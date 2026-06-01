@@ -1,59 +1,110 @@
-# Frontend
+# HiveHub — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.11.
+The frontend application for **HiveHub**, built with Angular. Communicates with the HiveHub backend REST API to deliver the user-facing interface.
 
-## Development server
+---
 
-To start a local development server, run:
+## Tech Stack
 
-```bash
-ng serve
-```
+| Layer | Technology |
+|---|---|
+| Language | TypeScript 5.9 |
+| Framework | Angular 21.2 |
+| Routing | Angular Router |
+| Forms | Angular Forms |
+| HTTP | Angular Common (HttpClient) |
+| Reactive | RxJS 7.8 |
+| Test Runner | Vitest 4 |
+| Formatter | Prettier 3 |
+| Package Manager | npm 11 |
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Prerequisites
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+- **Node.js** (LTS recommended)
+- **npm 11.12.1+**
+- **Angular CLI 21** — install globally if not already:
 
 ```bash
-ng build
+npm install -g @angular/cli
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## Getting Started
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### 1. Clone the repository
 
 ```bash
-ng test
+git clone https://github.com/HiveHub-SA/frontend.git
+cd frontend
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### 2. Install dependencies
 
 ```bash
-ng e2e
+npm install
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### 3. Start the development server
 
-## Additional Resources
+```bash
+npm start
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The app will be available at `http://localhost:4200/` and will hot-reload on file changes.
+
+---
+
+## Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm start` | Start the dev server at `localhost:4200` |
+| `npm test` | Run unit tests with Vitest |
+| `npm run watch` | Build in watch mode (development config) |
+| `ng generate component <name>` | Scaffold a new component |
+| `ng generate --help` | List all available Angular schematics |
+
+---
+
+## Project Structure
+
+```
+frontend/
+├── public/                  # Static assets
+├── src/
+│   ├── app/                 # Components, services, routing
+│   ├── environments/        # Environment config (dev / prod)
+│   └── main.ts              # Application bootstrap
+├── .editorconfig            # Editor formatting rules
+├── .prettierrc              # Prettier code style config
+├── angular.json             # Angular CLI workspace config
+├── tsconfig.json            # Base TypeScript config
+├── tsconfig.app.json        # App-specific TypeScript config
+├── tsconfig.spec.json       # Test-specific TypeScript config
+└── package.json             # Dependencies & npm scripts
+```
+
+---
+
+## Connecting to the Backend
+
+Make sure the [HiveHub backend](https://github.com/HiveHub-SA/backend) is running locally before starting the frontend. By default the backend runs on `http://localhost:8080`.
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m "feat: add your feature"`
+4. Push to the branch: `git push origin feature/your-feature`
+5. Open a Pull Request
+
+---
+
+## License
+
+This project is currently unlicensed. Contact the HiveHub-SA organization for usage permissions.
