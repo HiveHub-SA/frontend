@@ -16,22 +16,22 @@ export class MapaInteractivo implements AfterViewInit {
 
   private panalIcono = L.icon({
   iconUrl: 'assets/icono_panal.png',
-  iconSize: [40, 40],           // Tamaño de la imagen en píxeles [ancho, alto]
-  iconAnchor: [20, 40],         // Punto de la imagen que apuntará a la coordenada (la base central del panal)
-  popupAnchor: [0, -40]         // Punto desde donde se abrirá el cartelito flotante (popup) respecto al anclaje
+  iconSize: [40, 40],           // Tamaño de la imagen en pixeles [ancho, alto]
+  iconAnchor: [20, 40],         // Punto de la imagen que apuntara a la coordenada (la base central del panal)
+  popupAnchor: [0, -40]         // Punto desde donde se abrira el popup respecto al anclaje
   });
 
   ngAfterViewInit(): void {
     this.iniciarMapa();
   }
 
-  // Método para iniciar el mapa 
+  //Metodo para iniciar el mapa 
   private iniciarMapa() {
 
-    //Render del mapa centrado en Villa María
+    //Render del mapa centrado en Villa Maria
     this.mapa = L.map('mapa').setView([-32.4103, -63.2314], 13); 
 
-    //Capa segura con las políticas obligatorias
+    //Capa segura con las politicas obligatorias
     const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -42,14 +42,12 @@ export class MapaInteractivo implements AfterViewInit {
     //Boton para centrar la ubicacion
     const BotonUbicacion = L.Control.extend({
       options: {
-        position: 'topleft' // Puedes usar 'topleft', 'topright', 'bottomleft', 'bottomright'
+        position: 'topleft' 
       },
       onAdd: (map: any) => {
         // Creamos el contenedor del botón
         const boton = L.DomUtil.create('button', 'boton-ubicacion-circular');
         
-        // Icono o texto corto dentro del botón (puedes usar un emoji de mira/brújula o FontAwesome)
-        // boton.innerHTML = '<img src="assets/mira_ubicacion.png" alt="Mira de ubicación" class="icono-mira">';
         boton.innerHTML = '<img src="assets/mira_ubicacion-2.png" alt="Mira de ubicación" class="icono-mira">';
         boton.title = 'Mostrar mi ubicación';
 

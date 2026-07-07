@@ -30,7 +30,7 @@
   margin-top: 5px !important;
 }
 
-/* 🎯 CORRECCIÓN: Agregamos ::ng-deep e !important para forzar el tamaño de la imagen dinámica */
+/* ::ng-deep e !important para forzar el tamaño de la imagen dinámica */
 ::ng-deep .boton-ubicacion-circular .icono-mira {
   width: 18px !important;   /* Proporción ideal para los 34px del botón */
   height: 18px !important;
@@ -44,13 +44,13 @@
   .boton-ubicacion-circular:hover {
     background-color: #f4f4f4;
   }
-  /* 🎯 Aplicamos ::ng-deep también al efecto hover */
+  /* ::ng-deep también al efecto hover */
   ::ng-deep .boton-ubicacion-circular:hover .icono-mira {
     transform: scale(1.1); 
   }
 }
 
-/* Efecto clic/toque inmediato (tanto en PC como en celular) */
+/* Efecto clic/toque inmediato tanto en pc como en celular */
 .boton-ubicacion-circular:active {
   background-color: #e0e0e0;
 }
@@ -63,7 +63,7 @@
     margin-left: 10px !important;
   }
   
-  /* 🎯 Forzamos el escalado de la mira para el tamaño móvil */
+  /* forzamos el escalado de la mira para el tamaño móvil */
   ::ng-deep .boton-ubicacion-circular .icono-mira {
     width: 20px !important;  
     height: 20px !important;
