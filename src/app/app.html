@@ -1,14 +1,1 @@
-<main class="handshake-shell">
-  <section class="card">
-    <p class="eyebrow">Frontend ↔ Backend handshake</p>
-    <h1>{{ title() }}</h1>
-    <p class="message">{{ handshakeMessage() }}</p>
-
-    <div class="status" [class.connected]="connectionState() === 'connected'" [class.failed]="connectionState() === 'failed'">
-      {{ connectionState() }}
-    </div>
-
-    <p class="endpoint">GET http://localhost:8080/api/handshake</p>
-  </section>
-</main>
-
+<router-outlet></router-outlet>

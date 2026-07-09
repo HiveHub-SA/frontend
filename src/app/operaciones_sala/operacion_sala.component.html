@@ -1,0 +1,214 @@
+<div class="w-full flex flex-col transition-all duration-300" [class.filter]="mostrarModal()"
+  [class.blur-sm]="mostrarModal()" [class.pointer-events-none]="mostrarModal()">
+
+  <header
+    class="w-full bg-white border-b-2 border-slate-900 shadow-[0_4px_0_0_rgba(26,28,28,1)] flex justify-between items-center px-5 py-3 sticky top-0 z-40">
+    <div class="flex items-center gap-1">
+      <span class="material-symbols-outlined text-amber-700 text-2xl">hive</span>
+      <span class="font-headline text-xl font-black text-amber-700 uppercase tracking-tighter">HiveHub</span>
+    </div>
+    <div
+      class="flex items-center gap-2 bg-neutral-100 border-2 border-slate-900 rounded-full px-3 py-1 shadow-[2px_2px_0px_0px_rgba(26,28,28,1)]">
+      <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+      <span class="font-headline text-xs font-bold text-slate-900">ONLINE</span>
+    </div>
+  </header>
+
+  <main class="px-5 pt-6 flex flex-col gap-5 pb-24">
+
+    <section class="flex flex-col gap-2">
+      <div class="flex justify-between items-center">
+        <h3 class="font-headline text-sm font-black uppercase tracking-wide text-amber-900">RESUMEN TEMPORADA ACTUAL
+        </h3>
+        <button
+          class="flex items-center text-amber-800 bg-neutral-200 border-2 border-slate-900 rounded px-2 py-1 shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] text-xs font-headline font-bold gap-1 active:translate-y-[2px] active:shadow-none">
+          <span class="material-symbols-outlined text-xs">settings</span> Región
+        </button>
+      </div>
+
+      <div
+        class="text-[11px] font-headline font-bold text-amber-900 bg-neutral-100 px-3 py-1 rounded border border-slate-900 flex items-center gap-1 w-fit">
+        <span class="material-symbols-outlined text-xs">map</span> Rango Configurado: <span
+          class="text-amber-700 font-black">Nov - Mar</span>
+      </div>
+
+      <div
+        class="w-full bg-white border-2 border-slate-900 rounded-lg shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col overflow-hidden mt-1">
+        <div class="bg-amber-500/10 p-4 flex justify-between items-center border-b-2 border-slate-900">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🍯</span>
+            <div>
+              <p class="font-headline text-[10px] font-black text-amber-900 uppercase tracking-wider">Total Miel
+                Extraída</p>
+              <p class="font-headline text-2xl font-black text-amber-700 tracking-tight">{{ resumen().totalMielExtraida
+                | number:'1.1-2' }} <span class="text-sm font-bold">kg</span></p>
+            </div>
+          </div>
+          <span
+            class="font-headline text-xs font-bold text-amber-700 bg-white border border-slate-900 px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_rgba(26,28,28,1)]">Ciclo
+            {{ temporadaActual() }}</span>
+        </div>
+
+        <div class="grid grid-cols-2 bg-white divide-x-2 divide-slate-900">
+          <div class="p-3 flex flex-col gap-0.5">
+            <p
+              class="font-headline text-[9px] font-black text-amber-900 uppercase tracking-wider flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-700"></span>📦 Alzas Procesadas
+            </p>
+            <p class="font-headline text-lg font-black text-slate-900">{{ resumen().alzasProcesadas }} <span
+                class="text-xs font-bold text-amber-900">unidades</span></p>
+          </div>
+          <div class="p-3 flex flex-col gap-0.5 bg-orange-500/5">
+            <p
+              class="font-headline text-[9px] font-black text-orange-600 uppercase tracking-wider flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>📥 Stock en Sala
+            </p>
+            <p class="font-headline text-lg font-black text-orange-600">{{ resumen().alzasEnEspera }} <span
+                class="text-xs font-bold text-amber-900">en espera</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <h2 class="font-headline text-sm font-black uppercase tracking-wide text-amber-900">HISTORIAL LOGÍSTICO Y
+        CENTRIFUGADO</h2>
+
+      <div *ngIf="historial().length === 0"
+        class="w-full p-8 text-center border-2 border-dashed border-amber-900/30 rounded-lg text-amber-900 font-headline text-xs font-bold">
+        No hay movimientos registrados en esta temporada.
+      </div>
+
+      <article *ngFor="let op of historial()"
+        class="w-full p-4 bg-white border-2 border-slate-900 rounded-lg shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-2">
+        <div class="flex justify-between items-center border-b-2 border-neutral-200 pb-2">
+          <div class="flex items-center gap-1 font-headline text-sm font-bold text-slate-900">
+            <span class="material-symbols-outlined text-lg"
+              [ngClass]="op.tipoOperacion === 'EXTRACCION' ? 'text-amber-700' : 'text-orange-500'">
+              {{ op.tipoOperacion === 'EXTRACCION' ? 'water_drop' : 'local_shipping' }}
+            </span>
+            <span>{{ op.fecha | date:'dd/MM/yyyy' }}</span>
+          </div>
+
+          <span class="px-2 py-0.5 rounded-full border border-slate-900 font-headline text-[10px] font-bold uppercase"
+            [ngClass]="op.tipoOperacion === 'EXTRACCION' ? 'bg-amber-400 text-slate-900' : 'bg-neutral-200 text-slate-900'">
+            {{ op.tipoOperacion === 'EXTRACCION' ? 'Centrifugado' : 'Ingreso Sala' }}
+          </span>
+        </div>
+        <div class="flex justify-between items-center text-xs font-bold">
+          <span class="text-amber-900">
+            {{ op.tipoOperacion === 'EXTRACCION' ? 'Se procesaron ' + op.cantidadAlzas + ' Alzas de Sala' : 'Ingreso de
+            alzas cosechadas del campo' }}
+          </span>
+          <span class="text-sm font-black"
+            [ngClass]="op.tipoOperacion === 'EXTRACCION' ? 'text-amber-700' : 'text-orange-600'">
+            {{ op.tipoOperacion === 'EXTRACCION' ? '+' + op.kilosMiel + ' kg Miel' : '+' + op.cantidadAlzas + ' Alzas'
+            }}
+          </span>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
+
+<button *ngIf="!mostrarModal()" (click)="abrirModal()"
+  class="fixed right-5 bottom-24 z-50 w-14 h-14 rounded-full bg-orange-500 border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(26,28,28,1)] flex items-center justify-center text-slate-900 font-headline text-2xl font-black active:translate-y-[2px] active:shadow-none transition-all">
+  +
+</button>
+
+<div *ngIf="mostrarModal()"
+  class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-5 backdrop-blur-sm">
+  <div
+    class="bg-white border-2 border-slate-900 rounded-lg p-5 w-full max-w-sm mx-auto shadow-[8px_8px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-5 animate-[slideInUp_0.2s_ease-out]">
+
+    <div class="flex justify-between items-center border-b-2 border-slate-900 pb-2 relative">
+      <h2 class="font-headline text-sm font-black tracking-tight uppercase text-slate-900 text-center w-full">Nuevo
+        Registro Logístico</h2>
+      <button (click)="cerrarModal()" class="absolute right-0 text-amber-900 hover:text-slate-900 p-1">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
+    <div
+      class="flex border-2 border-slate-900 rounded-md overflow-hidden bg-neutral-200 p-0.5 shadow-[2px_2px_0px_0px_rgba(26,28,28,1)]">
+      <button (click)="cambiarTipoFormulario('INGRESO')"
+        class="w-1/2 py-2 font-headline text-[11px] font-black uppercase rounded flex items-center justify-center gap-1 transition-all"
+        [ngClass]="tipoOperacionForm() === 'INGRESO' ? 'bg-white border border-slate-900 text-slate-900' : 'text-neutral-500'">
+        <span class="material-symbols-outlined text-sm">input</span>1. Ingreso Sala
+      </button>
+      <button (click)="cambiarTipoFormulario('EXTRACCION')"
+        class="w-1/2 py-2 font-headline text-[11px] font-black uppercase rounded flex items-center justify-center gap-1 transition-all"
+        [ngClass]="tipoOperacionForm() === 'EXTRACCION' ? 'bg-white border border-slate-900 text-slate-900' : 'text-neutral-500'">
+        <span class="material-symbols-outlined text-sm">reorder</span>2. Extracción
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-4">
+
+      <div class="flex flex-col gap-1">
+        <label class="font-headline text-[10px] font-black text-amber-900 uppercase tracking-wider">Fecha
+          Operación</label>
+        <div class="relative">
+          <input [value]="fechaForm()" (input)="fechaForm.set($event.target.value)" type="date"
+            class="w-full bg-neutral-50 border-2 border-slate-900 rounded-md px-3 py-2 font-headline text-sm text-slate-900 font-bold focus:border-amber-500 focus:ring-0 focus:outline-none transition-colors">
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-headline text-[10px] font-black text-amber-900 uppercase tracking-wider">
+          {{ tipoOperacionForm() === 'INGRESO' ? 'Cantidad de Alzas Ingresadas' : 'Cantidad de Alzas a Centrifugar' }}
+        </label>
+        <div
+          class="flex items-center justify-between bg-neutral-50 border-2 border-slate-900 rounded-md p-1.5 shadow-[1px_1px_0px_0px_rgba(26,28,28,1)]">
+          <button (click)="decrementarAlzas()"
+            class="bg-neutral-200 border-2 border-slate-900 rounded w-10 h-10 flex items-center justify-center font-black text-xl active:translate-y-[1px]">-</button>
+          <span class="font-headline text-2xl font-black text-slate-900 w-16 text-center">{{ cantidadAlzasForm()
+            }}</span>
+          <button (click)="incrementarAlzas()"
+            class="bg-amber-400 border-2 border-slate-900 rounded w-10 h-10 flex items-center justify-center font-black text-xl active:translate-y-[1px]">+</button>
+        </div>
+        <p class="text-[10px] text-amber-900 font-bold mt-1">
+          {{ tipoOperacionForm() === 'INGRESO' ? 'Nota: Sumará al stock en espera.' : 'Nota: Descontará del stock de
+          sala.' }}
+        </p>
+      </div>
+
+      <div *ngIf="tipoOperacionForm() === 'EXTRACCION'" class="flex flex-col gap-1">
+        <label class="font-headline text-[10px] font-black text-amber-900 uppercase tracking-wider">Volumen Miel Total
+          Extraído</label>
+        <div class="relative">
+          <input [value]="kilosMielForm()" (input)="kilosMielForm.set(+$event.target.value)" type="number" step="0.1"
+            min="0.1" placeholder="Ej: 350.5"
+            class="w-full bg-neutral-50 border-2 border-slate-900 rounded-md pl-3 pr-12 py-2.5 font-headline text-sm text-slate-900 font-bold focus:border-amber-500 focus:ring-0 focus:outline-none text-right">
+          <span
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 font-headline text-xs font-bold text-amber-900">kg</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-2 border-t-2 border-dashed border-neutral-200">
+      <button (click)="guardarRegistro()"
+        class="w-full h-12 bg-amber-400 border-2 border-slate-900 rounded-full flex items-center justify-center font-headline text-xs font-black text-slate-900 uppercase shadow-[0_4px_0_0_rgba(26,28,28,1)] active:translate-y-[2px] active:shadow-none transition-all">
+        {{ tipoOperacionForm() === 'INGRESO' ? 'Confirmar Ingreso a Sala' : 'Confirmar Centrifugado' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<nav
+  class="fixed bottom-0 left-0 w-full bg-white border-t-2 border-slate-900 shadow-[0_-4px_0_0_rgba(26,28,28,1)] flex justify-around items-center h-[76px] pb-safe px-4 rounded-t-lg transition-all"
+  [ngClass]="mostrarModal() ? 'z-0 opacity-50' : 'z-40 opacity-100'">
+  <div class="flex flex-col items-center justify-center text-amber-900 opacity-40 px-3 py-1 cursor-pointer">
+    <span class="material-symbols-outlined text-xl mb-1">map</span>
+    <span class="font-headline text-[10px] font-bold uppercase tracking-tighter">Mapa</span>
+  </div>
+  <div class="flex flex-col items-center justify-center text-amber-900 opacity-40 px-3 py-1 cursor-pointer">
+    <span class="material-symbols-outlined text-xl mb-1">grid_view</span>
+    <span class="font-headline text-[10px] font-bold uppercase tracking-tighter">Apiarios</span>
+  </div>
+  <div
+    class="flex flex-col items-center justify-center bg-amber-400 text-slate-900 rounded-lg border-2 border-slate-900 px-4 py-1.5 translate-y-[-2px] shadow-[0_3px_0_0_rgba(26,28,28,1)] cursor-pointer">
+    <span class="material-symbols-outlined text-xl mb-0.5" style="font-variation-settings: 'FILL' 1;">liquor</span>
+    <span class="font-headline text-[10px] font-black uppercase tracking-tighter">Extracción</span>
+  </div>
+</nav>

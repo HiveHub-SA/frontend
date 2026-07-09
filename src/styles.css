@@ -1,1 +1,48 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@source "./**/*.{html,ts}";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/container-queries";
+
+@theme {
+  --color-primary: #7e5700;
+  --color-primary-container: #ffb300;
+  --color-on-primary-container: #6b4900;
+  --color-secondary: #8f4e00;
+  --color-secondary-container: #ff8f06;
+  --color-on-secondary-container: #623300;
+  --color-surface: #f9f9f9;
+  --color-surface-dim: #dadada;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #514532;
+  --color-outline: #847560;
+  --color-background: #f9f9f9;
+  --color-on-background: #1a1c1c;
+
+  --font-headline: "Quicksand", sans-serif;
+  --font-body: "Nunito Sans", sans-serif;
+}
+
+/* Reglas base del proyecto */
+body {
+  font-family: 'Nunito Sans', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  background-color: #f9f9f9;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-headline {
+  font-family: 'Quicksand', sans-serif;
+}
+
+/* Configuración de iconos Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
