@@ -1,0 +1,62 @@
+#mapa-seleccion { 
+      border: 2px solid #333; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+
+.boton-ubicacion-circular {
+  background-color: white;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+  z-index: 1000 !important;
+  margin-left: 10px !important;
+  margin-top: 5px !important;
+}
+
+/* ::ng-deep e !important para forzar el tamaño de la imagen dinámica */
+::ng-deep .boton-ubicacion-circular .icono-mira {
+  width: 18px !important;   /* Proporción ideal para los 34px del botón */
+  height: 18px !important;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+  display: block;           /* Evita espacios fantasma debajo de la imagen */
+}
+
+/* Feedback visual en computadoras (Hover) */
+@media (hover: hover) {
+  .boton-ubicacion-circular:hover {
+    background-color: #f4f4f4;
+  }
+  /* ::ng-deep también al efecto hover */
+  ::ng-deep .boton-ubicacion-circular:hover .icono-mira {
+    transform: scale(1.1); 
+  }
+}
+
+/* Efecto clic/toque inmediato tanto en pc como en celular */
+.boton-ubicacion-circular:active {
+  background-color: #e0e0e0;
+}
+
+/* Ajuste Responsive exclusivo para pantallas de celulares reales */
+@media (max-width: 576px) {
+  .boton-ubicacion-circular {
+    width: 42px;  /* Cómodo para el pulgar, pero integrado estéticamente */
+    height: 42px;
+    margin-left: 10px !important;
+  }
+  
+  /* forzamos el escalado de la mira para el tamaño móvil */
+  ::ng-deep .boton-ubicacion-circular .icono-mira {
+    width: 20px !important;  
+    height: 20px !important;
+  }
+}

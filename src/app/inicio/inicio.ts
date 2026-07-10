@@ -1,13 +1,17 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { BackendTestResponse, HandshakeService } from '../handshake.service';
+import { CommonModule } from '@angular/common';
+
+//Esto es solo para pruebas
+import { MockRegistrarApiarioComponent } from '../mock-registrar-apiario/mock-registrar-apiario';
 
 type ConnectionState = 'idle' | 'checking' | 'connected' | 'failed';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [RouterLink, RouterOutlet],
+  imports: [RouterLink, RouterOutlet, CommonModule, MockRegistrarApiarioComponent],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css'
 })
@@ -17,6 +21,8 @@ export class Inicio implements OnInit {
   protected readonly handshakeMessage = signal('Starting handshake...');
 
   constructor(private readonly handshakeService: HandshakeService) {}
+
+  public verRegistroMock: boolean = false;
 
   async ngOnInit(): Promise<void> {
     this.connectionState.set('checking');
