@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-operacion-sala',
   templateUrl: './operacion_sala.component.html',
+  styleUrl: './operacion_sala.component.css',
   standalone: true,
   imports: [
     CommonModule,
