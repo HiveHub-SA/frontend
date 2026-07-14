@@ -1,0 +1,25 @@
+<div class="min-h-screen bg-background flex flex-col text-on-surface relative overflow-hidden">
+  <!-- Decorative bg elements -->
+  <div class="absolute top-20 right-[-20px] opacity-10 pointer-events-none">
+    <span class="material-symbols-outlined text-[120px]">hive</span>
+  </div>
+
+  <header class="w-full top-0 sticky z-50 h-16 border-b-2 border-on-background bg-surface shadow-[0_4px_0_0_rgba(26,28,28,1)] flex items-center justify-between px-md">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">🐝</span>
+      <h1 class="font-headline-sm text-primary">HiveHub</h1>
+    </div>
+    <button 
+      class="h-[40px] px-sm bg-surface-container-highest text-on-surface rounded-full border-2 border-on-surface shadow-[0px_4px_0px_0px_rgba(26,28,28,1)] pressable font-label-sm uppercase flex items-center justify-center transition-all"
+      (click)="logout()">
+      Cerrar sesión
+    </button>
+  </header>
+
+  <main class="flex-grow py-xl px-margin max-w-4xl mx-auto w-full relative z-10">
+    <div class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-lg shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col">
+      <h2 class="font-headline-md mb-2 text-on-surface">Bienvenido{{ user ? ', ' + user.username : '' }} 👋</h2>
+      <p class="font-body-lg text-on-surface-variant">Tu apiario digital está en construcción. Acá vas a ver el resumen de tus colmenas.</p>
+    </div>
+  </main>
+</div>

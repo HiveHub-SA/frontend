@@ -1,0 +1,90 @@
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 h-16 border-b-2 border-on-background bg-surface shadow-[0_4px_0_0_rgba(26,28,28,1)]">
+
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex items-center justify-center py-xl relative overflow-hidden" *ngIf="state$ | async as state">
+  <!-- Decorative bg elements -->
+  <div class="absolute top-10 left-[-20px] opacity-10">
+    <span class="material-symbols-outlined text-[120px]">hive</span>
+  </div>
+  <div class="absolute bottom-20 right-[-30px] opacity-10">
+    <span class="material-symbols-outlined text-[150px]">hexagon</span>
+  </div>
+  
+  <!-- Login Form Card -->
+  <div class="w-full max-w-sm mx-margin relative z-10">
+    <div class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-lg shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] relative flex flex-col items-center">
+      <!-- Beehive Icon -->
+      <div class="w-24 h-24 bg-primary-container border-2 border-on-surface rounded-full flex items-center justify-center mb-6 shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] absolute -top-12 z-20 overflow-hidden">
+        <img alt="Beehive comic icon" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9xmfFB8UAXPRtXGxY4YComPljzUQ2Uww13r-_-D5iW_aVwFxXkxu60yBz0wOdXUvk_4dmR-kjY_V3BlBsWdHfdnxeylHRDRKlUy92WBCnaVnFBXLl-DwyaVBvGCPvMrn3aWZiHxhBEO1yYt0V-JNCm9cve20tHTTpqJpb1gF1YurapQuAyMVX-DMu8Dh1NT0vrWCNHaW6rjThxhv7aGBRiVvrw7367pIPGYPAyPls9JO_vn2wjU1C2Ajs4zCb0fqGjQDCWE7_vw">
+      </div>
+      
+      <div class="text-center mt-8 mb-8 w-full">
+        <h2 class="font-headline-sm mb-2 text-on-surface">Bienvenido</h2>
+        <p class="font-body-md text-on-surface-variant">Ingresa tus datos para continuar</p>
+      </div>
+
+      <form class="w-full space-y-6" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Email Input -->
+        <div class="flex flex-col gap-2">
+          <label class="font-label-lg text-on-surface" for="username">USUARIO</label>
+          <div class="relative w-full input-focus-ring border-2 border-on-surface rounded-lg bg-background transition-all" [class.border-error]="username.invalid && username.touched">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="material-symbols-outlined text-on-surface-variant">person</span>
+            </div>
+            <input 
+              class="block w-full pl-10 pr-3 py-sm bg-transparent border-none text-on-surface font-body-md focus:ring-0 placeholder:text-on-surface-variant/50" 
+              id="username" 
+              type="text"
+              formControlName="username"
+              placeholder="Tu nombre de usuario">
+          </div>
+          <p class="text-error font-label-sm mt-1" *ngIf="username.invalid && username.touched">
+            El usuario es obligatorio.
+          </p>
+        </div>
+
+        <!-- Password Input -->
+        <div class="flex flex-col gap-2">
+          <label class="font-label-lg text-on-surface" for="password">CONTRASEÑA</label>
+          <div class="relative w-full input-focus-ring border-2 border-on-surface rounded-lg bg-background transition-all" [class.border-error]="password.invalid && password.touched">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="material-symbols-outlined text-on-surface-variant">lock</span>
+            </div>
+            <input 
+              class="block w-full pl-10 pr-10 py-sm bg-transparent border-none text-on-surface font-body-md focus:ring-0 placeholder:text-on-surface-variant/50" 
+              id="password" 
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••">
+            <div 
+              class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer hover:opacity-70 transition-opacity"
+              (click)="togglePasswordVisibility()">
+              <span class="material-symbols-outlined text-on-surface-variant">{{ showPassword ? 'visibility' : 'visibility_off' }}</span>
+            </div>
+          </div>
+          <p class="text-error font-label-sm mt-1" *ngIf="password.invalid && password.touched">
+            La contraseña es obligatoria.
+          </p>
+        </div>
+
+        <p class="text-error font-body-md text-center" *ngIf="state.error">{{ state.error }}</p>
+
+        <!-- Submit Button -->
+        <button 
+          class="w-full h-[60px] bg-primary-container text-on-surface rounded-full border-2 border-on-surface shadow-[0px_4px_0px_0px_rgba(26,28,28,1)] pressable flex items-center justify-center transition-all mt-lg mt-md disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]" 
+          type="submit"
+          [disabled]="state.loading || form.invalid">
+          <span class="font-headline-sm uppercase tracking-wider font-bold">{{ state.loading ? 'INGRESANDO...' : 'INGRESAR AL SISTEMA' }}</span>
+          <span class="material-symbols-outlined ml-2 font-bold" *ngIf="!state.loading">arrow_forward</span>
+          <span class="material-symbols-outlined ml-2 font-bold animate-spin" *ngIf="state.loading">sync</span>
+        </button>
+      </form>
+    </div>
+    
+    <div class="mt-8 text-center w-full">
+      <a class="font-label-lg text-primary hover:opacity-80 underline-offset-4 decoration-2 decoration-primary underline transition-all" href="#">¿Olvidaste tu contraseña?</a>
+    </div>
+  </div>
+</main>
