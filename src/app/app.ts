@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 
 import { BackendTestResponse, HandshakeService } from './handshake.service';
+import { RouterOutlet } from '@angular/router';
 
 type ConnectionState = 'idle' | 'checking' | 'connected' | 'failed';
 
@@ -8,7 +9,8 @@ type ConnectionState = 'idle' | 'checking' | 'connected' | 'failed';
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  imports: [RouterOutlet],
+  styleUrl: './app.css',
 })
 export class App implements OnInit {
   protected readonly title = signal('frontend');
@@ -25,11 +27,13 @@ export class App implements OnInit {
       const response: BackendTestResponse = await this.handshakeService.initHandshake();
       this.connectionState.set('connected');
       this.handshakeMessage.set(
-        `${response.app} is ${response.status} (database: ${response.databaseConnection})`
+        `${response.app} is ${response.status} (database: ${response.databaseConnection})`,
       );
     } catch (error) {
       this.connectionState.set('failed');
-      this.handshakeMessage.set('Could not connect to the backend at http://localhost:8080/api/handshake');
+      this.handshakeMessage.set(
+        'Could not connect to the backend at http://localhost:8080/api/handshake',
+      );
       console.error('[Handshake] Backend connection failed.', error);
     }
   }

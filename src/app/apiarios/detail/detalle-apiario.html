@@ -1,0 +1,101 @@
+<!-- Loader para cuando se hace la llamada al backend -->
+<div *ngIf="loading()" class="flex h-screen items-center justify-center">
+  <p class="font-headline-md">Cargando detalles del apiario...</p>
+</div>
+
+<!-- Contenido principal (solo se renderiza si el apiario existe y cargó) -->
+<div *ngIf="!loading() && apiario() as datosApiario">
+
+  <!-- Custom Header -->
+  <header class="h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex items-center px-margin sticky top-0 z-50 shrink-0">
+    <button
+      routerLink="/apiarios"
+      aria-label="Volver"
+      class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-on-surface bg-surface-container-lowest shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect mr-4"
+    >
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_back</span>
+    </button>
+    <h1 class="font-headline-sm text-headline-sm flex-1 text-center pr-14 uppercase tracking-wide">
+      DETALLE: {{ datosApiario.name }}
+    </h1>
+  </header>
+
+  <!-- Main Content -->
+  <main class="pb-[100px] px-margin py-md flex flex-col gap-lg overflow-y-auto">
+
+    <!-- Bloque de Metadatos del Apiario (Creado / Ubicación) -->
+    <section class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-md shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-2">
+      <h2 class="font-label-lg text-on-surface uppercase tracking-wider border-b-2 border-surface-container pb-1">Información General</h2>
+      <p class="font-body-md text-on-surface-variant">
+        <strong>Creado el:</strong> {{ datosApiario.createdAt | date:'dd/MM/yyyy' }}
+      </p>
+      <p class="font-body-md text-on-surface-variant">
+        <strong>Ubicación Geográfica:</strong> {{ datosApiario.latitude }}, {{ datosApiario.longitude }}
+      </p>
+    </section>
+
+    <!-- Block B: COLMENAS EN SITIO & List -->
+    <section class="flex flex-col gap-sm">
+
+      <!-- Fila del Título y el Botón Agregar -->
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-label-lg text-on-surface uppercase tracking-wider">
+          COLMENAS EN SITIO ({{ datosApiario.colmenas.length }})
+        </h2>
+        <button
+          (click)="toggleForm()"
+          class="bg-[#FFB300] text-on-surface px-4 py-2 rounded-full border-2 border-on-surface font-bold text-[12px] shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect transition-transform flex items-center gap-1 uppercase"
+        >
+          <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">add</span> AÑADIR
+        </button>
+      </div>
+
+      <div class="form-container" *ngIf="showForm">
+        <div class="form-card">
+          <h3 class="section-title">Nueva Colmena</h3>
+
+          <form (ngSubmit)="createColmena()" #hiveForm="ngForm">
+            <!-- Input Nombre -->
+            <div class="form-field">
+              <label class="form-label">Identificador / Nombre</label>
+              <input
+                type="text"
+                name="nombre"
+                [(ngModel)]="newColmena.name"
+                required
+                placeholder="Ej: Colmena #03"
+                class="form-input"
+              />
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn-cancel" (click)="toggleForm()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn-submit" [disabled]="!hiveForm.form.valid">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="flex flex-col gap-sm">
+        <!-- Bucle de colmenas -->
+        <div
+          class="w-full p-md bg-surface-container-lowest border-2 border-on-surface rounded-lg shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] mb-sm sink-effect cursor-pointer transition-transform flex flex-col gap-2"
+          *ngFor="let colmena of datosApiario.colmenas; let i = index"
+        >
+          <div class="flex items-center justify-between border-b-2 border-surface-container pb-2">
+            <h3 class="font-headline-sm text-on-surface">Colmena "{{ colmena['name']}}"</h3>
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">hive</span>
+          </div>
+        </div>
+
+        <!-- Mensaje por si el apiario no tiene colmenas registradas -->
+        <p class="apiary-list__empty text-center py-4 font-body-md text-on-surface-variant bg-surface-container rounded-lg border-2 border-dashed border-on-surface" *ngIf="datosApiario.colmenas.length === 0">
+          Este apiario no tiene colmenas asociadas.
+        </p>
+
+      </div>
+    </section>
+  </main>
+</div>
