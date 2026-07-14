@@ -1,37 +1,48 @@
-import { AfterViewInit, Component} from '@angular/core';
+import { AfterViewInit, Component, OnInit, inject } from '@angular/core';
 import * as L from 'leaflet';
+import { Router } from '@angular/router';
+import { ApiarioMapasService, ApiarioDTO } from './apiario-mapas.service'; // Cambiar ruta en un futuro si es que usamos un solo servicio
 
 @Component({
   selector: 'app-mapa-interactivo',
-  imports: [],
+  imports: [], 
   templateUrl: './mapa-interactivo.html',
   styleUrl: './mapa-interactivo.css',
 })
-
-export class MapaInteractivo implements AfterViewInit {
-
-  private mapa:any;
+export class MapaInteractivo implements AfterViewInit, OnInit {
+  private mapa: any;
   private userMarker: L.Marker<any> | undefined;
 
+  // Inyectamos el servicio del apiario usando inject   
+  private apiarioService = inject(ApiarioMapasService);
+  private router = inject(Router);
 
-  private panalIcono = L.icon({
-  iconUrl: 'assets/icono_panal.png',
-  iconSize: [40, 40],           // Tamaño de la imagen en pixeles [ancho, alto]
-  iconAnchor: [20, 40],         // Punto de la imagen que apuntara a la coordenada (la base central del panal)
-  popupAnchor: [0, -40]         // Punto desde donde se abrira el popup respecto al anclaje
+  // Icono por defecto para la ubicacion del usuario
+  // Icono de panal para las colmenas
+  private usuarioIcono = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
   });
+
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.iniciarMapa();
+    this.cargarApiariosEnMapa(); // Llamamos a la carga de datos al iniciar el mapa
   }
 
-  //Metodo para iniciar el mapa 
+  // Método para iniciar el mapa 
   private iniciarMapa() {
+    // Render del mapa centrado en Villa Maria
+    this.mapa = L.map('mapa', {
+      zoomControl: false 
+    }).setView([-32.4103, -63.2314], 14);
 
-    //Render del mapa centrado en Villa Maria
-    this.mapa = L.map('mapa').setView([-32.4103, -63.2314], 13); 
-
-    //Capa segura con las politicas obligatorias
+    // Capa segura con las políticas obligatorias
     const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -39,48 +50,97 @@ export class MapaInteractivo implements AfterViewInit {
     });
     osmLayer.addTo(this.mapa);
 
-    //Boton para centrar la ubicacion
-    const BotonUbicacion = L.Control.extend({
-      options: {
-        position: 'topleft' 
-      },
-      onAdd: (map: any) => {
-        // Creamos el contenedor del botón
-        const boton = L.DomUtil.create('button', 'boton-ubicacion-circular');
-        
-        boton.innerHTML = '<img src="assets/mira_ubicacion-2.png" alt="Mira de ubicación" class="icono-mira">';
-        boton.title = 'Mostrar mi ubicación';
+    setTimeout(() => {
+      this.mapa.invalidateSize();
+    }, 100); //Son 100ms de delay para que llegue a cargar todo el css
 
-        // Vinculo entre el boton y la funcion de ubicacion 
-        L.DomEvent.on(boton, 'click', (e) => {
-          L.DomEvent.stopPropagation(e); // Evita que el mapa reciba el clic
-          this.getUbicacionActual();
-        });
-        return boton;
-      }
-    });
-
-    // Agregamos el boton al mapa
-    this.mapa.addControl(new BotonUbicacion());
   }
 
+  // Métodos de control de mapa enlazados a nuestros nuevos botones HTML
+  zoomIn() {
+    if (this.mapa) this.mapa.zoomIn();
+  }
+  zoomOut() {
+    if (this.mapa) this.mapa.zoomOut();
+  }
 
-  // Metodo para obtener la ubicacion del usuario
+  // Método de acción para el botón principal
+  onAnadirApiario() {
+    // Aca va a ir la logica para navegar al componente de crear apiario
+    console.log("Añadir Apiario clickeado");
+    // this.router.navigate(['/apiarios/crear']);
+  }
+
+  // Método que trae los apiarios del backend y los dibuja
+  private cargarApiariosEnMapa() {
+    this.apiarioService.obtenerApiarios().subscribe({
+      next: (apiarios: ApiarioDTO[]) => {
+        apiarios.forEach(apiario => {
+          if (apiario.latitude && apiario.longitude) {
+            
+            // Creación del contenedor HTML para el popup
+            const popupContenedor = document.createElement('div');
+            popupContenedor.style.textAlign = 'center';
+            
+            // Título del Apiario
+            const titulo = document.createElement('h4');
+            titulo.style.margin = '0 0 8px 0';
+            titulo.innerHTML = `<strong>Apiario:</strong> ${apiario.name}`;
+            popupContenedor.appendChild(titulo);
+
+            // Botón de "Ver detalles"
+            const botonDetalles = document.createElement('button');
+            botonDetalles.innerText = 'Ver detalles';
+            botonDetalles.className = 'btn-popup-detalles'; 
+            botonDetalles.onclick = () => {
+              this.router.navigate([`/apiarios/${apiario.id}/colmenas`]);
+            };
+            popupContenedor.appendChild(botonDetalles);
+
+            // Marcador HTML dinámico usando el diseño de extrusión y la etiqueta
+            const markerIcon = L.divIcon({
+              className: 'hive-marker-wrapper', // Clase principal invisible
+              html: `
+                <div class="hive-marker">
+                  <div class="hive-icon-bg">
+                    <span class="material-symbols-outlined icono-panal" style="font-variation-settings: 'FILL' 1;">hive</span>
+                  </div>
+                  <div class="hive-label">${apiario.name}</div>
+                </div>
+              `,
+              iconSize: [60, 60],
+              iconAnchor: [30, 45], // El ancla en la base del panal
+              popupAnchor: [0, -40]
+            });
+
+            L.marker([apiario.latitude, apiario.longitude], { icon: markerIcon })
+              .addTo(this.mapa)
+              .bindPopup(popupContenedor); 
+          }
+        });
+      },
+      error: (err) => {
+        console.error("Error al cargar los apiarios:", err);
+      }
+    });
+  }
+
+  // Método para obtener la ubicación del usuario
   getUbicacionActual() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const coordenadas: [number, number] = [position.coords.latitude, position.coords.longitude];
 
-        //Si el marcador ya existe, movemos su posicion. Si no, lo creamos.
+        // Si el marcador ya existe movemos su posición. Si no, lo creamos
         if (this.userMarker) {
           this.userMarker.setLatLng(coordenadas).openPopup();
         } else {
-          this.userMarker = L.marker(coordenadas, { icon: this.panalIcono })
+          // Usamos el icono de usuario para no confundirlo con sus panales
+          this.userMarker = L.marker(coordenadas, { icon: this.usuarioIcono })
             .addTo(this.mapa)
             .bindPopup("Estás aquí")
             .openPopup();
         }
-        // Movemos la camara del mapa hacia la ubicacion del usuario automaticamente
         this.mapa.setView(coordenadas, 17);
 
       }, () => {
@@ -90,8 +150,5 @@ export class MapaInteractivo implements AfterViewInit {
       alert("Geolocalización no soportada por el navegador");
     }
   }
-
-
-  
-
 }
+

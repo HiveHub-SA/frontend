@@ -1,4 +1,7 @@
-/* Contenedor general del mapa a pantalla completa */
+/* Importar tipografías de Google Fonts necesarias para el diseño (si no las tienes globales) */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
 .mapa-contenedor {
   position: absolute;
   top: 0;
@@ -6,66 +9,157 @@
   width: 100vw;
   height: 100vh;
   z-index: 1;
+  overflow: hidden;
 }
 
 #mapa {
   width: 100%;
   height: 100%;
+  background-color: #1a1c1c; /* Color de fondo mientras cargan los tiles */
 }
 
-/* El botón contenedor (perfectamente alineado con el zoom nativo de Leaflet) */
-.boton-ubicacion-circular {
-  background-color: white;
-  border: 2px solid rgba(0,0,0,0.2);
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
-  cursor: pointer;
+/* CONTROLES LATERALES FLOTANTES */
+.controles-laterales {
+  position: absolute;
+  top: 100px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000; /* Asegura que esté por encima de Leaflet */
+}
+
+.btn-control {
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 12px; /* Super-elipse suave */
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-  z-index: 1000 !important;
-  margin-left: 10px !important;
-  margin-top: 5px !important;
+  cursor: pointer;
+  box-shadow: 0px 4px 0px 0px #1a1c1c; /* Sombra sólida / Extrusión */
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  color: #1a1c1c;
 }
 
-/* ::ng-deep e !important para forzar el tamaño de la imagen dinámica */
-::ng-deep .boton-ubicacion-circular .icono-mira {
-  width: 18px !important;   /* Proporción ideal para los 34px del botón */
-  height: 18px !important;
-  object-fit: contain;
-  transition: transform 0.2s ease;
-  display: block;           /* Evita espacios fantasma debajo de la imagen */
+/* Botón especial de ubicación usando el color "Hive Orange" */
+.btn-control.btn-ubicacion {
+  background-color: #ff8f06; 
+  margin-top: 8px; /* Un poco más separado de los controles de zoom */
+}
+.btn-control.btn-ubicacion .text-icon-ubicacion {
+  color: #623300; /* Texto oscuro cálido */
 }
 
-/* Feedback visual en computadoras (Hover) */
-@media (hover: hover) {
-  .boton-ubicacion-circular:hover {
-    background-color: #f4f4f4;
-  }
-  /* ::ng-deep también al efecto hover */
-  ::ng-deep .boton-ubicacion-circular:hover .icono-mira {
-    transform: scale(1.1); 
-  }
+/* Boton Añadir Apiario */
+.contenedor-flotante-inferior {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  z-index: 1000;
+  box-sizing: border-box;
 }
 
-/* Efecto clic/toque inmediato tanto en pc como en celular */
-.boton-ubicacion-circular:active {
-  background-color: #e0e0e0;
+.btn-principal {
+  background-color: #ffb300; /* Honey Yellow */
+  color: #6b4900;
+  width: 100%;
+  max-width: 400px;
+  height: 60px; /* Tamaño táctil masivo */
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px; /* Forma de píldora completa */
+  font-family: 'Quicksand', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0px 4px 0px 0px #1a1c1c; 
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-/* Ajuste Responsive exclusivo para pantallas de celulares reales */
-@media (max-width: 576px) {
-  .boton-ubicacion-circular {
-    width: 42px;  /* Cómodo para el pulgar, pero integrado estéticamente */
-    height: 42px;
-    margin-left: 10px !important;
-  }
-  
-  /* forzamos el escalado de la mira para el tamaño móvil */
-  ::ng-deep .boton-ubicacion-circular .icono-mira {
-    width: 20px !important;  
-    height: 20px !important;
-  }
+.btn-principal .icono-principal {
+  font-size: 28px;
+}
+
+/* ANIMACIÓN "PRESSABLE" GENERAL */
+.pressable:active {
+  transform: translateY(4px); /* El botón "baja" al presionarse */
+  box-shadow: 0px 0px 0px 0px #1a1c1c; /* La extrusión desaparece */
+}
+
+/* ESTILOS DE MARCADORES (Se inyectan en Leaflet)
+   Usamos ::ng-deep para saltar la encapsulación */
+::ng-deep .hive-marker-wrapper {
+  background: transparent;
+  border: none;
+}
+
+::ng-deep .hive-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .hive-icon-bg {
+  background-color: #ffb300;
+  border: 2px solid #1a1c1c;
+  border-radius: 16px; /* 1rem - Cuadrado con bordes muy suaves */
+  padding: 8px;
+  box-shadow: 0px 4px 0px 0px #1a1c1c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .hive-icon-bg .icono-panal {
+  font-size: 28px;
+  color: #6b4900;
+}
+
+::ng-deep .hive-label {
+  margin-top: 10px; /* Espaciado por debajo de la extrusión */
+  background: #1a1c1c;
+  color: #f9f9f9;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.3); /* Sombra suave para separar del mapa */
+}
+
+/* ESTILOS POPUP LEAFLET */
+.btn-popup-detalles {
+  background-color: #ffb300; 
+  color: #6b4900;
+  border: 2px solid #1a1c1c;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  width: 100%;
+  margin-top: 10px;
+  box-shadow: 0px 2px 0px 0px #1a1c1c;
+}
+
+.btn-popup-detalles:active {
+  transform: translateY(2px);
+  box-shadow: 0px 0px 0px 0px #1a1c1c;
 }
