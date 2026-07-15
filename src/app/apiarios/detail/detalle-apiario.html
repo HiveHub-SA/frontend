@@ -16,7 +16,7 @@
       <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_back</span>
     </button>
     <h1 class="font-headline-sm text-headline-sm flex-1 text-center pr-14 uppercase tracking-wide">
-      DETALLE: {{ datosApiario.name }}
+      APIARIO: {{ datosApiario.name }}
     </h1>
   </header>
 
@@ -81,8 +81,9 @@
       <div class="flex flex-col gap-sm">
         <!-- Bucle de colmenas -->
         <div
-          class="w-full p-md bg-surface-container-lowest border-2 border-on-surface rounded-lg shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] mb-sm sink-effect cursor-pointer transition-transform flex flex-col gap-2"
           *ngFor="let colmena of datosApiario.colmenas; let i = index"
+          [routerLink]="['/colmenas/', colmena['id']]"
+          class="w-full p-md bg-surface-container-lowest border-2 border-on-surface rounded-lg shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] mb-sm sink-effect cursor-pointer transition-transform flex flex-col gap-2"
         >
           <div class="flex items-center justify-between border-b-2 border-surface-container pb-2">
             <h3 class="font-headline-sm text-on-surface">Colmena "{{ colmena['name']}}"</h3>

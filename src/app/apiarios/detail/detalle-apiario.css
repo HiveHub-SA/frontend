@@ -1,540 +1,107 @@
 /* ============================================================
-   HiveHub – tokens de diseño (colores, spacing, tipografía)
+   detalle-apiario — estilos propios de este componente
+   Los utilitarios (flex, gap-sm, font-label-lg, colores, sombras,
+   etc.) viven en el styles.css global. Acá va solo lo que es
+   específico de esta vista: el formulario de nueva colmena.
+
+   Nota: "apiary-list__empty" no necesita reglas propias, el mensaje
+   de "sin colmenas" queda totalmente resuelto con las utilidades
+   globales que ya trae en el HTML (text-center, py-4, bg-surface-
+   container, border-dashed, etc).
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap');
-
-:root {
-  /* Colores */
-  --color-tertiary-fixed-dim: #8dcdff;
-  --color-tertiary-fixed: #cae6ff;
-  --color-error-container: #ffdad6;
-  --color-surface-variant: #e2e2e2;
-  --color-secondary: #8f4e00;
-  --color-primary-fixed-dim: #ffba38;
-  --color-surface-container-lowest: #ffffff;
-  --color-on-tertiary-fixed-variant: #004b70;
-  --color-error: #ba1a1a;
-  --color-primary-container: #ffb300;
-  --color-outline: #847560;
-  --color-surface-container-high: #e8e8e8;
-  --color-secondary-fixed-dim: #ffb77b;
-  --color-secondary-fixed: #ffdcc2;
-  --color-on-surface: #1a1c1c;
-  --color-on-secondary: #ffffff;
-  --color-surface-tint: #7e5700;
-  --color-secondary-container: #ff8f06;
-  --color-on-tertiary: #ffffff;
-  --color-on-secondary-fixed-variant: #6d3a00;
-  --color-on-background: #1a1c1c;
-  --color-inverse-on-surface: #f1f1f1;
-  --color-surface-container-highest: #e2e2e2;
-  --color-primary: #7e5700;
-  --color-on-tertiary-container: #00547c;
-  --color-on-surface-variant: #514532;
-  --color-surface-container: #eeeeee;
-  --color-surface: #f9f9f9;
-  --color-on-secondary-fixed: #2e1500;
-  --color-tertiary-container: #80c9ff;
-  --color-surface-dim: #dadada;
-  --color-surface-bright: #f9f9f9;
-  --color-background: #f9f9f9;
-  --color-on-secondary-container: #623300;
-  --color-on-primary: #ffffff;
-  --color-outline-variant: #d6c4ac;
-  --color-inverse-primary: #ffba38;
-  --color-surface-container-low: #f3f3f3;
-  --color-on-tertiary-fixed: #001e30;
-  --color-tertiary: #006493;
-  --color-primary-fixed: #ffdeac;
-  --color-on-primary-container: #6b4900;
-  --color-inverse-surface: #2f3131;
-  --color-on-error: #ffffff;
-  --color-on-primary-fixed-variant: #604100;
-
-  /* Espaciado */
-  --space-margin: 20px;
-  --space-sm: 12px;
-  --space-base: 8px;
-  --space-md: 20px;
-  --space-xs: 4px;
-  --space-xl: 48px;
-  --space-lg: 32px;
-  --space-gutter: 16px;
-
-  /* Border radius */
-  --radius-default: 1.8rem; /* Mayor redondeo para emular la captura */
-  --radius-lg: 2rem;
-  --radius-xl: 3rem;
-  --radius-full: 9999px;
-
-  /* Tipografía */
-  --font-display: 'Quicksand', sans-serif;
-  --font-body: 'Nunito Sans', sans-serif;
+.form-container {
+  margin-bottom: var(--space-sm);
 }
 
-/* Reset mínimo */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+.form-card {
+  background-color: var(--color-surface-container-lowest);
+  border: 2px solid var(--color-on-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
-body {
-  margin: 0;
-  font-family: var(--font-body);
-  background-color: var(--color-background);
-  color: var(--color-on-surface);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -webkit-tap-highlight-color: transparent;
-  overflow-x: hidden;
-}
-
-h1, h2, h3, p {
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  font-family: inherit;
-  color: inherit;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
-}
-
-/* Configuración de Material Symbols */
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ============================================================
-   ESTILOS DE MAQUETACIÓN GENERAL Y COMPONENTES (HIVEHUB)
-   ============================================================ */
-
-/* Tipografía y Textos */
-.font-headline-sm {
+.section-title {
   font-family: var(--font-display);
   font-size: 20px;
   line-height: 28px;
   font-weight: 700;
+  color: var(--color-on-surface);
+  margin: 0;
 }
 
-.font-body-md {
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 500;
-}
-
-.font-label-lg {
-  font-family: var(--font-display);
-  font-size: 16px;
-  line-height: 20px;
-  letter-spacing: 0.5px;
-  font-weight: 700;
-}
-
-.font-label-sm {
-  font-family: var(--font-display);
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 1px;
-  font-weight: 700;
-}
-
-.text-on-surface-variant {
-  color: var(--color-on-surface-variant);
-}
-
-.text-primary {
-  color: var(--color-primary);
-}
-
-.text-secondary {
-  color: var(--color-secondary);
-}
-
-.text-primary-fixed-dim {
-  color: var(--color-primary-fixed-dim);
-}
-
-/* Efecto Neo-Brutalista (Efecto Hundido) */
-.sink-effect {
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-
-.sink-effect:active {
-  transform: translateY(4px) !important;
-  box-shadow: none !important;
-  margin-bottom: 4px;
-}
-
-/* Header */
-header {
-  height: 64px;
-  border-bottom: 2px solid var(--color-on-surface);
-  background-color: var(--color-primary-fixed);
-  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
-  display: flex;
-  align-items: center;
-  padding-left: var(--space-margin);
-  padding-right: var(--space-margin);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-header button {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--color-on-surface);
-  background-color: var(--color-surface-container-lowest);
-  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
-  margin-right: 16px;
-}
-
-header h1 {
-  flex: 1;
-  text-align: center;
-  padding-right: 56px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* Main */
-main {
-  padding-top: var(--space-md);
-  padding-bottom: 100px;
-  padding-left: var(--space-margin);
-  padding-right: var(--space-margin);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-/* Secciones */
-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-section h2 {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* Bloque A: Grid de Contadores */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.grid > div {
-  background-color: var(--color-surface-container-lowest);
-  border: 2px solid var(--color-on-surface);
-  border-radius: 1rem;
-  padding: var(--space-sm);
-  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 100px;
-}
-
-.flex-counter-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.flex-counter-controls button {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--color-on-surface);
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 14px;
-  box-shadow: 1px 1px 0px 0px rgba(26, 28, 28, 1);
-}
-
-.flex-counter-controls button:first-child {
-  background-color: var(--color-surface-variant);
-}
-
-.flex-counter-controls button:last-child {
-  background-color: var(--color-primary-container);
-}
-
-/* ============================================================
-   CORRECCIONES CLAVE (BLOQUE B: COLMENAS EN SITIO)
-   ============================================================ */
-
-/* Asegura el flujo horizontal entre el título y el botón "Añadir" */
-.flex.items-center.justify-between.mb-2 {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-/* Botón Añadir corregido con sus tokens nativos */
-.btn-add-hive,
-button.bg-\[\#FFB300\] {
-  background-color: #FFB300 !important;
-  color: var(--color-on-surface) !important;
-  padding: 8px 16px !important;
-  border-radius: var(--radius-full) !important;
-  border: 2px solid var(--color-on-surface) !important;
-  font-family: var(--font-display) !important;
-  font-weight: 700 !important;
-  font-size: 12px !important;
-  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  height: fit-content;
-}
-
-/* Lista contenedora de tarjetas */
-.flex-col.gap-sm {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: var(--space-sm) !important;
-  width: 100%;
-}
-
-/* Estilización de tarjetas de Colmenas (Redondeado tipo píldora, bordes definidos y sombra) */
-.w-full.p-md.bg-surface-container-lowest.border-2.border-on-surface {
-  width: 100% !important;
-  padding: var(--space-md) !important;
-  background-color: var(--color-surface-container-lowest) !important;
-  border: 2px solid var(--color-on-surface) !important;
-  border-radius: 2.2rem !important; /* Bordes muy redondeados como se ve en la captura */
-  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 12px !important;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-/* Header de la tarjeta (Nombre Colmena + Icono Panal alineados horizontalmente) */
-.flex.items-center.justify-between.border-b-2.border-surface-container {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  border-bottom: 2px solid var(--color-surface-container) !important;
-  padding-bottom: 8px !important;
-  width: 100%;
-}
-
-/* Título interior (Colmena #01) */
-.font-headline-sm.text-on-surface {
-  font-family: var(--font-display) !important;
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  color: var(--color-on-surface) !important;
-}
-
-/* Cuerpo de texto (Composición) */
-.font-body-md.text-on-surface-variant {
-  font-family: var(--font-body) !important;
-  font-size: 15px !important;
-  line-height: 22px !important;
-  color: var(--color-on-surface-variant) !important;
-  margin-top: 4px;
-}
-
-/* Íconos de las colmenas */
-.material-symbols-outlined.text-primary,
-.material-symbols-outlined.text-secondary,
-.material-symbols-outlined.text-primary-fixed-dim {
-  font-size: 28px !important;
-}
-
-/* Shared Component: BottomNavBar */
-nav {
-  box-sizing: border-box;
-}
-
-nav.fixed {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 50;
-}
-
-@media (min-width: 768px) {
-  nav {
-    display: none !important;
-  }
-}
-
-
-/* Contenedor del Formulario */
-.form-container {
-  margin-top: var(--space-md);
-  animation: slideDown 0.25s ease-out;
-}
-
-.form-card {
-  padding: var(--space-md);
-  background: var(--color-surface-container-lowest);
-  border: 2px solid var(--color-on-surface);
-  border-radius: 24px;
-  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
-}
-
-/* Campos de entrada */
 .form-field {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  margin-bottom: var(--space-md);
 }
 
 .form-label {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
 }
 
 .form-input {
-  padding: var(--space-sm);
-  border: 2px solid var(--color-on-surface);
-  border-radius: 8px;
-  background: var(--color-background);
   font-family: var(--font-body);
   font-size: 16px;
   color: var(--color-on-surface);
-  outline: none;
+  background-color: var(--color-surface-container-lowest);
+  border: 2px solid var(--color-on-surface);
+  border-radius: var(--radius-default);
+  padding: var(--space-base) var(--space-sm);
 }
 
 .form-input:focus {
-  border-color: var(--color-primary);
+  outline: none;
+  border-color: var(--color-tertiary);
 }
 
-/* Fila de contadores rápidos */
-.inputs-row {
-  display: flex;
-  gap: var(--space-sm);
-}
-
-.counter-input {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 12px;
-  font-family: var(--font-display);
-  text-transform: uppercase;
-}
-
-.counter-input input {
-  padding: var(--space-xs);
-  border: 2px solid var(--color-on-surface);
-  border-radius: 8px;
-  text-align: center;
-  font-weight: 700;
-}
-
-/* Botones del Formulario (Con efecto hundimiento incluido) */
 .form-actions {
   display: flex;
-  justify-content: flex-end;
   gap: var(--space-sm);
-  margin-top: var(--space-md);
+  justify-content: flex-end;
 }
 
-.btn-cancel, .btn-submit {
-  padding: 8px 16px;
-  border: 2px solid var(--color-on-surface);
-  border-radius: 100px;
+.btn-cancel,
+.btn-submit {
   font-family: var(--font-display);
+  font-size: 12px;
   font-weight: 700;
-  font-size: 14px;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid var(--color-on-surface);
+  border-radius: var(--radius-full);
+  padding: var(--space-base) var(--space-md);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, margin-bottom 0.08s ease;
 }
 
 .btn-cancel {
-  background: var(--color-surface-variant);
-  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
-}
-
-.btn-cancel:active {
-  transform: translateY(2px);
-  box-shadow: 0 0 0 0 rgba(26, 28, 28, 1);
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
 }
 
 .btn-submit {
-  background: var(--color-primary-container);
-  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
+  background-color: var(--color-primary-container);
+  color: var(--color-on-surface);
 }
 
-.btn-submit:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 0 0 0 rgba(26, 28, 28, 1);
-}
-
-.btn-submit:disabled {
-  opacity: 0.5;
+.btn-submit[disabled] {
+  opacity: 0.4;
   cursor: not-allowed;
   box-shadow: none;
-  transform: none;
 }
 
-/* Animación de entrada suave */
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.btn-cancel:active,
+.btn-submit:not([disabled]):active {
+  transform: translateY(4px);
+  box-shadow: none;
+  margin-bottom: 4px;
 }
-
-
-
-

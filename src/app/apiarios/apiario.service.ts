@@ -11,7 +11,7 @@ export class ApiarioService {
   constructor(private http: HttpClient) {}
 
 
-  // GET /api/apiarios/{id}
+  // GET /hivehub/apiarios/{id}
   getApiarioById(id: number): Observable<ApiarioDTO> {
     return this.http.get<ApiarioDTO>(`${this.apiUrl}/${id}`);
   }
