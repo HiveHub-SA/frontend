@@ -64,6 +64,7 @@
   padding: 0 20px;
   z-index: 1000;
   box-sizing: border-box;
+  padding-bottom: 10px;
 }
 
 .btn-principal {
@@ -163,3 +164,5 @@
   transform: translateY(2px);
   box-shadow: 0px 0px 0px 0px #1a1c1c;
 }
+
+

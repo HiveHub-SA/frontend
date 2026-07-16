@@ -43,12 +43,23 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
     }).setView([-32.4103, -63.2314], 14);
 
     // Capa segura con las políticas obligatorias
-    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+    //Mapa inactivo por el momento, es mas pesado para la carga web
+    // const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //   maxZoom: 19,
+    //   attribution: '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    //   referrerPolicy: 'no-referrer-when-downgrade'
+    // });
+    // osmLayer.addTo(this.mapa);
+
+    //Otro mapa de prueba que parece mas liviano, luego vere cual dejo
+    const capaCarto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      referrerPolicy: 'no-referrer-when-downgrade'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
     });
-    osmLayer.addTo(this.mapa);
+    
+    capaCarto.addTo(this.mapa);
+
 
     setTimeout(() => {
       this.mapa.invalidateSize();
@@ -93,7 +104,7 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
             botonDetalles.innerText = 'Ver detalles';
             botonDetalles.className = 'btn-popup-detalles'; 
             botonDetalles.onclick = () => {
-              this.router.navigate([`/apiarios/${apiario.id}/colmenas`]);
+              this.router.navigate([`/apiarios/${apiario.id}`]);
             };
             popupContenedor.appendChild(botonDetalles);
 
