@@ -33,4 +33,9 @@ export class ApiarioService {
   deleteApiario(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  // POST /hivehub/apiarios
+  createApiario(apiario: ApiarioDTO): Observable<ApiarioDTO> {
+    return this.http.post<ApiarioDTO>(`${this.apiUrl}`, apiario);
+  }
 }
