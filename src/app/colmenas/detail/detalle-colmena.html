@@ -1,0 +1,57 @@
+<div *ngIf="loading()" class="flex h-screen items-center justify-center">
+  <p class="font-headline-md">Cargando detalles de la colmena...</p>
+</div>
+
+<div *ngIf="!loading() && colmena() as datosColmena">
+
+  <!-- Custom Header -->
+  <header class="header-grid h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] px-margin sticky top-0 z-50 shrink-0">
+    <button
+      [routerLink]="['/apiarios/', datosColmena.apiarioId]"
+      aria-label="Volver"
+      class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-on-surface bg-surface-container-lowest shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect mr-4"
+    >
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_back</span>
+    </button>
+    <h1 class="font-headline-sm text-headline-sm text-center uppercase tracking-wide">
+      COLMENA: {{ datosColmena.name }}
+    </h1>
+
+    <!-- Botón de eliminar -->
+    <button
+      (click)="openDeleteModal()"
+      aria-label="Eliminar Colmena"
+      class="delete-header-btn sink-effect"
+      >
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">delete</span>
+    </button>
+  </header>
+
+  <!-- Main Content -->
+  <main class="px-margin py-md flex flex-col gap-lg overflow-y-auto">
+
+    <!-- Información General -->
+    <section class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-md shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-2">
+      <h2 class="font-label-lg text-on-surface uppercase tracking-wider border-b-2 border-surface-container pb-1">
+        Información General
+      </h2>
+      <p class="font-body-md text-on-surface-variant">
+        <strong>Creada el:</strong> {{ datosColmena.createdAt | date: 'dd/MM/yyyy' }}
+      </p>
+      <p class="font-body-md text-on-surface-variant">
+        <strong>Apiario asociado:</strong> #{{ datosColmena.apiarioId }}
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<app-confirm-delete-component
+  [visible]="showDeleteModal()"
+  [itemName]="colmena()?.name ?? ''"
+  entityLabel="colmena"
+  [loading]="deleting()"
+  [errorMessage]="deleteError()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="closeDeleteModal()"
+/>

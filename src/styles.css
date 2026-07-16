@@ -1,1 +1,260 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   HiveHub – tokens de diseño (colores, spacing, tipografía)
+   Importar UNA sola vez en el styles.css global de la app,
+   o agregar la ruta al array "styles" de angular.json
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+:root {
+  /* Colores */
+  --color-tertiary-fixed-dim: #8dcdff;
+  --color-tertiary-fixed: #cae6ff;
+  --color-error-container: #ffdad6;
+  --color-surface-variant: #e2e2e2;
+  --color-secondary: #8f4e00;
+  --color-primary-fixed-dim: #ffba38;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-tertiary-fixed-variant: #004b70;
+  --color-error: #ba1a1a;
+  --color-primary-container: #ffb300;
+  --color-outline: #847560;
+  --color-surface-container-high: #e8e8e8;
+  --color-secondary-fixed-dim: #ffb77b;
+  --color-secondary-fixed: #ffdcc2;
+  --color-on-surface: #1a1c1c;
+  --color-on-secondary: #ffffff;
+  --color-surface-tint: #7e5700;
+  --color-secondary-container: #ff8f06;
+  --color-on-tertiary: #ffffff;
+  --color-on-secondary-fixed-variant: #6d3a00;
+  --color-on-background: #1a1c1c;
+  --color-inverse-on-surface: #f1f1f1;
+  --color-surface-container-highest: #e2e2e2;
+  --color-primary: #7e5700;
+  --color-on-tertiary-container: #00547c;
+  --color-on-surface-variant: #514532;
+  --color-surface-container: #eeeeee;
+  --color-surface: #f9f9f9;
+  --color-on-secondary-fixed: #2e1500;
+  --color-tertiary-container: #80c9ff;
+  --color-surface-dim: #dadada;
+  --color-surface-bright: #f9f9f9;
+  --color-background: #f9f9f9;
+  --color-on-secondary-container: #623300;
+  --color-on-primary: #ffffff;
+  --color-outline-variant: #d6c4ac;
+  --color-inverse-primary: #ffba38;
+  --color-surface-container-low: #f3f3f3;
+  --color-on-tertiary-fixed: #001e30;
+  --color-tertiary: #006493;
+  --color-primary-fixed: #ffdeac;
+  --color-on-primary-container: #6b4900;
+  --color-inverse-surface: #2f3131;
+  --color-on-error: #ffffff;
+  --color-on-primary-fixed-variant: #604100;
+
+  /* Espaciado */
+  --space-margin: 20px;
+  --space-sm: 12px;
+  --space-base: 8px;
+  --space-md: 20px;
+  --space-xs: 4px;
+  --space-xl: 48px;
+  --space-lg: 32px;
+  --space-gutter: 16px;
+
+  /* Border radius */
+  --radius-default: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+  --radius-full: 9999px;
+
+  /* Tipografía */
+  --font-display: 'Quicksand', sans-serif;
+  --font-body: 'Nunito Sans', sans-serif;
+}
+
+/* Reset mínimo (Tailwind traía esto integrado como "preflight") */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Configuración base recomendada por Google para el font Material Symbols */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   UTILIDADES REUTILIZABLES
+   Reemplazan las clases estilo Tailwind que traía el HTML de
+   Stitch (flex, gap-sm, shadow-[...], etc). Van acá, en el global,
+   para no tener que reescribirlas en cada componente nuevo.
+   ============================================================ */
+
+:root {
+  /* Sombra "neo-brutalista" del sistema, para no repetir el rgba a mano */
+  --shadow-sm: 2px 2px 0px 0px rgba(26, 28, 28, 1);
+  --shadow-md: 4px 4px 0px 0px rgba(26, 28, 28, 1);
+}
+
+/* Reset mínimo de botones/inputs (esto lo daba gratis el preflight de Tailwind) */
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: 100%;
+  margin: 0;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* --- Layout --- */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-1 { flex: 1 1 0%; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.text-center { text-align: center; }
+.overflow-y-auto { overflow-y: auto; }
+.sticky { position: sticky; }
+.top-0 { top: 0; }
+.z-50 { z-index: 50; }
+.shrink-0 { flex-shrink: 0; }
+.cursor-pointer { cursor: pointer; }
+.transition-transform { transition: transform 0.15s ease; }
+.w-full { width: 100%; }
+.w-10 { width: 40px; }
+.h-10 { height: 40px; }
+.h-16 { height: 64px; }
+.h-screen { height: 100vh; }
+
+/* --- Tipografía ---
+   Igual que en el config original de Tailwind, "font-*" define la
+   familia y "text-*" define tamaño/interlineado/peso. Para los que
+   se usan solos (font-headline-md, font-body-md, font-label-lg) les
+   dejamos ambas cosas en la misma clase para que funcionen sin pareja. */
+.font-headline-sm,
+.text-headline-sm {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+}
+.font-headline-md {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+}
+.font-label-lg {
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+.font-body-md {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+.font-bold { font-weight: 700; }
+.uppercase { text-transform: uppercase; }
+.tracking-wide { letter-spacing: 0.025em; }
+.tracking-wider { letter-spacing: 0.05em; }
+
+/* --- Bordes y radios --- */
+.rounded-full { border-radius: var(--radius-full); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.border-2 { border-width: 2px; border-style: solid; }
+.border-b-2 { border-bottom-width: 2px; border-bottom-style: solid; }
+.border-dashed { border-style: dashed; }
+
+/* --- Color (usa los tokens --color-* de arriba) --- */
+.border-on-surface { border-color: var(--color-on-surface); }
+.border-surface-container { border-color: var(--color-surface-container); }
+.bg-primary-fixed { background-color: var(--color-primary-fixed); }
+.bg-surface-container-lowest { background-color: var(--color-surface-container-lowest); }
+.bg-surface-container { background-color: var(--color-surface-container); }
+.bg-primary-container { background-color: var(--color-primary-container); }
+.text-on-surface { color: var(--color-on-surface); }
+.text-on-surface-variant { color: var(--color-on-surface-variant); }
+.text-primary { color: var(--color-primary); }
+
+/* --- Espaciado (misma escala que usaba Tailwind: 1 unidad = 4px) --- */
+.px-margin { padding-left: var(--space-margin); padding-right: var(--space-margin); }
+.py-md { padding-top: var(--space-md); padding-bottom: var(--space-md); }
+.p-md { padding: var(--space-md); }
+.px-4 { padding-left: var(--space-gutter); padding-right: var(--space-gutter); }
+.py-2 { padding-top: var(--space-base); padding-bottom: var(--space-base); }
+.py-4 { padding-top: var(--space-gutter); padding-bottom: var(--space-gutter); }
+.pb-1 { padding-bottom: var(--space-xs); }
+.pb-2 { padding-bottom: var(--space-base); }
+.pr-14 { padding-right: 56px; } /* ancho del botón volver (40px) + su margen (16px), para centrar el título del header */
+.gap-1 { gap: var(--space-xs); }
+.gap-2 { gap: var(--space-base); }
+.gap-sm { gap: var(--space-sm); }
+.gap-lg { gap: var(--space-lg); }
+.mb-2 { margin-bottom: var(--space-base); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mr-4 { margin-right: var(--space-gutter); }
+
+/* --- Valores puntuales que en Stitch venían como "arbitrary values" de
+   Tailwind (bg-[#...], shadow-[...], texto entre corchetes). Quedan
+   acá para que el HTML funcione tal cual está, sin tener que tocarlo. --- */
+[class~="shadow-[4px_4px_0px_0px_rgba(26,28,28,1)]"] { box-shadow: var(--shadow-md); }
+[class~="shadow-[2px_2px_0px_0px_rgba(26,28,28,1)]"] { box-shadow: var(--shadow-sm); }
+[class~="bg-[#FFB300]"] { background-color: var(--color-primary-container); }
+[class~="text-[12px]"] { font-size: 12px; }
+[class~="text-[16px]"] { font-size: 16px; }
+[class~="pb-[100px]"] { padding-bottom: 100px; }
+
+/* --- Efecto "hundido" al presionar (usado en botones y tarjetas clickeables) --- */
+.sink-effect {
+  transition: transform 0.08s ease, box-shadow 0.08s ease, margin-bottom 0.08s ease;
+}
+.sink-effect:active {
+  transform: translateY(4px);
+  box-shadow: none !important;
+  margin-bottom: 4px;
+}

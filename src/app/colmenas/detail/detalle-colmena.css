@@ -1,0 +1,34 @@
+.delete-header-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-error);
+  background-color: var(--color-error-container);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-error);
+  margin-left: var(--space-gutter);
+  transition: background-color 0.15s ease, transform 0.08s ease;
+}
+
+.delete-header-btn .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.delete-header-btn:hover {
+  background-color: var(--color-error);
+  color: var(--color-on-error);
+}
+
+.header-grid {
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items: center;
+}
+
+.header-grid .delete-header-btn {
+  margin-left: 0;
+  justify-self: end;
+}
