@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiarioDTO } from '../apiario.model';
 import { ApiarioService } from '../apiario.service';
 import { HttpClient } from '@angular/common/http';
@@ -78,6 +78,7 @@ export class ApiarioDetailComponent implements OnInit {
         this.showForm = false;
         this.cleanForm();
 
+        //rotear de vuelta al apiario
         if (this.apiarioId) {
           this.apiarioService.getApiarioById(this.apiarioId).subscribe({
             next: (data) => this.apiario.set(data),

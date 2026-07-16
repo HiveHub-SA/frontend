@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MockRegistrarApiario } from './mock-registrar-apiario';
+import { MockRegistrarApiario } from './registrar-apiario';
 
 describe('MockRegistrarApiario', () => {
   let component: MockRegistrarApiario;

@@ -15,4 +15,12 @@ export interface ApiarioDTO {
 export interface ApiarioVista {
   id: number;
   name: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface NewApiario {
+  name: string;
+  latitude: number | null;
+  longitude: number | null;
 }

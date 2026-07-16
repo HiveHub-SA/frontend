@@ -4,14 +4,14 @@ import { BackendTestResponse, HandshakeService } from '../handshake.service';
 import { CommonModule } from '@angular/common';
 
 //Esto es solo para pruebas
-import { MockRegistrarApiarioComponent } from '../mock-registrar-apiario/mock-registrar-apiario';
+import {RegistrarApiarioComponent} from '../registrar-apiario/registrar-apiario';
 
 type ConnectionState = 'idle' | 'checking' | 'connected' | 'failed';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, CommonModule, MockRegistrarApiarioComponent],
+  imports: [RouterLink, RouterOutlet, CommonModule, RegistrarApiarioComponent],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css'
 })
@@ -39,5 +39,11 @@ export class Inicio implements OnInit {
       this.handshakeMessage.set('Could not connect to the backend at http://localhost:8080/api/handshake');
       console.error('[Handshake] Backend connection failed.', error);
     }
+  }
+
+  mostrarFormApiario = false;
+
+  onApiarioCreado(apiario: any) {
+    this.mostrarFormApiario = false;
   }
 }

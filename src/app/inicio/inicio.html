@@ -16,16 +16,21 @@
 <!-- Sección de Pruebas -->
 <div style="margin: 20px; display: flex; gap: 10px; justify-content: center;">
   <button routerLink="/mapa">Ir a mapas (Pantalla Completa)</button>
-  
+
   <!--Controla la variable booleana para mostrar el ABM Mock -->
   <button (click)="verRegistroMock = !verRegistroMock" style="background-color: #ffcc00; color: #333; font-weight: bold; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
     {{ verRegistroMock ? 'Ocultar ABM Apiario' : 'Probar ABM Apiario (Ventanita Modal)' }}
   </button>
 </div>
 
-<!-- RENDER CONDICIONAL: Muestra tu formulario mock si haces click en el botón -->
 <div *ngIf="verRegistroMock" style="border-top: 2px dashed #ffcc00; padding-top: 20px;">
-  <app-mock-registrar-apiario></app-mock-registrar-apiario>
+  <app-registrar-apiario
+    [visible]="mostrarFormApiario"
+    (creado)="onApiarioCreado($event)"
+    (cancelado)="mostrarFormApiario = false"
+  ></app-registrar-apiario>
+
+  <button (click)="mostrarFormApiario = true">Nuevo Apiario</button>
 </div>
 
 <router-outlet></router-outlet>

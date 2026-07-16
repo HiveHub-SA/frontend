@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { ApiarioDTO, ApiarioVista } from './apiario.model';
+import { ApiarioDTO, ApiarioVista, NewApiario } from './apiario.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiarioService {
@@ -26,6 +26,8 @@ export class ApiarioService {
     return {
       id: dto.id,
       name: dto.name,
+      latitude: dto.latitude,
+      longitude: dto.longitude,
     };
   }
 
@@ -35,7 +37,7 @@ export class ApiarioService {
   }
 
   // POST /hivehub/apiarios
-  createApiario(apiario: ApiarioDTO): Observable<ApiarioDTO> {
-    return this.http.post<ApiarioDTO>(`${this.apiUrl}`, apiario);
+  createApiario(apiario: NewApiario): Observable<NewApiario> {
+    return this.http.post<NewApiario>(`${this.apiUrl}`, apiario);
   }
 }

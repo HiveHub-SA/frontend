@@ -27,20 +27,24 @@ export class SelectorUbicacionComponent implements AfterViewInit {
 
   private iniciarMapa() {
     //Render del mapa centrado en Villa Maria
-    this.mapa = L.map('mapa-seleccion').setView([-32.4103, -63.2314], 13); 
+    this.mapa = L.map('mapa-seleccion').setView([-32.4103, -63.2314], 13);
 
     //Capa segura con las politicas obligatorias
-    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      referrerPolicy: 'no-referrer-when-downgrade'
-    });
-    osmLayer.addTo(this.mapa);
+    const capaCarto = L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      },
+    );
+
+    capaCarto.addTo(this.mapa);
 
     //Boton para centrar la ubicacion actual
     const BotonUbicacion = L.Control.extend({
       options: {
-        position: 'topleft' 
+        position: 'topleft'
       },
       onAdd: (map: any) => {
         const boton = L.DomUtil.create('button', 'boton-ubicacion-circular');
@@ -87,7 +91,7 @@ export class SelectorUbicacionComponent implements AfterViewInit {
             .bindPopup("Estás aquí")
             .openPopup();
         }
-        
+
         //Movemos el mapa para la ubicacion actual
         this.mapa.setView(coordenadas, 17);
 
@@ -100,9 +104,9 @@ export class SelectorUbicacionComponent implements AfterViewInit {
         }
 
         //Pasamos las coordenadas tipo double al componente padre
-        this.coordenadaSeleccionada.emit({ 
-          lat: position.coords.latitude, 
-          lng: position.coords.longitude 
+        this.coordenadaSeleccionada.emit({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
         });
 
       }, () => {

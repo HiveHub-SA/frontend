@@ -1,0 +1,93 @@
+<div
+  *ngIf="visible()"
+  class="modal-overlay"
+  (click)="onBackdropClick()"
+>
+  <div
+    class="modal-content border-2 border-on-surface bg-surface-container-lowest rounded-lg"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex justify-between items-center">
+      <h3 class="font-headline-sm text-on-surface uppercase tracking-wide modal-title">
+        Registrar Apiario
+      </h3>
+      <button class="btn-cerrar-modal sink-effect" (click)="cerrar()" [disabled]="loading">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="form-group">
+      <label class="font-label-lg text-on-surface">Nombre del Apiario:</label>
+      <input
+        type="text"
+        [(ngModel)]="name"
+        placeholder="Ej: Panal de las Sierras"
+        [disabled]="loading"
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="font-label-lg text-on-surface">Coordenadas:</label>
+      <div class="coordenadas-input-group">
+        <input type="number" [value]="latitude" readonly placeholder="Latitud">
+        <input type="number" [value]="longitude" readonly placeholder="Longitud">
+        <button class="btn-buscar-mapa font-label-lg sink-effect" (click)="abrirMapa()" [disabled]="loading">
+          <span class="material-symbols-outlined" style="font-size: 18px;">location_on</span>
+          Seleccionar en Mapa
+        </button>
+      </div>
+    </div>
+
+    <p *ngIf="errorMessage" class="font-body-md modal-error">{{ errorMessage }}</p>
+
+    <div class="modal-actions">
+      <button
+        class="btn btn-cancel font-label-lg border-2 border-on-surface sink-effect"
+        (click)="cerrar()"
+        [disabled]="loading"
+      >
+        Cancelar
+      </button>
+      <button
+        class="btn btn-guardar font-label-lg border-2 border-on-surface sink-effect"
+        [disabled]="!name || !latitude || loading"
+        (click)="createApiario()"
+      >
+        <span *ngIf="loading" class="spinner"></span>
+        {{ loading ? 'Guardando...' : 'Guardar Apiario' }}
+      </button>
+    </div>
+
+    <!-- popup anidado: selector de ubicación en el mapa -->
+    <div class="modal-overlay modal-overlay--nested" *ngIf="mostrarModalMapa" (click)="cerrarMapa()">
+      <div
+        class="modal-content modal-content--mapa border-2 border-on-surface bg-surface-container-lowest rounded-lg"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="flex justify-between items-center">
+          <h4 class="font-headline-sm text-on-surface uppercase tracking-wide modal-title">
+            Selecciona la ubicación del Apiario
+          </h4>
+          <button class="btn-cerrar-modal sink-effect" (click)="cerrarMapa()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <app-selector-ubicacion (coordenadaSeleccionada)="onUbicacionSeleccionada($event)"></app-selector-ubicacion>
+        </div>
+        <div class="modal-footer">
+          <p *ngIf="latitude !== null" class="font-body-md text-on-surface-variant">
+            Ubicación fijada: {{ latitude?.toFixed(4) }}, {{ longitude?.toFixed(4) }}
+          </p>
+          <button
+            class="btn-confirmar font-label-lg sink-effect"
+            [disabled]="!latitude"
+            (click)="cerrarMapa()"
+          >
+            Confirmar Ubicación
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
