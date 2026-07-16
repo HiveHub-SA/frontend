@@ -14,4 +14,9 @@ export class ColmenaService {
   getColmenaById(id: number): Observable<ColmenaDTO>{
     return this.http.get<ColmenaDTO>(`${this.apiUrl}/${id}`);
   }
+
+  //DELETE /hivehub/colmenas/{id}
+  deleteColmena(id: number): Observable<void>{
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

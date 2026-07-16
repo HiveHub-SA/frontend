@@ -1,28 +1,77 @@
-/* ============================================================
-   detalle-apiario — estilos propios de este componente
-   Los utilitarios (flex, gap-sm, font-label-lg, colores, sombras,
-   etc.) viven en el styles.css global. Acá va solo lo que es
-   específico de esta vista: el formulario de nueva colmena.
-
-   Nota: "apiary-list__empty" no necesita reglas propias, el mensaje
-   de "sin colmenas" queda totalmente resuelto con las utilidades
-   globales que ya trae en el HTML (text-center, py-4, bg-surface-
-   container, border-dashed, etc).
-   ============================================================ */
-
 .form-container {
   margin-bottom: var(--space-sm);
+}
+
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 28, 28, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-margin);
+  animation: fadeIn 0.15s ease;
 }
 
 .form-card {
   background-color: var(--color-surface-container-lowest);
   border: 2px solid var(--color-on-surface);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: var(--space-md);
+  box-shadow: 6px 6px 0px 0px rgba(26, 28, 28, 1);
+  padding: var(--space-lg);
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+  animation: popIn 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.form-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-fixed);
+  border: 2px solid var(--color-on-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-xs);
+}
+
+.form-icon {
+  font-size: 28px;
+  color: var(--color-primary);
+}
+
+.form-body {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .section-title {
@@ -68,7 +117,6 @@
   justify-content: flex-end;
 }
 
-.btn-cancel,
 .btn-submit {
   font-family: var(--font-display);
   font-size: 12px;
@@ -104,4 +152,39 @@
   transform: translateY(4px);
   box-shadow: none;
   margin-bottom: 4px;
+}
+
+.delete-header-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-error);
+  background-color: var(--color-error-container);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-error);
+  margin-left: var(--space-gutter);
+  transition: background-color 0.15s ease, transform 0.08s ease;
+}
+
+.delete-header-btn .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.delete-header-btn:hover {
+  background-color: var(--color-error);
+  color: var(--color-on-error);
+}
+
+.header-grid {
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items: center;
+}
+
+.header-grid .delete-header-btn {
+  margin-left: 0;
+  justify-self: end;
 }

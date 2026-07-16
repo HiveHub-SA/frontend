@@ -28,4 +28,9 @@ export class ApiarioService {
       name: dto.name,
     };
   }
+
+  // DELETE /hivehub/apiarios/{id}
+  deleteApiario(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

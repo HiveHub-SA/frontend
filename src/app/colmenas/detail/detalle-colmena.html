@@ -5,7 +5,7 @@
 <div *ngIf="!loading() && colmena() as datosColmena">
 
   <!-- Custom Header -->
-  <header class="h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex items-center px-margin sticky top-0 z-50 shrink-0">
+  <header class="header-grid h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] px-margin sticky top-0 z-50 shrink-0">
     <button
       [routerLink]="['/apiarios/', datosColmena.apiarioId]"
       aria-label="Volver"
@@ -13,9 +13,18 @@
     >
       <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_back</span>
     </button>
-    <h1 class="font-headline-sm text-headline-sm flex-1 text-center pr-14 uppercase tracking-wide">
+    <h1 class="font-headline-sm text-headline-sm text-center uppercase tracking-wide">
       COLMENA: {{ datosColmena.name }}
     </h1>
+
+    <!-- Botón de eliminar -->
+    <button
+      (click)="openDeleteModal()"
+      aria-label="Eliminar Colmena"
+      class="delete-header-btn sink-effect"
+      >
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">delete</span>
+    </button>
   </header>
 
   <!-- Main Content -->
@@ -36,3 +45,13 @@
 
   </main>
 </div>
+
+<app-confirm-delete-component
+  [visible]="showDeleteModal()"
+  [itemName]="colmena()?.name ?? ''"
+  entityLabel="colmena"
+  [loading]="deleting()"
+  [errorMessage]="deleteError()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="closeDeleteModal()"
+/>

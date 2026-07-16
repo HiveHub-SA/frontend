@@ -7,17 +7,26 @@
 <div *ngIf="!loading() && apiario() as datosApiario">
 
   <!-- Custom Header -->
-  <header class="h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex items-center px-margin sticky top-0 z-50 shrink-0">
+  <header class="header-grid h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] px-margin sticky top-0 z-50 shrink-0">
     <button
       routerLink="/apiarios"
       aria-label="Volver"
-      class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-on-surface bg-surface-container-lowest shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect mr-4"
+      class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-on-surface bg-surface-container-lowest shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect"
     >
       <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_back</span>
     </button>
-    <h1 class="font-headline-sm text-headline-sm flex-1 text-center pr-14 uppercase tracking-wide">
-      APIARIO: {{ datosApiario.name }}
+    <h1 class="font-headline-sm text-headline-sm text-center uppercase tracking-wide">
+     APIARIO: {{ datosApiario.name }}
     </h1>
+
+    <!-- Botón de eliminar -->
+    <button
+      (click)="openDeleteModal()"
+      aria-label="Eliminar Apiario"
+      class="delete-header-btn sink-effect"
+    >
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">delete</span>
+    </button>
   </header>
 
   <!-- Main Content -->
@@ -50,11 +59,17 @@
         </button>
       </div>
 
-      <div class="form-container" *ngIf="showForm">
-        <div class="form-card">
+      <div class="form-overlay" *ngIf="showForm" (click)="toggleForm()">
+        <div class="form-card" (click)="$event.stopPropagation()">
+          <div class="form-icon-wrapper">
+      <span class="material-symbols-outlined form-icon" style="font-variation-settings: 'FILL' 1;">
+        hive
+      </span>
+          </div>
+
           <h3 class="section-title">Nueva Colmena</h3>
 
-          <form (ngSubmit)="createColmena()" #hiveForm="ngForm">
+          <form (ngSubmit)="createColmena()" #hiveForm="ngForm" class="form-body">
             <!-- Input Nombre -->
             <div class="form-field">
               <label class="form-label">Identificador / Nombre</label>
@@ -68,10 +83,10 @@
               />
             </div>
             <div class="form-actions">
-              <button type="button" class="btn-cancel" (click)="toggleForm()">
+              <button type="button" class="btn-cancel sink-effect" (click)="toggleForm()">
                 Cancelar
               </button>
-              <button type="submit" class="btn-submit" [disabled]="!hiveForm.form.valid">
+              <button type="submit" class="btn-submit sink-effect" [disabled]="!hiveForm.form.valid">
                 Guardar
               </button>
             </div>
@@ -100,3 +115,14 @@
     </section>
   </main>
 </div>
+
+<app-confirm-delete-component
+  [visible]="showDeleteModal()"
+  [itemName]="apiario()?.name ?? ''"
+  entityLabel="apiario"
+  extraWarning="Se eliminarán también todas las colmenas asociadas a este apiario."
+  [loading]="deleting()"
+  [errorMessage]="deleteError()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="closeDeleteModal()"
+/>
