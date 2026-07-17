@@ -1,0 +1,74 @@
+.app-header {
+  width: 100%;
+  background-color: var(--color-surface-container-lowest);
+  border-bottom: var(--border-dark);
+  box-shadow: 0 4px 0px 0px rgba(26,28,28,1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  transition: all 0.3s ease;
+}
+
+.blurred-overlay {
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.brand-icon {
+  color: var(--color-primary);
+  font-size: 24px;
+}
+
+.brand-title {
+  font-family: var(--font-headline);
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f5f5f5;
+  border: var(--border-dark);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  box-shadow: var(--shadow-hard-small);
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.status-text {
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

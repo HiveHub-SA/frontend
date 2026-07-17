@@ -1,17 +1,4 @@
-<div class="main-layout" [class.blurred-overlay]="mostrarModal() || mostrarModalRegion()">
-
-  <header class="app-header">
-    <div class="brand-container">
-      <span class="material-symbols-outlined brand-icon">hive</span>
-      <span class="brand-title">HiveHub</span>
-    </div>
-    <div class="status-badge">
-      <div class="status-indicator"></div>
-      <span class="status-text">ONLINE</span>
-    </div>
-  </header>
-
-  <main class="content-container">
+<div class="content-container" [class.blurred-overlay]="mostrarModal() || mostrarModalRegion()">
 
     <section class="summary-section">
       <div class="section-header">
@@ -98,7 +85,6 @@
         </div>
       </article>
     </section>
-  </main>
 </div>
 
 <button *ngIf="!mostrarModal() && !mostrarModalRegion()" (click)="abrirModal()" class="fab-button">+</button>
@@ -257,18 +243,3 @@
 
   </div>
 </div>
-
-<nav class="bottom-nav" [ngClass]="mostrarModal() || mostrarModalRegion() ? 'nav-disabled' : 'nav-enabled'">
-  <div class="nav-item">
-    <span class="material-symbols-outlined nav-icon">map</span>
-    <span class="nav-label">Mapa</span>
-  </div>
-  <div class="nav-item">
-    <span class="material-symbols-outlined nav-icon">grid_view</span>
-    <span class="nav-label">Apiarios</span>
-  </div>
-  <div class="nav-item active-nav-item">
-    <span class="material-symbols-outlined nav-icon active-icon" style="font-variation-settings: 'FILL' 1;">liquor</span>
-    <span class="nav-label active-label">Extracción</span>
-  </div>
-</nav>

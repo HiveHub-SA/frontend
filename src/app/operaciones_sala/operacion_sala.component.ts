@@ -1,7 +1,8 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, effect } from '@angular/core';
 import { OperacionSalaService, OperacionSalaResponse, ResumenSalaResponse, OperacionSalaRequest, Region, Apiario } from './operacion_sala.service';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NavbarService } from '../navbar/navbar.service';
 
 @Component({
   selector: 'app-operacion-sala',
@@ -18,6 +19,14 @@ export class OperacionSalaComponent implements OnInit {
 
   // Inyección de dependencias
   private readonly operacionService = inject(OperacionSalaService);
+  private readonly navbarService = inject(NavbarService);
+
+  constructor() {
+    effect(() => {
+      const isModalOpen = this.mostrarModal() || this.mostrarModalRegion();
+      this.navbarService.setDisabled(isModalOpen);
+    });
+  }
 
   // Nombres cortos de meses para display
   nombresMeses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
