@@ -1,62 +1,62 @@
-#mapa-seleccion { 
-      border: 2px solid #333; 
-      border-radius: 12px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
+.mapa-wrapper {
+  position: relative;
+  width: 100%;
+}
 
+/* CONTROLES LATERALES FLOTANTES */
+.controles-laterales {
+  position: absolute;
+  top: 100px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000; /* Asegura que esté por encima de Leaflet */
+}
 
-.boton-ubicacion-circular {
-  background-color: white;
-  border: 2px solid rgba(0,0,0,0.2);
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
-  cursor: pointer;
+.btn-control {
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 12px; /* Super-elipse suave */
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-  z-index: 1000 !important;
-  margin-left: 10px !important;
-  margin-top: 5px !important;
+  cursor: pointer;
+  box-shadow: 0px 4px 0px 0px #1a1c1c; /* Sombra sólida / Extrusión */
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  color: #1a1c1c;
 }
 
-/* ::ng-deep e !important para forzar el tamaño de la imagen dinámica */
-::ng-deep .boton-ubicacion-circular .icono-mira {
-  width: 18px !important;   /* Proporción ideal para los 34px del botón */
-  height: 18px !important;
-  object-fit: contain;
-  transition: transform 0.2s ease;
-  display: block;           /* Evita espacios fantasma debajo de la imagen */
+/* Botón especial de ubicación usando el color "Hive Orange" */
+.btn-control.btn-ubicacion {
+  background-color: #ff8f06; 
+  margin-top: 8px; /* Un poco más separado de los controles de zoom */
+}
+.btn-control.btn-ubicacion .text-icon-ubicacion {
+  color: #623300; /* Texto oscuro cálido */
 }
 
-/* Feedback visual en computadoras (Hover) */
-@media (hover: hover) {
-  .boton-ubicacion-circular:hover {
-    background-color: #f4f4f4;
-  }
-  /* ::ng-deep también al efecto hover */
-  ::ng-deep .boton-ubicacion-circular:hover .icono-mira {
-    transform: scale(1.1); 
-  }
+
+/* 
+   MODIFICADORES PARA EL MARCADOR DE NUEVA UBICACIÓN  
+*/
+
+::ng-deep .hive-icon-bg.is-proposal {
+  background-color: #2196f3; 
+  box-shadow: 0px 4px 0px 0px #0d47a1; 
+  border-color: #1a1c1c;
 }
 
-/* Efecto clic/toque inmediato tanto en pc como en celular */
-.boton-ubicacion-circular:active {
-  background-color: #e0e0e0;
+/*flecha interna para que contraste con el azul */
+::ng-deep .hive-icon-bg.is-proposal .icono-panal.is-arrow {
+  color: #ffffff; 
 }
 
-/* Ajuste Responsive exclusivo para pantallas de celulares reales */
-@media (max-width: 576px) {
-  .boton-ubicacion-circular {
-    width: 42px;  /* Cómodo para el pulgar, pero integrado estéticamente */
-    height: 42px;
-    margin-left: 10px !important;
-  }
-  
-  /* forzamos el escalado de la mira para el tamaño móvil */
-  ::ng-deep .boton-ubicacion-circular .icono-mira {
-    width: 20px !important;  
-    height: 20px !important;
-  }
+/*etiqueta inferior */
+::ng-deep .hive-label.is-proposal-label {
+  background: #2196f3;
+  color: #ffffff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
 }

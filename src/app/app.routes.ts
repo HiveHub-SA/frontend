@@ -12,6 +12,6 @@ export const routes: Routes = [
   {path: 'colmenas/:id', component: ColmenaDetailComponent, },
   {path: "mapa", component: MapaInteractivo},
   {path: "inicio", component: Inicio},
-  {path: "", component: Inicio},
+  {path: "", component: MapaInteractivo},
 ];
 

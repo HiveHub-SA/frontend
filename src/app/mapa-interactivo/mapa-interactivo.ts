@@ -19,7 +19,6 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
   private router = inject(Router);
 
   // Icono por defecto para la ubicacion del usuario
-  // Icono de panal para las colmenas
   private usuarioIcono = L.icon({
     iconUrl:
       'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
@@ -44,16 +43,6 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
     }).setView([-32.4103, -63.2314], 14);
 
     // Capa segura con las políticas obligatorias
-
-    //Mapa inactivo por el momento, es mas pesado para la carga web
-    // const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    //   maxZoom: 19,
-    //   attribution: '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    //   referrerPolicy: 'no-referrer-when-downgrade'
-    // });
-    // osmLayer.addTo(this.mapa);
-
-    //Otro mapa de prueba que parece mas liviano, luego vere cual dejo
     const capaCarto = L.tileLayer(
       'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
       {
@@ -62,9 +51,9 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       },
     );
-
     capaCarto.addTo(this.mapa);
 
+    //Timeout para que cargue bien el mapa 
     setTimeout(() => {
       this.mapa.invalidateSize();
     }, 100); //Son 100ms de delay para que llegue a cargar todo el css
@@ -92,7 +81,7 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
             const titulo = document.createElement('h4');
             titulo.style.margin = '0 0 8px 0';
             titulo.innerHTML = `<strong>Apiario:</strong> ${apiario.name}`;
-            popupContenedor.appendChild(titulo);
+            // popupContenedor.appendChild(titulo);
 
             // Botón de "Ver detalles"
             const botonDetalles = document.createElement('button');
@@ -148,8 +137,7 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
             // Usamos el icono de usuario para no confundirlo con sus panales
             this.userMarker = L.marker(coordenadas, { icon: this.usuarioIcono })
               .addTo(this.mapa)
-              .bindPopup('Estás aquí')
-              .openPopup();
+              .bindPopup('Estás aquí');
           }
           this.mapa.setView(coordenadas, 17);
         },

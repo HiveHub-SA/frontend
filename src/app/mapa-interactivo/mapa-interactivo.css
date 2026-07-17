@@ -1,6 +1,3 @@
-/* Importar tipografías de Google Fonts necesarias para el diseño (si no las tienes globales) */
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 .mapa-contenedor {
   position: absolute;
@@ -32,14 +29,14 @@
 .btn-control {
   background-color: #ffffff;
   border: 2px solid #1a1c1c;
-  border-radius: 12px; /* Super-elipse suave */
+  border-radius: 12px; 
   width: 48px;
   height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0px 4px 0px 0px #1a1c1c; /* Sombra sólida / Extrusión */
+  box-shadow: 0px 4px 0px 0px #1a1c1c; 
   transition: transform 0.1s ease, box-shadow 0.1s ease;
   color: #1a1c1c;
 }
@@ -47,10 +44,10 @@
 /* Botón especial de ubicación usando el color "Hive Orange" */
 .btn-control.btn-ubicacion {
   background-color: #ff8f06; 
-  margin-top: 8px; /* Un poco más separado de los controles de zoom */
+  margin-top: 8px; 
 }
 .btn-control.btn-ubicacion .text-icon-ubicacion {
-  color: #623300; /* Texto oscuro cálido */
+  color: #623300; 
 }
 
 /* Boton Añadir Apiario */
@@ -72,9 +69,9 @@
   color: #6b4900;
   width: 100%;
   max-width: 400px;
-  height: 60px; /* Tamaño táctil masivo */
+  height: 60px; 
   border: 2px solid #1a1c1c;
-  border-radius: 9999px; /* Forma de píldora completa */
+  border-radius: 9999px; 
   font-family: 'Quicksand', sans-serif;
   font-size: 20px;
   font-weight: 700;
@@ -95,8 +92,8 @@
 
 /* ANIMACIÓN "PRESSABLE" GENERAL */
 .pressable:active {
-  transform: translateY(4px); /* El botón "baja" al presionarse */
-  box-shadow: 0px 0px 0px 0px #1a1c1c; /* La extrusión desaparece */
+  transform: translateY(4px); 
+  box-shadow: 0px 0px 0px 0px #1a1c1c;
 }
 
 /* ESTILOS DE MARCADORES (Se inyectan en Leaflet)
@@ -116,7 +113,7 @@
 ::ng-deep .hive-icon-bg {
   background-color: #ffb300;
   border: 2px solid #1a1c1c;
-  border-radius: 16px; /* 1rem - Cuadrado con bordes muy suaves */
+  border-radius: 16px; 
   padding: 8px;
   box-shadow: 0px 4px 0px 0px #1a1c1c;
   display: flex;
@@ -130,7 +127,7 @@
 }
 
 ::ng-deep .hive-label {
-  margin-top: 10px; /* Espaciado por debajo de la extrusión */
+  margin-top: 10px; 
   background: #1a1c1c;
   color: #f9f9f9;
   padding: 4px 10px;
@@ -140,29 +137,41 @@
   font-weight: 700;
   text-transform: uppercase;
   white-space: nowrap;
-  box-shadow: 0px 2px 4px rgba(0,0,0,0.3); /* Sombra suave para separar del mapa */
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.3); 
 }
 
-/* ESTILOS POPUP LEAFLET */
-.btn-popup-detalles {
+/*
+   ESTILOS DEL POPUP DE LEAFLET  con ::ng-deep
+*/
+
+::ng-deep .btn-popup-detalles {
   background-color: #ffb300; 
-  color: #6b4900;
-  border: 2px solid #1a1c1c;
-  padding: 8px 16px;
-  font-size: 14px;
+  color: #1a1c1c;            
+  border: 2px solid #1a1c1c; 
+  padding: 10px 16px;
+  
+  /* Tipografía idéntica a tus títulos/etiquetas */
   font-family: 'Quicksand', sans-serif;
-  font-weight: bold;
+  font-size: 13px;
+  font-weight: 700;          
+  text-transform: uppercase; 
+  letter-spacing: 0.5px;
   border-radius: 8px;
+  
   cursor: pointer;
-  transition: transform 0.1s ease;
   width: 100%;
-  margin-top: 10px;
-  box-shadow: 0px 2px 0px 0px #1a1c1c;
+  margin-top: 2px;
+  
+  /* Sombra sólida de extrusión (indica visualmente que es un bloque presionable) */
+  box-shadow: 0px 3px 0px 0px #1a1c1c; 
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  display: inline-block;
+  box-sizing: border-box;
 }
 
-.btn-popup-detalles:active {
-  transform: translateY(2px);
-  box-shadow: 0px 0px 0px 0px #1a1c1c;
+/* Efecto de hundimiento realista al hacer click */
+::ng-deep .btn-popup-detalles:active {
+  transform: translateY(3px); 
+  box-shadow: 0px 0px 0px 0px #1a1c1c; 
 }
-
 
