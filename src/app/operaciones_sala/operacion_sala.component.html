@@ -1,4 +1,4 @@
-<div class="main-layout" [class.blurred-overlay]="mostrarModal()">
+<div class="main-layout" [class.blurred-overlay]="mostrarModal() || mostrarModalRegion()">
 
   <header class="app-header">
     <div class="brand-container">
@@ -16,14 +16,17 @@
     <section class="summary-section">
       <div class="section-header">
         <h3 class="section-title">RESUMEN TEMPORADA ACTUAL</h3>
-        <button class="settings-button">
+        <button (click)="abrirModalRegion()" class="settings-button">
           <span class="material-symbols-outlined btn-icon-xs">settings</span> Región
         </button>
       </div>
 
-      <div class="config-badge">
-        <span class="material-symbols-outlined badge-icon-xs">map</span> Rango Configurado: <span
-          class="badge-highlight">Nov - Mar</span>
+      <div class="config-badge" *ngIf="regionActiva()">
+        <span class="material-symbols-outlined badge-icon-xs">map</span> Rango Configurado: 
+        <span class="badge-highlight">
+          {{ nombresMeses[regionActiva()!.inicioTemporadaMes - 1] }} - {{ nombresMeses[regionActiva()!.finTemporadaMes - 1] }}
+        </span>
+        <span class="region-active-name">({{ regionActiva()!.nombre }})</span>
       </div>
 
       <div class="summary-card">
@@ -78,9 +81,16 @@
           </span>
         </div>
         <div class="history-details">
-          <span class="details-desc">
-            {{ op.tipoOperacion === 'EXTRACCION' ? 'Se procesaron ' + op.cantidadAlzas + ' Alzas de Sala' : 'Ingreso de alzas cosechadas del campo' }}
-          </span>
+          <div class="details-text-group">
+            <span class="details-desc">
+              {{ op.tipoOperacion === 'EXTRACCION' ? 'Se procesaron ' + op.cantidadAlzas + ' Alzas de Sala' : 'Ingreso de alzas cosechadas del campo' }}
+            </span>
+            <!-- Listado de apiarios en el historial -->
+            <div class="apiarios-badge-list" *ngIf="op.apiariosNombres && op.apiariosNombres.length > 0">
+              <span class="apiarios-label-title">📍 Apiarios:</span>
+              <span class="apiario-name-tag" *ngFor="let name of op.apiariosNombres">{{ name }}</span>
+            </div>
+          </div>
           <span class="details-value"
             [ngClass]="op.tipoOperacion === 'EXTRACCION' ? 'text-amber' : 'text-orange'">
             {{ op.tipoOperacion === 'EXTRACCION' ? '+' + op.kilosMiel + ' kg Miel' : '+' + op.cantidadAlzas + ' Alzas' }}
@@ -91,8 +101,9 @@
   </main>
 </div>
 
-<button *ngIf="!mostrarModal()" (click)="abrirModal()" class="fab-button">+</button>
+<button *ngIf="!mostrarModal() && !mostrarModalRegion()" (click)="abrirModal()" class="fab-button">+</button>
 
+<!-- MODAL: REGISTRO DE OPERACION -->
 <div *ngIf="mostrarModal()" class="modal-overlay">
   <div class="modal-container">
 
@@ -121,7 +132,7 @@
       <div class="form-group">
         <label class="form-label">Fecha Operación</label>
         <div class="input-wrapper">
-          <input [value]="fechaForm()" (input)="fechaForm.set($event.target.value)" type="date" class="form-input">
+          <input [value]="fechaForm()" (input)="fechaForm.set($any($event.target).value)" type="date" class="form-input">
         </div>
       </div>
 
@@ -142,10 +153,27 @@
       <div *ngIf="tipoOperacionForm() === 'EXTRACCION'" class="form-group">
         <label class="form-label">Volumen Miel Total Extraído</label>
         <div class="volume-input-wrapper">
-          <input [value]="kilosMielForm()" (input)="kilosMielForm.set(+$event.target.value)" type="number" step="0.1"
+          <input [value]="kilosMielForm()" (input)="kilosMielForm.set(+$any($event.target).value)" type="number" step="0.1"
             min="0.1" placeholder="Ej: 350.5" class="form-input volume-input">
           <span class="volume-unit">kg</span>
         </div>
+      </div>
+
+      <!-- SELECCION MULTIPLE DE APIARIOS -->
+      <div class="form-group" *ngIf="apiariosFiltrados().length > 0">
+        <label class="form-label">Apiarios de Procedencia</label>
+        <div class="apiarios-checkbox-list">
+          <div *ngFor="let ap of apiariosFiltrados()" class="checkbox-container">
+            <input type="checkbox" 
+                   [id]="'apiario-' + ap.id"
+                   [checked]="apiariosSeleccionadosForm().includes(ap.id)"
+                   (change)="toggleApiarioSeleccionado(ap.id)">
+            <label [for]="'apiario-' + ap.id" class="checkbox-label-text">{{ ap.name }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" *ngIf="apiariosFiltrados().length === 0">
+        <p class="form-note-warning">⚠️ No hay apiarios registrados en esta región.</p>
       </div>
     </div>
 
@@ -157,7 +185,80 @@
   </div>
 </div>
 
-<nav class="bottom-nav" [ngClass]="mostrarModal() ? 'nav-disabled' : 'nav-enabled'">
+<!-- MODAL: CONFIGURACION DE REGION -->
+<div *ngIf="mostrarModalRegion()" class="modal-overlay">
+  <div class="modal-container">
+
+    <div class="modal-header">
+      <h2 class="modal-title">Gestión de Regiones</h2>
+      <button (click)="cerrarModalRegion()" class="modal-close-btn">
+        <span class="material-symbols-outlined close-icon">close</span>
+      </button>
+    </div>
+
+    <div class="form-body">
+      
+      <!-- Selección de región activa si no se está creando una nueva -->
+      <div class="form-group" *ngIf="!creandoNuevaRegion()">
+        <label class="form-label">Región Activa</label>
+        <div class="select-wrapper">
+          <select [ngModel]="regionActiva()" (ngModelChange)="seleccionarRegion($event)" class="form-select">
+            <option *ngFor="let reg of regiones()" [ngValue]="reg">{{ reg.nombre }}</option>
+          </select>
+        </div>
+        <button (click)="activarNuevaRegionForm()" class="text-button-primary">
+          <span class="material-symbols-outlined text-btn-icon">add_circle</span> Crear nueva región
+        </button>
+      </div>
+
+      <div class="region-form-card">
+        <h3 class="card-subtitle-alt">
+          {{ creandoNuevaRegion() ? 'Nueva Región' : 'Configuración de Región Seleccionada' }}
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label">Nombre de Región</label>
+          <input [value]="nombreRegionForm()" (input)="nombreRegionForm.set($any($event.target).value)" 
+                 type="text" class="form-input" placeholder="Ej: Pampeana Norte">
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Inicio de Temporada</label>
+            <div class="select-wrapper">
+              <select [ngModel]="inicioTemporadaMesForm()" (ngModelChange)="inicioTemporadaMesForm.set($event)" class="form-select">
+                <option *ngFor="let mes of mesesSelect" [value]="mes.value">{{ mes.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Fin de Temporada</label>
+            <div class="select-wrapper">
+              <select [ngModel]="finTemporadaMesForm()" (ngModelChange)="finTemporadaMesForm.set($event)" class="form-select">
+                <option *ngFor="let mes of mesesSelect" [value]="mes.value">{{ mes.label }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions-inline" *ngIf="creandoNuevaRegion()">
+          <button (click)="cancelarNuevaRegion()" class="cancel-button-inline">Cancelar</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button (click)="guardarRegion()" class="submit-button">
+        {{ creandoNuevaRegion() ? 'Crear Región' : 'Aplicar Cambios' }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<nav class="bottom-nav" [ngClass]="mostrarModal() || mostrarModalRegion() ? 'nav-disabled' : 'nav-enabled'">
   <div class="nav-item">
     <span class="material-symbols-outlined nav-icon">map</span>
     <span class="nav-label">Mapa</span>

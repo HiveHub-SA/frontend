@@ -771,3 +771,185 @@
     opacity: 1;
   }
 }
+
+/* Region active name in badge */
+.region-active-name {
+  margin-left: 6px;
+  color: var(--color-on-surface);
+  font-weight: 900;
+}
+
+/* Apiarios styling in history card */
+.apiarios-badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+.apiarios-label-title {
+  color: var(--color-on-surface-variant);
+  font-weight: 900;
+}
+
+.apiario-name-tag {
+  background-color: var(--color-primary-container);
+  border: 1px solid var(--color-on-surface);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 10px;
+  color: var(--color-on-surface);
+  box-shadow: 1px 1px 0px 0px rgba(26,28,28,1);
+}
+
+.details-text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Checkbox lists for Apiarios */
+.apiarios-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+  background-color: #fafafa;
+  border: var(--border-dark);
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 4px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.checkbox-label-text {
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  cursor: pointer;
+}
+
+.form-note-warning {
+  font-size: 11px;
+  color: #c2410c;
+  font-weight: 700;
+  margin: 4px 0 0 0;
+}
+
+/* Form Select wrapper and style */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.form-select {
+  width: 100%;
+  background-color: #fafafa;
+  border: var(--border-dark);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: var(--font-headline);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  appearance: none;
+  cursor: pointer;
+}
+
+.select-wrapper::after {
+  content: '▼';
+  font-size: 10px;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-on-surface-variant);
+}
+
+.text-button-primary {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 0;
+  width: fit-content;
+  text-transform: uppercase;
+}
+
+.text-button-primary:hover {
+  text-decoration: underline;
+}
+
+.text-btn-icon {
+  font-size: 16px;
+}
+
+/* Region Management inline card */
+.region-form-card {
+  background-color: rgba(255, 179, 0, 0.05);
+  border: var(--border-dark);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  box-shadow: var(--shadow-hard-small);
+}
+
+.card-subtitle-alt {
+  font-family: var(--font-headline);
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-actions-inline {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.cancel-button-inline {
+  background-color: #e5e5e5;
+  border: var(--border-dark);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-family: var(--font-headline);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+

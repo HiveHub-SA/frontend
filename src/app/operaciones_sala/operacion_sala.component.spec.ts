@@ -9,7 +9,20 @@ describe('OperacionSalaComponent', () => {
   let mockService: jasmine.SpyObj<OperacionSalaService>;
 
   beforeEach(async () => {
-    mockService = jasmine.createSpyObj('OperacionSalaService', ['obtenerResumen', 'obtenerHistorial', 'registrarOperacion']);
+    mockService = jasmine.createSpyObj('OperacionSalaService', [
+      'obtenerResumen',
+      'obtenerHistorial',
+      'registrarOperacion',
+      'obtenerRegiones',
+      'obtenerApiarios'
+    ]);
+    
+    mockService.obtenerRegiones.and.returnValue(of([
+      { id: 1, nombre: 'Pampeana', inicioTemporadaMes: 11, finTemporadaMes: 3 }
+    ]));
+    mockService.obtenerApiarios.and.returnValue(of([
+      { id: 1, name: 'Apiario 1', createdAt: '2026-07-10T12:00:00', latitude: -34.0, longitude: -59.0, regionId: 1 }
+    ]));
     mockService.obtenerResumen.and.returnValue(of({ totalMielExtraida: 100, alzasProcesadas: 10, alzasEnEspera: 5 }));
     mockService.obtenerHistorial.and.returnValue(of([]));
     mockService.registrarOperacion.and.returnValue(of({
@@ -17,7 +30,10 @@ describe('OperacionSalaComponent', () => {
       fecha: '2026-07-10',
       tipoOperacion: 'INGRESO',
       cantidadAlzas: 10,
-      temporada: '2026/2027'
+      temporada: '2025/2026',
+      regionId: 1,
+      regionNombre: 'Pampeana',
+      apiariosNombres: ['Apiario 1']
     }));
 
     await TestBed.configureTestingModule({
@@ -37,8 +53,10 @@ describe('OperacionSalaComponent', () => {
   });
 
   it('should initialize screen data on init', () => {
-    expect(mockService.obtenerResumen).toHaveBeenCalledWith('2025/2026');
-    expect(mockService.obtenerHistorial).toHaveBeenCalledWith('2025/2026');
+    expect(mockService.obtenerRegiones).toHaveBeenCalled();
+    expect(mockService.obtenerApiarios).toHaveBeenCalled();
+    expect(mockService.obtenerResumen).toHaveBeenCalledWith(1, '2025/2026');
+    expect(mockService.obtenerHistorial).toHaveBeenCalledWith(1, '2025/2026');
     expect(component.resumen().totalMielExtraida).toBe(100);
     expect(component.resumen().alzasProcesadas).toBe(10);
     expect(component.resumen().alzasEnEspera).toBe(5);
@@ -81,8 +99,10 @@ describe('OperacionSalaComponent', () => {
 
   it('should submit registration and refresh data', () => {
     component.abrirModal();
+    component.fechaForm.set('2026-11-10');
     component.cantidadAlzasForm.set(5);
     component.tipoOperacionForm.set('INGRESO');
+    component.apiariosSeleccionadosForm.set([1]);
 
     spyOn(component, 'cargarDatosPantalla');
     component.guardarRegistro();

@@ -28,7 +28,8 @@ describe('OperacionSalaService', () => {
       fecha: '2026-07-10',
       tipoOperacion: 'INGRESO',
       cantidadAlzas: 10,
-      temporada: '2026/2027'
+      regionId: 1,
+      apiariosIds: []
     };
 
     const mockResponse: OperacionSalaResponse = {
@@ -36,7 +37,10 @@ describe('OperacionSalaService', () => {
       fecha: '2026-07-10',
       tipoOperacion: 'INGRESO',
       cantidadAlzas: 10,
-      temporada: '2026/2027'
+      temporada: '2026/2027',
+      regionId: 1,
+      regionNombre: 'Test Region',
+      apiariosNombres: []
     };
 
     service.registrarOperacion(mockRequest).subscribe(response => {
@@ -50,6 +54,7 @@ describe('OperacionSalaService', () => {
   });
 
   it('should send GET request to fetch summary', () => {
+    const regionId = 1;
     const temporada = '2026/2027';
     const mockSummary: ResumenSalaResponse = {
       totalMielExtraida: 120.5,
@@ -57,16 +62,17 @@ describe('OperacionSalaService', () => {
       alzasEnEspera: 6
     };
 
-    service.obtenerResumen(temporada).subscribe(response => {
+    service.obtenerResumen(regionId, temporada).subscribe(response => {
       expect(response).toEqual(mockSummary);
     });
 
-    const req = httpMock.expectOne(`http://localhost:8080/api/hivehub/sala-extraccion/resumen?temporada=${temporada}`);
+    const req = httpMock.expectOne(`http://localhost:8080/api/hivehub/sala-extraccion/resumen?regionId=${regionId}&temporada=${temporada}`);
     expect(req.request.method).toBe('GET');
     req.flush(mockSummary);
   });
 
   it('should send GET request to fetch history', () => {
+    const regionId = 1;
     const temporada = '2026/2027';
     const mockHistory: OperacionSalaResponse[] = [
       {
@@ -74,15 +80,18 @@ describe('OperacionSalaService', () => {
         fecha: '2026-07-10',
         tipoOperacion: 'INGRESO',
         cantidadAlzas: 10,
-        temporada: '2026/2027'
+        temporada: '2026/2027',
+        regionId: 1,
+        regionNombre: 'Test Region',
+        apiariosNombres: []
       }
     ];
 
-    service.obtenerHistorial(temporada).subscribe(response => {
+    service.obtenerHistorial(regionId, temporada).subscribe(response => {
       expect(response).toEqual(mockHistory);
     });
 
-    const req = httpMock.expectOne(`http://localhost:8080/api/hivehub/sala-extraccion/historial?temporada=${temporada}`);
+    const req = httpMock.expectOne(`http://localhost:8080/api/hivehub/sala-extraccion/historial?regionId=${regionId}&temporada=${temporada}`);
     expect(req.request.method).toBe('GET');
     req.flush(mockHistory);
   });
