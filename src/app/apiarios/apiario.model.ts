@@ -1,6 +1,12 @@
 // acá solo se usa colmenas.length para contar colmenas.
 export interface ColmenaDTO {
-  [key: string]: unknown;
+  id: number;
+  name: string;
+  createdAt: string;
+  apiarioId: number;
+  camaras?: number;
+  alzas?: number;
+  nucleos?: number;
 }
 
 export interface ApiarioDTO {

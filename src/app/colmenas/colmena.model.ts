@@ -3,4 +3,8 @@ export interface ColmenaDTO {
   name: string;
   createdAt: string;
   apiarioId: number;
+  camaras?: number;
+  alzas?: number;
+  marcosAlza?: number;
+  nucleos?: number;
 }

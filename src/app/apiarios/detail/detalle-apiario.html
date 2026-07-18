@@ -7,24 +7,18 @@
 <div *ngIf="!loading() && apiario() as datosApiario">
 
   <!-- Custom Header -->
-  <header class="header-grid h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] px-margin sticky top-0 z-50 shrink-0">
-    <button
-      routerLink="/apiarios"
-      aria-label="Volver"
-      class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-on-surface bg-surface-container-lowest shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect"
-    >
+  <header
+    class="header-grid h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] px-margin sticky top-0 z-50 shrink-0">
+    <button routerLink="/apiarios" aria-label="Volver"
+      class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-on-surface bg-surface-container-lowest shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect">
       <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_back</span>
     </button>
     <h1 class="font-headline-sm text-headline-sm text-center uppercase tracking-wide">
-     APIARIO: {{ datosApiario.name }}
+      APIARIO: {{ datosApiario.name }}
     </h1>
 
     <!-- Botón de eliminar -->
-    <button
-      (click)="openDeleteModal()"
-      aria-label="Eliminar Apiario"
-      class="delete-header-btn sink-effect"
-    >
+    <button (click)="openDeleteModal()" aria-label="Eliminar Apiario" class="delete-header-btn sink-effect">
       <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">delete</span>
     </button>
   </header>
@@ -33,14 +27,22 @@
   <main class="pb-[100px] px-margin py-md flex flex-col gap-lg overflow-y-auto">
 
     <!-- Bloque de Metadatos del Apiario (Creado / Ubicación) -->
-    <section class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-md shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-2">
-      <h2 class="font-label-lg text-on-surface uppercase tracking-wider border-b-2 border-surface-container pb-1">Información General</h2>
+    <section
+      class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-md shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-2">
+      <h2 class="font-label-lg text-on-surface uppercase tracking-wider border-b-2 border-surface-container pb-1">
+        Información General</h2>
       <p class="font-body-md text-on-surface-variant">
         <strong>Creado el:</strong> {{ datosApiario.createdAt | date:'dd/MM/yyyy' }}
       </p>
       <p class="font-body-md text-on-surface-variant">
         <strong>Ubicación Geográfica:</strong> {{ datosApiario.latitude }}, {{ datosApiario.longitude }}
       </p>
+      <div class="mt-2 pt-2 border-t-2 border-surface-container">
+        <p class="font-body-md text-on-surface-variant">
+          <strong>Material Total en Apiario:</strong><br>
+          {{ totalCamaras() }} {{ camarasLabel() }}, {{ totalAlzas() }} {{ alzasLabel() }}, {{ totalNucleos() }} {{ nucleosLabel() }}
+        </p>
+      </div>
     </section>
 
     <!-- Block B: COLMENAS EN SITIO & List -->
@@ -51,20 +53,19 @@
         <h2 class="font-label-lg text-on-surface uppercase tracking-wider">
           COLMENAS EN SITIO ({{ datosApiario.colmenas.length }})
         </h2>
-        <button
-          (click)="toggleForm()"
-          class="bg-[#FFB300] text-on-surface px-4 py-2 rounded-full border-2 border-on-surface font-bold text-[12px] shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect transition-transform flex items-center gap-1 uppercase"
-        >
-          <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">add</span> AÑADIR
+        <button (click)="toggleForm()"
+          class="bg-[#FFB300] text-on-surface px-4 py-2 rounded-full border-2 border-on-surface font-bold text-[12px] shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect transition-transform flex items-center gap-1 uppercase">
+          <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">add</span>
+          AÑADIR
         </button>
       </div>
 
       <div class="form-overlay" *ngIf="showForm" (click)="toggleForm()">
         <div class="form-card" (click)="$event.stopPropagation()">
           <div class="form-icon-wrapper">
-      <span class="material-symbols-outlined form-icon" style="font-variation-settings: 'FILL' 1;">
-        hive
-      </span>
+            <span class="material-symbols-outlined form-icon" style="font-variation-settings: 'FILL' 1;">
+              hive
+            </span>
           </div>
 
           <h3 class="section-title">Nueva Colmena</h3>
@@ -73,20 +74,91 @@
             <!-- Input Nombre -->
             <div class="form-field">
               <label class="form-label">Identificador / Nombre</label>
-              <input
-                type="text"
-                name="nombre"
-                [(ngModel)]="newColmena.name"
-                required
-                placeholder="Ej: Colmena #03"
-                class="form-input"
-              />
+              <input type="text" name="nombre" [(ngModel)]="newColmena.name" required placeholder="Ej: Colmena #03"
+                class="form-input" />
             </div>
-            <div class="form-actions">
-              <button type="button" class="btn-cancel sink-effect" (click)="toggleForm()">
-                Cancelar
-              </button>
-              <button type="submit" class="btn-submit sink-effect" [disabled]="!hiveForm.form.valid">
+            <!-- Separador material -->
+            <div style="border-top: 2px solid var(--color-surface-container); padding-top: 12px; margin-top: 8px;">
+              <p class="form-label text-sm font-bold" style="margin-bottom: 12px;">MATERIAL ASIGNADO</p>
+
+              <!-- Alertas (ej. sin stock) -->
+              <div *ngIf="createError()"
+                class="mb-4 p-2 bg-red-100 text-red-700 rounded border-2 border-red-500 font-bold text-sm text-center shadow-[2px_2px_0px_0px_rgba(239,68,68,1)]">
+                {{ createError() }}
+              </div>
+
+              <!-- Cámaras -> Colmenas -->
+              <div class="form-field flex flex-col gap-2" style="margin-bottom: 12px;">
+                <label class="form-label font-bold text-sm">
+                  Colmenas
+                  <span style="font-weight:400; text-transform:none; font-size:11px; margin-left:4px;">(máx. 2)</span>
+                </label>
+                <div class="flex items-center gap-3">
+                  <button type="button"
+                    (click)="materialInicio.camaras = materialInicio.camaras > 0 ? materialInicio.camaras - 1 : 0"
+                    class="w-16 h-8 flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-lg bg-surface-container sink-effect">−</button>
+                  <span class="flex-1 text-center font-bold text-xl">{{ materialInicio.camaras }}</span>
+                  <button type="button"
+                    (click)="materialInicio.camaras = materialInicio.camaras < 2 ? materialInicio.camaras + 1 : 2"
+                    [disabled]="materialInicio.camaras >= 2"
+                    class="w-16 h-8 flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-lg bg-surface-container sink-effect disabled:opacity-40">+</button>
+                </div>
+              </div>
+
+              <!-- Alzas -->
+              <div class="form-field flex flex-col gap-2" style="margin-bottom: 12px;">
+                <label class="form-label font-bold text-sm">
+                  Alzas
+                  <span style="font-weight:400; text-transform:none; font-size:11px; margin-left:4px;">(máx. 5)</span>
+                </label>
+                <div class="flex items-center gap-3">
+                  <button type="button" (click)="decrementAlzas()"
+                    class="w-16 h-8 flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-lg bg-surface-container sink-effect">−</button>
+                  <span class="flex-1 text-center font-bold text-xl">{{ materialInicio.alzas }}</span>
+                  <button type="button"
+                    (click)="materialInicio.alzas = materialInicio.alzas < 5 ? materialInicio.alzas + 1 : 5"
+                    [disabled]="materialInicio.alzas >= 5"
+                    class="w-16 h-8 flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-lg bg-surface-container sink-effect disabled:opacity-40">+</button>
+                </div>
+              </div>
+
+              <!-- Marcos por alza -->
+              <div *ngIf="materialInicio.alzas > 0" class="form-field flex flex-col gap-2" style="margin-bottom: 12px;">
+                <label class="form-label font-bold text-sm">Marcos por alza</label>
+                <div class="flex gap-2">
+                  <label *ngFor="let m of [8, 9, 10]" class="flex-1 cursor-pointer">
+                    <input type="radio" name="marcosAlza" [value]="m" [(ngModel)]="materialInicio.marcosAlza"
+                      class="sr-only peer" />
+                    <div class="w-full text-center border-2 border-on-surface rounded-full py-2 font-bold
+                                peer-checked:bg-primary-container transition-colors cursor-pointer">
+                      {{ m }}
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Núcleos -->
+              <div class="form-field flex flex-col gap-2">
+                <label class="form-label font-bold text-sm">Núcleos</label>
+                <div class="flex items-center gap-3">
+                  <button type="button"
+                    (click)="materialInicio.nucleos = materialInicio.nucleos > 0 ? materialInicio.nucleos - 1 : 0"
+                    class="w-16 h-8 flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-lg bg-surface-container sink-effect">−</button>
+                  <span class="flex-1 text-center font-bold text-xl">{{ materialInicio.nucleos }}</span>
+                  <button type="button" (click)="materialInicio.nucleos = materialInicio.nucleos + 1"
+                    class="w-16 h-8 flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-lg bg-surface-container sink-effect">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions mt-4 flex gap-2">
+              <button type="button" class="btn-cancel flex-1 p-2 border-2 rounded-full font-bold text-sm sink-effect"
+                (click)="toggleForm()">Cancelar</button>
+              <button type="submit"
+                class="btn-submit flex-1 p-2 border-2 rounded-full font-bold text-sm bg-primary sink-effect text-on-primary flex items-center justify-center gap-2 disabled:opacity-50"
+                [disabled]="!hiveForm.form.valid || creating() || (materialInicio.alzas > 0 && !materialInicio.marcosAlza)">
+                <span *ngIf="creating()" class="material-symbols-outlined animate-spin"
+                  style="font-size:16px">sync</span>
                 Guardar
               </button>
             </div>
@@ -95,11 +167,8 @@
       </div>
       <div class="flex flex-col gap-sm">
         <!-- Bucle de colmenas -->
-        <div
-          *ngFor="let colmena of datosApiario.colmenas; let i = index"
-          [routerLink]="['/colmenas/', colmena['id']]"
-          class="w-full p-md bg-surface-container-lowest border-2 border-on-surface rounded-lg shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] mb-sm sink-effect cursor-pointer transition-transform flex flex-col gap-2"
-        >
+        <div *ngFor="let colmena of datosApiario.colmenas; let i = index" [routerLink]="['/colmenas/', colmena['id']]"
+          class="w-full p-md bg-surface-container-lowest border-2 border-on-surface rounded-lg shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] mb-sm sink-effect cursor-pointer transition-transform flex flex-col gap-2">
           <div class="flex items-center justify-between border-b-2 border-surface-container pb-2">
             <h3 class="font-headline-sm text-on-surface">Colmena "{{ colmena['name']}}"</h3>
             <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">hive</span>
@@ -107,7 +176,8 @@
         </div>
 
         <!-- Mensaje por si el apiario no tiene colmenas registradas -->
-        <p class="apiary-list__empty text-center py-4 font-body-md text-on-surface-variant bg-surface-container rounded-lg border-2 border-dashed border-on-surface" *ngIf="datosApiario.colmenas.length === 0">
+        <p class="apiary-list__empty text-center py-4 font-body-md text-on-surface-variant bg-surface-container rounded-lg border-2 border-dashed border-on-surface"
+          *ngIf="datosApiario.colmenas.length === 0">
           Este apiario no tiene colmenas asociadas.
         </p>
 
@@ -116,13 +186,6 @@
   </main>
 </div>
 
-<app-confirm-delete-component
-  [visible]="showDeleteModal()"
-  [itemName]="apiario()?.name ?? ''"
-  entityLabel="apiario"
-  extraWarning="Se eliminarán también todas las colmenas asociadas a este apiario."
-  [loading]="deleting()"
-  [errorMessage]="deleteError()"
-  (confirmed)="confirmDelete()"
-  (cancelled)="closeDeleteModal()"
-/>
+<app-confirm-delete-component [visible]="showDeleteModal()" [itemName]="apiario()?.name ?? ''" entityLabel="apiario"
+  extraWarning="Se eliminarán también todas las colmenas asociadas a este apiario." [loading]="deleting()"
+  [errorMessage]="deleteError()" (confirmed)="confirmDelete()" (cancelled)="closeDeleteModal()" />
