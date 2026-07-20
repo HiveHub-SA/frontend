@@ -13,15 +13,11 @@ describe('OperacionSalaComponent', () => {
       'obtenerResumen',
       'obtenerHistorial',
       'registrarOperacion',
-      'obtenerRegiones',
       'obtenerApiarios'
     ]);
     
-    mockService.obtenerRegiones.and.returnValue(of([
-      { id: 1, nombre: 'Pampeana', inicioTemporadaMes: 11, finTemporadaMes: 3 }
-    ]));
     mockService.obtenerApiarios.and.returnValue(of([
-      { id: 1, name: 'Apiario 1', createdAt: '2026-07-10T12:00:00', latitude: -34.0, longitude: -59.0, regionId: 1 }
+      { id: 1, name: 'Apiario 1', createdAt: '2026-07-10T12:00:00', latitude: -34.0, longitude: -59.0 }
     ]));
     mockService.obtenerResumen.and.returnValue(of({ totalMielExtraida: 100, alzasProcesadas: 10, alzasEnEspera: 5 }));
     mockService.obtenerHistorial.and.returnValue(of([]));
@@ -31,8 +27,6 @@ describe('OperacionSalaComponent', () => {
       tipoOperacion: 'INGRESO',
       cantidadAlzas: 10,
       temporada: '2025/2026',
-      regionId: 1,
-      regionNombre: 'Pampeana',
       apiariosNombres: ['Apiario 1']
     }));
 
@@ -53,10 +47,9 @@ describe('OperacionSalaComponent', () => {
   });
 
   it('should initialize screen data on init', () => {
-    expect(mockService.obtenerRegiones).toHaveBeenCalled();
     expect(mockService.obtenerApiarios).toHaveBeenCalled();
-    expect(mockService.obtenerResumen).toHaveBeenCalledWith(1, '2025/2026');
-    expect(mockService.obtenerHistorial).toHaveBeenCalledWith(1, '2025/2026');
+    expect(mockService.obtenerResumen).toHaveBeenCalledWith('2025/2026');
+    expect(mockService.obtenerHistorial).toHaveBeenCalledWith('2025/2026');
     expect(component.resumen().totalMielExtraida).toBe(100);
     expect(component.resumen().alzasProcesadas).toBe(10);
     expect(component.resumen().alzasEnEspera).toBe(5);
