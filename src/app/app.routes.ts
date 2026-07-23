@@ -18,9 +18,3 @@ export const routes: Routes = [
   { path: 'extraccion', component: OperacionSalaComponent },
 ];
 
-
-
-
-
-
-

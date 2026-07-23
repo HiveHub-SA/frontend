@@ -1,0 +1,19 @@
+<div class="mapa-wrapper">
+  <!-- 1. El mapa ahora está solo y limpio -->
+  <div id="mapa-seleccion" style="height: 450px; width: 100%;"></div>
+
+  <!-- 2. Los controles flotantes quedan fuera del div del mapa -->
+  <div class="controles-laterales">
+    <button class="btn-control pressable" (click)="zoomIn()" title="Acercar">
+      <span class="material-symbols-outlined">add</span>
+    </button>
+
+    <button class="btn-control pressable" (click)="zoomOut()" title="Alejar">
+      <span class="material-symbols-outlined">remove</span>
+    </button>
+
+    <button class="btn-control btn-ubicacion pressable" (click)="getUbicacionActual()" title="Mi Ubicación">
+      <span class="material-symbols-outlined text-icon-ubicacion">my_location</span>
+    </button>
+  </div>
+</div>

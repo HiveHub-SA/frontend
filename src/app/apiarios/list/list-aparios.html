@@ -1,0 +1,25 @@
+
+<!-- Main Content -->
+<main class="main-content">
+  <h2 class="section-title">NUESTROS apiarios</h2>
+
+  <!-- Apiary Item Cards -->
+  <div class="apiary-list">
+    <div class="apiary-card"
+         *ngFor="let apiario of misApiarios()"
+         [routerLink]="['/apiarios/', apiario.id]"
+         style="cursor: pointer"
+    >
+      <div class="apiary-card__row">
+        <h3 class="apiary-card__name">{{ apiario.name }}</h3>
+        <span class="material-symbols-outlined apiary-card__chevron">chevron_right</span>
+      </div>
+    </div>
+
+    <p class="apiary-list__empty" *ngIf="misApiarios().length === 0">
+      Todavía no hay apiarios cargados.
+    </p>
+  </div>
+</main>
+
+

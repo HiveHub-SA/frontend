@@ -1,0 +1,211 @@
+/* --- overlay y contenedor del popup, mismo patrón que confirm-delete-component --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 28, 28, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: var(--space-margin);
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-content {
+  box-shadow: var(--shadow-md);
+  padding: var(--space-lg);
+  max-width: 500px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  animation: popIn 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-title {
+  margin: 0;
+}
+
+.btn-cerrar-modal {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* --- formulario --- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.form-group input {
+  padding: var(--space-base);
+  border: 2px solid var(--color-outline);
+  border-radius: var(--radius-default);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.form-group input:disabled {
+  background: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+  cursor: not-allowed;
+}
+
+.coordenadas-input-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.coordenadas-input-group input {
+  flex: 1 1 40%;
+  min-width: 0;
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 14px;
+  background: var(--color-surface-container);
+}
+
+.btn-buscar-mapa {
+  flex: 1 1 100%;
+  background: var(--color-tertiary-container);
+  color: var(--color-on-tertiary-container);
+  border: 2px solid var(--color-on-surface);
+  padding: var(--space-base) var(--space-sm);
+  border-radius: var(--radius-default);
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+}
+
+.btn-buscar-mapa:disabled {
+  background: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.ubicacion-fijada {
+  margin: 0;
+}
+
+/* --- error --- */
+.modal-error {
+  color: var(--color-error);
+  background-color: var(--color-error-container);
+  border-radius: var(--radius-default);
+  padding: var(--space-xs) var(--space-sm);
+  width: 100%;
+  margin: 0;
+}
+
+/* --- acciones --- */
+.modal-actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--space-xs);
+}
+
+.btn {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-cancel {
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+}
+
+.btn-guardar {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-on-primary-container);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* --- popup anidado del mapa --- */
+.modal-overlay--nested {
+  z-index: 2100;
+}
+
+.modal-content--mapa {
+  max-width: 700px;
+}
+
+.modal-footer {
+  margin-top: var(--space-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.btn-confirmar {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+  border: 2px solid var(--color-on-surface);
+  padding: var(--space-base) var(--space-md);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-confirmar:disabled {
+  background: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,62 @@
+.mapa-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* CONTROLES LATERALES FLOTANTES */
+.controles-laterales {
+  position: absolute;
+  top: 100px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000; /* Asegura que esté por encima de Leaflet */
+}
+
+.btn-control {
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 12px; /* Super-elipse suave */
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0px 4px 0px 0px #1a1c1c; /* Sombra sólida / Extrusión */
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  color: #1a1c1c;
+}
+
+/* Botón especial de ubicación usando el color "Hive Orange" */
+.btn-control.btn-ubicacion {
+  background-color: #ff8f06; 
+  margin-top: 8px; /* Un poco más separado de los controles de zoom */
+}
+.btn-control.btn-ubicacion .text-icon-ubicacion {
+  color: #623300; /* Texto oscuro cálido */
+}
+
+
+/* 
+   MODIFICADORES PARA EL MARCADOR DE NUEVA UBICACIÓN  
+*/
+
+::ng-deep .hive-icon-bg.is-proposal {
+  background-color: #2196f3; 
+  box-shadow: 0px 4px 0px 0px #0d47a1; 
+  border-color: #1a1c1c;
+}
+
+/*flecha interna para que contraste con el azul */
+::ng-deep .hive-icon-bg.is-proposal .icono-panal.is-arrow {
+  color: #ffffff; 
+}
+
+/*etiqueta inferior */
+::ng-deep .hive-label.is-proposal-label {
+  background: #2196f3;
+  color: #ffffff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+}

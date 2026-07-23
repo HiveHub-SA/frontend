@@ -1,0 +1,57 @@
+<div
+  *ngIf="visible()"
+  class="modal-overlay"
+  (click)="onBackdropClick()"
+>
+  <div
+    class="modal-content border-2 border-on-surface bg-surface-container-lowest rounded-lg"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-icon-wrapper">
+      <span class="material-symbols-outlined modal-icon" style="font-variation-settings: 'FILL' 1;">
+        delete_forever
+      </span>
+    </div>
+
+    <h2 class="font-headline-sm text-on-surface uppercase tracking-wide modal-title">
+      {{ title() }}
+    </h2>
+
+    <p class="font-body-md text-on-surface-variant modal-text">
+      Estás por eliminar {{ entityLabel() }}
+      <strong class="text-on-surface">{{ itemName() }}</strong>.
+    </p>
+
+    <div *ngIf="extraWarning()" class="modal-extra-warning">
+      <span class="material-symbols-outlined" style="font-size: 18px;">info</span>
+      <span class="font-body-md">{{ extraWarning() }}</span>
+    </div>
+
+    <div class="modal-warning">
+      <span class="material-symbols-outlined" style="font-size: 18px;">warning</span>
+      <span class="font-label-lg">Esta acción no se puede deshacer</span>
+    </div>
+
+    <p *ngIf="errorMessage()" class="font-body-md modal-error">
+      {{ errorMessage() }}
+    </p>
+
+    <div class="modal-actions">
+      <button
+        (click)="onCancel()"
+        [disabled]="loading()"
+        class="btn btn-cancel font-label-lg border-2 border-on-surface sink-effect"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="onConfirm()"
+        [disabled]="loading()"
+        class="btn btn-delete font-label-lg border-2 border-on-surface sink-effect"
+      >
+        <span *ngIf="loading()" class="spinner"></span>
+        {{ loading() ? 'Eliminando...' : 'Eliminar' }}
+      </button>
+    </div>
+  </div>
+</div>
