@@ -1,14 +1,16 @@
-/* You can add global styles to this file, and also import other style files */
-@import "leaflet/dist/leaflet.css";
 /* ============================================================
-   HiveHub – tokens de diseño (colores, spacing, tipografía)
-   Importar UNA sola vez en el styles.css global de la app,
-   o agregar la ruta al array "styles" de angular.json
+   HiveHub – styles.css global
+   Combina los tokens de diseño (colores, spacing, tipografía)
+   con los componentes neubrutalistas y las utilidades tipo
+   Tailwind. Importar UNA sola vez en el styles.css global de la
+   app, o agregar la ruta al array "styles" de angular.json.
    ============================================================ */
 
+@import "leaflet/dist/leaflet.css";
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap');
 
+/* --- Design tokens --- */
 :root {
   /* Colores */
   --color-tertiary-fixed-dim: #8dcdff;
@@ -73,21 +75,53 @@
   --radius-xl: 3rem;
   --radius-full: 9999px;
 
-  /* Tipografía */
+  /* Tipografía
+     --font-display y --font-headline son alias (mismo valor,
+     dos nombres en uso en distintos componentes). */
   --font-display: 'Quicksand', sans-serif;
+  --font-headline: var(--font-display);
   --font-body: 'Nunito Sans', sans-serif;
+
+  /* Bordes y sombras "neo-brutalistas"
+     --shadow-sm/--shadow-md y --border-dark son los tokens
+     canónicos; --shadow-hard/--shadow-hard-small quedan como
+     alias por compatibilidad con componentes existentes. */
+  --border-dark: 2px solid #1a1c1c;
+  --shadow-sm: 2px 2px 0px 0px rgba(26, 28, 28, 1);
+  --shadow-md: 4px 4px 0px 0px rgba(26, 28, 28, 1);
+  --shadow-hard: var(--shadow-md);
+  --shadow-hard-small: var(--shadow-sm);
 }
 
-/* Reset mínimo (Tailwind traía esto integrado como "preflight") */
+/* --- Reset mínimo --- */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
   font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-headline {
+  font-family: var(--font-headline);
 }
 
 h1,
@@ -102,36 +136,6 @@ a {
   text-decoration: none;
 }
 
-/* Configuración base recomendada por Google para el font Material Symbols */
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ============================================================
-   UTILIDADES REUTILIZABLES
-   Reemplazan las clases estilo Tailwind que traía el HTML de
-   Stitch (flex, gap-sm, shadow-[...], etc). Van acá, en el global,
-   para no tener que reescribirlas en cada componente nuevo.
-   ============================================================ */
-
-:root {
-  /* Sombra "neo-brutalista" del sistema, para no repetir el rgba a mano */
-  --shadow-sm: 2px 2px 0px 0px rgba(26, 28, 28, 1);
-  --shadow-md: 4px 4px 0px 0px rgba(26, 28, 28, 1);
-}
-
-/* Reset mínimo de botones/inputs (esto lo daba gratis el preflight de Tailwind) */
 button,
 input,
 textarea,
@@ -147,6 +151,428 @@ button {
   padding: 0;
   cursor: pointer;
 }
+
+/* Configuración de iconos Material Symbols */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ============================================================
+   COMPONENTES NEUBRUTALISTAS
+   ============================================================ */
+
+/* Desenfoque de fondo general para elementos inactivos */
+.blurred-overlay {
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* Modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.modal-container {
+  background-color: var(--color-surface-container-lowest);
+  border: var(--border-dark);
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 8px 8px 0px 0px rgba(26, 28, 28, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: slideInUp 0.2s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--border-dark);
+  padding-bottom: 8px;
+  position: relative;
+}
+
+.modal-title {
+  font-family: var(--font-headline);
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--color-on-surface);
+  text-align: center;
+  width: 100%;
+  margin: 0;
+}
+
+.modal-close-btn {
+  position: absolute;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.modal-close-btn:hover {
+  color: var(--color-on-surface);
+}
+
+.modal-footer {
+  padding-top: 8px;
+  border-top: 2px dashed #e5e5e5;
+}
+
+/* Botones */
+.submit-button {
+  width: 100%;
+  height: 48px;
+  background-color: var(--color-primary-container);
+  border: var(--border-dark);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--color-on-surface);
+  text-transform: uppercase;
+  box-shadow: 0 4px 0px 0px rgba(26, 28, 28, 1);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.submit-button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.fab-button {
+  position: fixed;
+  right: 20px;
+  bottom: 96px;
+  z-index: 50;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--color-secondary-container);
+  border: var(--border-dark);
+  box-shadow: 3px 3px 0px 0px rgba(26, 28, 28, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-surface);
+  font-family: var(--font-headline);
+  font-size: 28px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.fab-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.text-button-primary {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 0;
+  width: fit-content;
+  text-transform: uppercase;
+}
+
+.text-button-primary:hover {
+  text-decoration: underline;
+}
+
+.text-btn-icon {
+  font-size: 16px;
+}
+
+/* Formularios y Inputs */
+.form-toggle {
+  display: flex;
+  border: var(--border-dark);
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #e5e5e5;
+  padding: 2px;
+  box-shadow: var(--shadow-hard-small);
+}
+
+.toggle-btn {
+  width: 50%;
+  padding: 8px 0;
+  font-family: var(--font-headline);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  border-radius: 4px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.active-toggle {
+  background-color: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-on-surface);
+  color: var(--color-on-surface);
+}
+
+.inactive-toggle {
+  background: none;
+  color: #888888;
+}
+
+.toggle-icon {
+  font-size: 14px;
+}
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  font-family: var(--font-headline);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-on-surface-variant);
+}
+
+.form-input {
+  width: 100%;
+  background-color: #fafafa;
+  border: var(--border-dark);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: var(--font-headline);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.form-input:focus {
+  border-color: var(--color-primary-container);
+  outline: none;
+}
+
+/* Control de Contador (+/-) */
+.counter-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fafafa;
+  border: var(--border-dark);
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: 1px 1px 0px 0px rgba(26, 28, 28, 1);
+}
+
+.counter-btn {
+  background-color: #e5e5e5;
+  border: var(--border-dark);
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.counter-btn:active {
+  transform: translateY(1px);
+}
+
+.btn-plus {
+  background-color: var(--color-primary-container);
+}
+
+.counter-value {
+  font-family: var(--font-headline);
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--color-on-surface);
+  width: 64px;
+  text-align: center;
+}
+
+.form-note {
+  font-size: 10px;
+  color: var(--color-on-surface-variant);
+  font-weight: 700;
+  margin: 4px 0 0 0;
+}
+
+/* Inputs de Volumen/Medida */
+.volume-input-wrapper {
+  position: relative;
+}
+
+.volume-input {
+  padding-right: 48px;
+  text-align: right;
+}
+
+.volume-unit {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-on-surface-variant);
+}
+
+/* Selectores Neubrutalistas */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.form-select {
+  width: 100%;
+  background-color: #fafafa;
+  border: var(--border-dark);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: var(--font-headline);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  appearance: none;
+  cursor: pointer;
+}
+
+.select-wrapper::after {
+  content: '▼';
+  font-size: 10px;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-on-surface-variant);
+}
+
+/* Tarjeta de Formulario interna */
+.region-form-card {
+  background-color: rgba(255, 179, 0, 0.05);
+  border: var(--border-dark);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  box-shadow: var(--shadow-hard-small);
+}
+
+.card-subtitle-alt {
+  font-family: var(--font-headline);
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-actions-inline {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.cancel-button-inline {
+  background-color: #e5e5e5;
+  border: var(--border-dark);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-family: var(--font-headline);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   UTILIDADES REUTILIZABLES
+   Reemplazan las clases estilo Tailwind que traía el HTML de
+   Stitch (flex, gap-sm, shadow-[...], etc). Van acá, en el
+   global, para no tener que reescribirlas en cada componente
+   nuevo.
+   ============================================================ */
 
 /* --- Layout --- */
 .flex { display: flex; }
@@ -170,10 +596,11 @@ button {
 .h-screen { height: 100vh; }
 
 /* --- Tipografía ---
-   Igual que en el config original de Tailwind, "font-*" define la
-   familia y "text-*" define tamaño/interlineado/peso. Para los que
-   se usan solos (font-headline-md, font-body-md, font-label-lg) les
-   dejamos ambas cosas en la misma clase para que funcionen sin pareja. */
+   Igual que en el config original de Tailwind, "font-*" define
+   la familia y "text-*" define tamaño/interlineado/peso. Para
+   los que se usan solos (font-headline-md, font-body-md,
+   font-label-lg) les dejamos ambas cosas en la misma clase para
+   que funcionen sin pareja. */
 .font-headline-sm,
 .text-headline-sm {
   font-family: var(--font-display);
@@ -241,9 +668,10 @@ button {
 .mb-sm { margin-bottom: var(--space-sm); }
 .mr-4 { margin-right: var(--space-gutter); }
 
-/* --- Valores puntuales que en Stitch venían como "arbitrary values" de
-   Tailwind (bg-[#...], shadow-[...], texto entre corchetes). Quedan
-   acá para que el HTML funcione tal cual está, sin tener que tocarlo. --- */
+/* --- Valores puntuales que en Stitch venían como "arbitrary
+   values" de Tailwind (bg-[#...], shadow-[...], texto entre
+   corchetes). Quedan acá para que el HTML funcione tal cual
+   está, sin tener que tocarlo. --- */
 [class~="shadow-[4px_4px_0px_0px_rgba(26,28,28,1)]"] { box-shadow: var(--shadow-md); }
 [class~="shadow-[2px_2px_0px_0px_rgba(26,28,28,1)]"] { box-shadow: var(--shadow-sm); }
 [class~="bg-[#FFB300]"] { background-color: var(--color-primary-container); }
@@ -251,7 +679,8 @@ button {
 [class~="text-[16px]"] { font-size: 16px; }
 [class~="pb-[100px]"] { padding-bottom: 100px; }
 
-/* --- Efecto "hundido" al presionar (usado en botones y tarjetas clickeables) --- */
+/* --- Efecto "hundido" al presionar (usado en botones y tarjetas
+   clickeables) --- */
 .sink-effect {
   transition: transform 0.08s ease, box-shadow 0.08s ease, margin-bottom 0.08s ease;
 }

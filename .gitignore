@@ -64,3 +64,7 @@ __screenshots__/
 # ==========================================
 .DS_Store
 Thumbs.db
+
+# IA / IDE configs
+.claude/
+.antigravity/

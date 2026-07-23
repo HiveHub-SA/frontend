@@ -1,0 +1,37 @@
+{
+  "projectId": "1abbaa58-a231-40c0-8542-74e0a5f03678",
+  "type": "frontend",
+  "name": "Registrar ingreso de alzas en sala de extracción",
+  "description": "Verificar que un usuario pueda abrir el modal de registro, cargar un ingreso de 10 alzas y constatar que el stock en espera del panel de resumen se incremente en 10.",
+  "priority": "p0",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the /extraccion page"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the 'HISTORIAL LOGÍSTICO Y CENTRIFUGADO' heading is visible on the screen"
+    },
+    {
+      "type": "action",
+      "description": "Click the '+' button in the bottom right corner to open the modal"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify that the modal dialog with heading 'Nuevo Registro Logístico' is visible"
+    },
+    {
+      "type": "action",
+      "description": "Click the '+' button inside the modal ten times to set the alzas count to 10"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'Confirmar Ingreso a Sala' button"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify that the modal closes and the 'Stock en Sala' value increases by 10 units"
+    }
+  ]
+}
