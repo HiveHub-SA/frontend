@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ColmenaDTO } from './colmena.model'
+import { ColmenaDTO, ColmenaRequestDTO } from './colmena.model'
 
 @Injectable({ providedIn: 'root' })
 export class ColmenaService {
@@ -21,7 +21,12 @@ export class ColmenaService {
   }
 
   //PUT /hivehub/colmenas/{id}
-  updateColmena(id: number, colmena: ColmenaDTO): Observable<ColmenaDTO> {
+  updateColmena(id: number, colmena: ColmenaRequestDTO): Observable<ColmenaDTO> {
     return this.http.put<ColmenaDTO>(`${this.apiUrl}/${id}`, colmena);
+  }
+
+  //POST /hivehub/colmenas
+  crearColmena(colmena: ColmenaRequestDTO): Observable<ColmenaDTO> {
+    return this.http.post<ColmenaDTO>(this.apiUrl, colmena);
   }
 }

@@ -1,17 +1,16 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
-import { ColmenaService } from '../colmena.service';
-import { ColmenaDTO } from '../colmena.model'
 import { CommonModule } from '@angular/common';
-import { ConfirmDeleteComponent } from '../../confirm-delete-component/confirm-delete-component';
 import { FormsModule } from '@angular/forms';
-import { InventarioService } from '../../inventario/inventario.service';
-import { InventarioRequestDTO } from '../../inventario/inventario.model';
+import { ColmenaService } from '../colmena.service';
+import { ColmenaDTO, ColmenaRequestDTO } from '../colmena.model';
+import { calcularComposicion, formatearAlzas } from '../colmena-composicion.util';
+import { ConfirmDeleteComponent } from '../../confirm-delete-component/confirm-delete-component';
+import { InventarioSelectorComponent } from '../../shared/inventario-selector/inventario-selector.component';
 
 @Component({
   selector: 'app-detalle-colmena',
-  imports: [CommonModule, RouterLink, ConfirmDeleteComponent, FormsModule],
+  imports: [CommonModule, RouterLink, ConfirmDeleteComponent, FormsModule, InventarioSelectorComponent],
   templateUrl: './detalle-colmena.html',
   styleUrl: './detalle-colmena.css',
 })
@@ -26,161 +25,81 @@ export class ColmenaDetailComponent implements OnInit {
 
   editMode = signal<boolean>(false);
   saving = signal<boolean>(false);
+  saveError = signal<string | null>(null);
 
-  // --- Registro de material físico (Historia de Usuario 23) ---
-  showMaterialForm = signal<boolean>(false);
-  registeringMaterial = signal<boolean>(false);
-  materialError = signal<string | null>(null);
+  // Selección de inventario en modo edición
+  idsCamaras: number[] = [];
+  idsAlzas: number[] = [];
+  idsNucleos: number[] = [];
+  nombreEdit = '';
 
-  marcosAlzaEdit = signal<number | null>(null);
+  composicion = computed(() => calcularComposicion(this.colmena()?.inventarios ?? []));
+  alzasTexto = computed(() => formatearAlzas(this.composicion()));
 
-  nuevoMaterial: InventarioRequestDTO = {
-    tipoInventario: 'Colmena',
-    cantidadMarcos: null,
-    pesoInventario: null,
-  };
+  camarasActuales = computed(() =>
+    this.colmena()?.inventarios.filter((i) => i.tipoNombre === 'CAMARA') ?? []
+  );
+  alzasActuales = computed(() =>
+    this.colmena()?.inventarios.filter((i) => i.tipoNombre === 'ALZA') ?? []
+  );
+  nucleosActuales = computed(() =>
+    this.colmena()?.inventarios.filter((i) => i.tipoNombre === 'NUCLEO') ?? []
+  );
 
   constructor(
     private route: ActivatedRoute,
     private colmenaService: ColmenaService,
-    private inventarioService: InventarioService,
-    private http: HttpClient,
     private router: Router
   ) { }
 
   ngOnInit() {
     this.colmenaId = this.route.snapshot.params['id'];
-
     if (this.colmenaId) {
-      this.colmenaService.getColmenaById(this.colmenaId).subscribe({
-        next: data => {
-          this.colmena.set(data);
-          this.loading.set(false);
-        },
-        error: error => {
-          console.error("Error al traer los datos de la colmena:", error);
-          this.loading.set(false);
-        }
-      })
+      this.cargarColmena();
     }
   }
 
-  /**
-   * Alterna el modo de edición de la colmena.
-   * Si se activa, inicializa el estado temporal de marcos de alza según el valor guardado.
-   */
+  private cargarColmena() {
+    this.colmenaService.getColmenaById(this.colmenaId!).subscribe({
+      next: (data) => { this.colmena.set(data); this.loading.set(false); },
+      error: (error) => { console.error('Error al traer los datos de la colmena:', error); this.loading.set(false); },
+    });
+  }
+
   toggleEditMode() {
-    this.editMode.update(v => !v);
+    this.editMode.update((v) => !v);
+    this.saveError.set(null);
     if (this.editMode() && this.colmena()) {
-      this.marcosAlzaEdit.set(this.colmena()!.marcosAlza || null);
+      const inv = this.colmena()!.inventarios;
+      this.nombreEdit = this.colmena()!.name;
+      this.idsCamaras = inv.filter((i) => i.tipoNombre === 'CAMARA').map((i) => i.id);
+      this.idsAlzas = inv.filter((i) => i.tipoNombre === 'ALZA').map((i) => i.id);
+      this.idsNucleos = inv.filter((i) => i.tipoNombre === 'NUCLEO').map((i) => i.id);
     }
   }
 
-  /**
-   * Guarda los cambios realizados en el modo de edición.
-   * Valida si los marcos de alza deben enviarse o descartarse en función del conteo de alzas.
-   */
-  saveColmena() {
+  guardarColmena() {
     if (!this.colmenaId || !this.colmena()) return;
     this.saving.set(true);
+    this.saveError.set(null);
 
-    const currentColmena = this.colmena()!;
+    const request: ColmenaRequestDTO = {
+      name: this.nombreEdit,
+      apiarioId: this.colmena()!.apiarioId,
+      inventarioIds: [...this.idsCamaras, ...this.idsAlzas, ...this.idsNucleos],
+    };
 
-    if (currentColmena.alzas && currentColmena.alzas > 0) {
-      currentColmena.marcosAlza = this.marcosAlzaEdit() ?? undefined;
-    } else {
-      currentColmena.marcosAlza = undefined;
-    }
-
-    this.colmenaService.updateColmena(this.colmenaId, currentColmena).subscribe({
+    this.colmenaService.updateColmena(this.colmenaId, request).subscribe({
       next: (updated) => {
         this.colmena.set(updated);
-        this.marcosAlzaEdit.set(updated.marcosAlza || null);
         this.saving.set(false);
         this.editMode.set(false);
       },
       error: (err) => {
         console.error('Error al guardar la colmena:', err);
         this.saving.set(false);
-      }
-    });
-  }
-  // --- Lógica de registro de material físico ---
-
-  /**
-   * Alterna la visibilidad del modal para registrar material (alzas, núcleos, etc.).
-   * También resetea el formulario al cerrarse.
-   */
-  toggleMaterialForm() {
-    this.showMaterialForm.update(v => !v);
-    this.materialError.set(null);
-    if (!this.showMaterialForm()) {
-      this.resetMaterialForm();
-    }
-  }
-
-  /**
-   * Restablece el formulario de material a sus valores predeterminados (tipo 'Colmena').
-   */
-  resetMaterialForm() {
-    this.nuevoMaterial = {
-      tipoInventario: 'Colmena',
-      cantidadMarcos: null,
-      pesoInventario: null,
-    };
-  }
-
-  /**
-   * Se ejecuta cuando cambia el tipo de inventario en el formulario.
-   * Resetea la cantidad de marcos si el tipo seleccionado no es 'Alza'.
-   */
-  onTipoChange() {
-    if (this.nuevoMaterial.tipoInventario !== 'Alza') {
-      this.nuevoMaterial.cantidadMarcos = null;
-    }
-  }
-
-  /**
-   * Envía la solicitud para registrar nuevo material físico asociado a la colmena actual.
-   * Incluye validación local para asegurar cantidad correcta de marcos en caso de ser un Alza.
-   */
-  registrarMaterial() {
-    if (!this.colmenaId) return;
-
-    if (this.nuevoMaterial.tipoInventario === 'Alza') {
-      const marcos = this.nuevoMaterial.cantidadMarcos;
-      if (marcos !== 8 && marcos !== 9 && marcos !== 10) {
-        this.materialError.set('El Alza debe tener 8, 9 o 10 marcos.');
-        return;
-      }
-    }
-
-    this.registeringMaterial.set(true);
-    this.materialError.set(null);
-
-    const request: InventarioRequestDTO = {
-      ...this.nuevoMaterial,
-      colmenaId: this.colmenaId,
-    };
-
-    this.inventarioService.registrarInventario(request).subscribe({
-      next: () => {
-        this.registeringMaterial.set(false);
-        this.showMaterialForm.set(false);
-        this.resetMaterialForm();
-        this.colmenaService.getColmenaById(this.colmenaId!).subscribe({
-          next: (data) => this.colmena.set(data),
-          error: (err) => console.error('Error al refrescar la colmena:', err),
-        });
+        this.saveError.set(typeof err?.error === 'string' ? err.error : 'No se pudo guardar la colmena.');
       },
-      error: (err) => {
-        console.error('Error al registrar material:', err);
-        this.registeringMaterial.set(false);
-        const mensaje = typeof err?.error === 'string'
-          ? err.error
-          : 'No se pudo registrar el material. Intente nuevamente.';
-        this.materialError.set(mensaje);
-      }
     });
   }
 
@@ -205,25 +124,11 @@ export class ColmenaDetailComponent implements OnInit {
         this.showDeleteModal.set(false);
         this.router.navigate(['/apiarios/', apiarioId]);
       },
-      error: error => {
+      error: (error) => {
         console.error('Error al eliminar la colmena:', error);
         this.deleting.set(false);
         this.deleteError.set('No se pudo eliminar la colmena. Intente nuevamente.');
-      }
+      },
     });
-  }
-
-  /**
-   * Reduce el conteo de alzas durante la edición y resetea los marcos
-   * si el número de alzas llega a 0.
-   * @param colmena Datos actuales de la colmena en el modal.
-   */
-  decrementAlzasEdit(colmena: any) {
-    if (colmena.alzas > 0) {
-      colmena.alzas--;
-      if (colmena.alzas === 0) {
-        this.marcosAlzaEdit.set(null);
-      }
-    }
   }
 }

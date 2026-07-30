@@ -4,7 +4,6 @@
 
 <div *ngIf="!loading() && colmena() as datosColmena">
 
-  <!-- Custom Header -->
   <header
     class="header-grid h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] px-margin sticky top-0 z-50 shrink-0">
     <button [routerLink]="['/apiarios/', datosColmena.apiarioId]" aria-label="Volver"
@@ -14,17 +13,13 @@
     <h1 class="font-headline-sm text-headline-sm text-center uppercase tracking-wide">
       COLMENA: {{ datosColmena.name }}
     </h1>
-
-    <!-- Botón de eliminar -->
     <button (click)="openDeleteModal()" aria-label="Eliminar Colmena" class="delete-header-btn sink-effect">
       <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">delete</span>
     </button>
   </header>
 
-  <!-- Main Content -->
   <main class="pb-[100px] px-margin py-md flex flex-col gap-lg overflow-y-auto">
 
-    <!-- Información General -->
     <section
       class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-md shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-2">
       <h2 class="font-label-lg text-on-surface uppercase tracking-wider border-b-2 border-surface-container pb-1">
@@ -38,78 +33,19 @@
       </p>
       <p class="font-body-md text-on-surface-variant">
         <strong>Material actual:</strong>
-        {{ datosColmena.camaras || 0 }} {{ datosColmena.camaras === 1 ? 'Colmena' : 'Colmenas' }},
-        {{ datosColmena.alzas || 0 }} {{ datosColmena.alzas === 1 ? 'Alza' : 'Alzas' }}
-        <span *ngIf="datosColmena.alzas && datosColmena.alzas > 0">(de {{ datosColmena.marcosAlza }} marcos)</span>,
-        {{ datosColmena.nucleos || 0 }} {{ datosColmena.nucleos === 1 ? 'Núcleo' : 'Núcleos' }}
+        {{ composicion().camaras }} {{ composicion().camaras === 1 ? 'Cámara' : 'Cámaras' }},
+        {{ composicion().alzas }} {{ composicion().alzas === 1 ? 'Alza' : 'Alzas' }}
+        <span *ngIf="composicion().alzas > 0">({{ alzasTexto() }})</span>,
+        {{ composicion().nucleos }} {{ composicion().nucleos === 1 ? 'Núcleo' : 'Núcleos' }}
       </p>
     </section>
 
-    <!-- Acciones -->
     <section class="w-full flex flex-col items-center" style="gap: 16px;">
-      <button (click)="toggleEditMode()" style="margin-bottom: 16px; width: auto; max-width: 264px;"
+      <button (click)="toggleEditMode()" style="width: auto; max-width: 264px;"
         class="bg-primary text-on-primary py-4 px-6 rounded-full border-2 border-on-surface font-bold shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] sink-effect flex items-center justify-center gap-2">
         <span class="material-symbols-outlined">edit</span> EDITAR COLMENA
       </button>
-      <button (click)="toggleMaterialForm()" style="width: auto; max-width: 264px;"
-        class="bg-[#FFB300] text-on-surface py-4 px-6 rounded-full border-2 border-on-surface font-bold shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] sink-effect flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined">add</span> REGISTRAR MATERIAL
-      </button>
     </section>
-
-    <!-- Modal Registrar Material -->
-    <div class="form-overlay fixed inset-0 z-[60] flex items-start justify-center pt-16 p-4 bg-black/20"
-      *ngIf="showMaterialForm()" (click)="toggleMaterialForm()">
-      <div class="form-card w-full max-w-sm max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
-        <div class="form-icon-wrapper">
-          <span class="material-symbols-outlined form-icon" style="font-variation-settings: 'FILL' 1;">add_box</span>
-        </div>
-        <h3 class="section-title text-center text-xl font-bold mb-4">Registrar Material</h3>
-
-        <form (ngSubmit)="registrarMaterial()" #materialForm="ngForm" class="form-body flex flex-col gap-4">
-          <div *ngIf="materialError()"
-            class="p-2 bg-red-100 text-red-700 rounded border-2 border-red-500 font-bold text-sm text-center shadow-[2px_2px_0px_0px_rgba(239,68,68,1)]">
-            {{ materialError() }}
-          </div>
-
-          <div class="form-field flex flex-col gap-2">
-            <label class="form-label font-bold text-sm">Tipo de Material</label>
-            <select name="tipoInventario" [(ngModel)]="nuevoMaterial.tipoInventario" (change)="onTipoChange()"
-              class="form-input border-2 border-on-surface rounded p-2 bg-white">
-              <option value="Colmena">Colmena</option>
-              <option value="Alza">Alza</option>
-              <option value="Núcleo">Núcleo</option>
-            </select>
-          </div>
-
-          <div *ngIf="nuevoMaterial.tipoInventario === 'Alza'" class="form-field flex flex-col gap-2">
-            <label class="form-label font-bold text-sm">Marcos por alza</label>
-            <div class="flex gap-2">
-              <label *ngFor="let m of [8, 9, 10]" class="flex-1 cursor-pointer">
-                <input type="radio" name="cantidadMarcos" [value]="m" [(ngModel)]="nuevoMaterial.cantidadMarcos"
-                  required class="sr-only peer" />
-                <div
-                  class="w-full min-w-[64px] text-center border-2 border-on-surface rounded-full py-3 font-bold peer-checked:bg-primary-container transition-colors cursor-pointer">
-                  {{ m }}
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <div class="form-actions flex gap-2 mt-4">
-            <button type="button" class="btn-cancel flex-1 p-2 border-2 rounded-full font-bold text-sm sink-effect"
-              (click)="toggleMaterialForm()">Cancelar</button>
-            <button type="submit"
-              class="btn-submit flex-1 p-2 border-2 rounded-full font-bold text-sm bg-primary sink-effect text-on-primary flex items-center justify-center gap-2 disabled:opacity-50"
-              [disabled]="!materialForm.form.valid || registeringMaterial() || (nuevoMaterial.tipoInventario === 'Alza' && !nuevoMaterial.cantidadMarcos)">
-              <span *ngIf="registeringMaterial()" class="material-symbols-outlined animate-spin"
-                style="font-size:16px">sync</span>
-              Registrar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
 
     <!-- Edit Overlay -->
     <div class="form-overlay fixed inset-0 z-[60] flex items-start justify-center pt-16 p-4 bg-black/20"
@@ -119,84 +55,30 @@
           <span class="material-symbols-outlined form-icon" style="font-variation-settings: 'FILL' 1;">edit</span>
         </div>
         <h3 class="section-title text-center text-xl font-bold mb-4">Editar Colmena</h3>
+
+        <div *ngIf="saveError()"
+          class="p-2 bg-red-100 text-red-700 rounded border-2 border-red-500 font-bold text-sm text-center shadow-[2px_2px_0px_0px_rgba(239,68,68,1)]">
+          {{ saveError() }}
+        </div>
+
         <div class="form-body flex flex-col gap-4">
           <div class="form-field flex flex-col gap-2">
             <label class="form-label font-bold text-sm">Identificador / Nombre</label>
-            <input type="text" name="nombre" [(ngModel)]="datosColmena.name" required
+            <input type="text" name="nombre" [(ngModel)]="nombreEdit" required
               class="form-input border-2 border-on-surface rounded p-2" />
           </div>
 
-          <!-- Separador de Composición -->
           <div style="border-top: 2px solid var(--color-surface-container); padding-top: 12px; margin-top: 8px;">
-            <p class="form-label text-sm font-bold" style="margin-bottom: 12px;">COMPOSICIÓN DE LA COLMENA</p>
+            <p class="form-label text-sm font-bold" style="margin-bottom: 12px;">MATERIAL ASIGNADO</p>
 
-            <!-- Cámaras -> Colmenas -->
-            <div class="form-field flex flex-col gap-2" style="margin-bottom: 12px;">
-              <label class="form-label font-bold text-sm">
-                Colmenas
-                <span style="font-weight:400; text-transform:none; font-size:11px; margin-left:4px;">(máx. 2)</span>
-              </label>
-              <div class="flex items-center justify-center gap-6">
-                <button type="button"
-                  (click)="datosColmena.camaras = (datosColmena.camaras || 0) > 0 ? (datosColmena.camaras || 0) - 1 : 0"
-                  style="width: 96px; height: 40px; min-width: 96px;"
-                  class="flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-xl bg-surface-container sink-effect">−</button>
-                <span class="w-16 text-center font-bold text-xl">{{ datosColmena.camaras || 0 }}</span>
-                <button type="button"
-                  (click)="datosColmena.camaras = (datosColmena.camaras || 0) < 2 ? (datosColmena.camaras || 0) + 1 : 2"
-                  [disabled]="(datosColmena.camaras || 0) >= 2" style="width: 96px; height: 40px; min-width: 96px;"
-                  class="flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-xl bg-surface-container sink-effect disabled:opacity-40">+</button>
-              </div>
-            </div>
+            <app-inventario-selector tipo="CAMARA" [max]="2" [seleccionados]="idsCamaras"
+              [preAsignados]="camarasActuales()" (seleccionadosChange)="idsCamaras = $event" />
 
-            <!-- Alzas -->
-            <div class="form-field flex flex-col gap-2" style="margin-bottom: 12px;">
-              <label class="form-label font-bold text-sm">
-                Alzas
-                <span style="font-weight:400; text-transform:none; font-size:11px; margin-left:4px;">(máx. 5)</span>
-              </label>
-              <div class="flex items-center justify-center gap-6">
-                <button type="button" (click)="decrementAlzasEdit(datosColmena)"
-                  style="width: 96px; height: 40px; min-width: 96px;"
-                  class="flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-xl bg-surface-container sink-effect">−</button>
-                <span class="w-16 text-center font-bold text-xl">{{ datosColmena.alzas || 0 }}</span>
-                <button type="button"
-                  (click)="datosColmena.alzas = (datosColmena.alzas || 0) < 5 ? (datosColmena.alzas || 0) + 1 : 5"
-                  [disabled]="(datosColmena.alzas || 0) >= 5" style="width: 96px; height: 40px; min-width: 96px;"
-                  class="flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-xl bg-surface-container sink-effect disabled:opacity-40">+</button>
-              </div>
-            </div>
+            <app-inventario-selector tipo="ALZA" [max]="5" [seleccionados]="idsAlzas" [preAsignados]="alzasActuales()"
+              (seleccionadosChange)="idsAlzas = $event" />
 
-            <!-- Marcos por alza (Solo visible si hay alzas) -->
-            <div *ngIf="(datosColmena.alzas || 0) > 0" class="form-field flex flex-col gap-2"
-              style="margin-bottom: 12px;">
-              <label class="form-label font-bold text-sm">Marcos por alza</label>
-              <div class="flex gap-2">
-                <label *ngFor="let m of [8, 9, 10]" class="flex-1 cursor-pointer">
-                  <input type="radio" name="marcosAlzaEdit" [value]="m" [ngModel]="marcosAlzaEdit()"
-                    (ngModelChange)="marcosAlzaEdit.set($event)" class="sr-only peer" />
-                  <div
-                    class="w-full min-w-[64px] text-center border-2 border-on-surface rounded-full py-3 font-bold peer-checked:bg-primary-container transition-colors cursor-pointer">
-                    {{ m }}
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- Núcleos -->
-            <div class="form-field flex flex-col gap-2">
-              <label class="form-label font-bold text-sm">Núcleos</label>
-              <div class="flex items-center justify-center gap-6">
-                <button type="button"
-                  (click)="datosColmena.nucleos = (datosColmena.nucleos || 0) > 0 ? (datosColmena.nucleos || 0) - 1 : 0"
-                  style="width: 96px; height: 40px; min-width: 96px;"
-                  class="flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-xl bg-surface-container sink-effect">−</button>
-                <span class="w-16 text-center font-bold text-xl">{{ datosColmena.nucleos || 0 }}</span>
-                <button type="button" (click)="datosColmena.nucleos = (datosColmena.nucleos || 0) + 1"
-                  style="width: 96px; height: 40px; min-width: 96px;"
-                  class="flex items-center justify-center border-2 border-on-surface rounded-full font-bold text-xl bg-surface-container sink-effect">+</button>
-              </div>
-            </div>
+            <app-inventario-selector tipo="NUCLEO" [seleccionados]="idsNucleos" [preAsignados]="nucleosActuales()"
+              (seleccionadosChange)="idsNucleos = $event" />
           </div>
 
           <div class="form-actions flex gap-2 mt-4">
@@ -204,8 +86,7 @@
               (click)="toggleEditMode()">Cancelar</button>
             <button type="button"
               class="btn-submit flex-1 p-2 border-2 rounded-full font-bold text-sm bg-primary sink-effect text-on-primary flex items-center justify-center gap-2 disabled:opacity-50"
-              (click)="saveColmena()"
-              [disabled]="saving() || !datosColmena.name || ((datosColmena.alzas || 0) > 0 && !marcosAlzaEdit())">
+              (click)="guardarColmena()" [disabled]="saving() || !nombreEdit">
               <span *ngIf="saving()" class="material-symbols-outlined animate-spin" style="font-size:16px">sync</span>
               Guardar
             </button>

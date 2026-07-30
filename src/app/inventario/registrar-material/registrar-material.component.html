@@ -1,0 +1,51 @@
+<div class="form-overlay fixed inset-0 z-[60] flex items-start justify-center pt-16 p-4 bg-black/20" (click)="cerrar()">
+    <div class="form-card w-full max-w-sm max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+        <div class="form-icon-wrapper">
+            <span class="material-symbols-outlined form-icon" style="font-variation-settings: 'FILL' 1;">add_box</span>
+        </div>
+        <h3 class="section-title text-center text-xl font-bold mb-4">Registrar Material</h3>
+
+        <form (ngSubmit)="registrar()" #materialForm="ngForm" class="form-body flex flex-col gap-4">
+            <div *ngIf="error"
+                class="p-2 bg-red-100 text-red-700 rounded border-2 border-red-500 font-bold text-sm text-center shadow-[2px_2px_0px_0px_rgba(239,68,68,1)]">
+                {{ error }}
+            </div>
+
+            <div class="form-field flex flex-col gap-2">
+                <label class="form-label font-bold text-sm">Tipo de Material</label>
+                <select name="tipoInventario" [(ngModel)]="material.tipoInventario" (change)="onTipoChange()"
+                    class="form-input border-2 border-on-surface rounded p-2 bg-white">
+                    <option value="CAMARA">Cámara</option>
+                    <option value="ALZA">Alza</option>
+                    <option value="NUCLEO">Núcleo</option>
+                </select>
+            </div>
+
+            <div *ngIf="material.tipoInventario === 'ALZA'" class="form-field flex flex-col gap-2">
+                <label class="form-label font-bold text-sm">Marcos por alza</label>
+                <div class="flex gap-2">
+                    <label *ngFor="let m of marcosValidos" class="flex-1 cursor-pointer">
+                        <input type="radio" name="cantidadMarcos" [value]="m" [(ngModel)]="material.cantidadMarcos"
+                            required class="sr-only peer" />
+                        <div
+                            class="w-full min-w-[64px] text-center border-2 border-on-surface rounded-full py-3 font-bold peer-checked:bg-primary-container transition-colors cursor-pointer">
+                            {{ m }}
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions flex gap-2 mt-4">
+                <button type="button" class="btn-cancel flex-1 p-2 border-2 rounded-full font-bold text-sm sink-effect"
+                    (click)="cerrar()">Cancelar</button>
+                <button type="submit"
+                    class="btn-submit flex-1 p-2 border-2 rounded-full font-bold text-sm bg-primary sink-effect text-on-primary flex items-center justify-center gap-2 disabled:opacity-50"
+                    [disabled]="!materialForm.form.valid || registrando || (material.tipoInventario === 'ALZA' && !material.cantidadMarcos)">
+                    <span *ngIf="registrando" class="material-symbols-outlined animate-spin"
+                        style="font-size:16px">sync</span>
+                    Registrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

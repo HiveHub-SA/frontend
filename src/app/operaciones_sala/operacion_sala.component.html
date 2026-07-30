@@ -1,0 +1,161 @@
+<div class="content-container" [class.blurred-overlay]="mostrarModal()">
+
+    <section class="summary-section">
+      <div class="section-header">
+        <h3 class="section-title">RESUMEN TEMPORADA ACTUAL</h3>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-header">
+          <div class="miel-info">
+            <span class="miel-emoji">🍯</span>
+            <div class="miel-details">
+              <p class="miel-label">Total Miel Extraída</p>
+              <p class="miel-value">{{ resumen().totalMielExtraida | number:'1.1-2' }} <span class="miel-unit">kg</span></p>
+            </div>
+          </div>
+          <span class="cycle-badge">Ciclo {{ temporadaActual() }}</span>
+        </div>
+
+        <div class="card-stats">
+          <div class="stat-box procesadas-box">
+            <p class="stat-label stat-label-procesadas">
+              <span class="dot-indicator dot-amber"></span>📦 Alzas Procesadas
+            </p>
+            <p class="stat-value">{{ resumen().alzasProcesadas }} <span class="stat-unit">unidades</span></p>
+          </div>
+          <div class="stat-box espera-box">
+            <p class="stat-label stat-label-espera">
+              <span class="dot-indicator dot-orange animated"></span>📥 Stock en Sala
+            </p>
+            <p class="stat-value text-orange">{{ resumen().alzasEnEspera }} <span class="stat-unit">en espera</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="history-section">
+      <h2 class="section-title-alt">HISTORIAL LOGÍSTICO Y CENTRIFUGADO</h2>
+
+      <div *ngIf="historial().length === 0" class="empty-state">
+        No hay movimientos registrados en esta temporada.
+      </div>
+
+      <article *ngFor="let op of historial()" class="history-card">
+        <div class="history-header">
+          <div class="history-meta">
+            <span class="material-symbols-outlined text-lg"
+              [ngClass]="op.tipoOperacion === 'EXTRACCION' ? 'text-amber' : 'text-orange'">
+              {{ op.tipoOperacion === 'EXTRACCION' ? 'water_drop' : 'local_shipping' }}
+            </span>
+            <span>{{ op.fecha | date:'dd/MM/yyyy' }}</span>
+          </div>
+
+          <span class="type-badge"
+            [ngClass]="op.tipoOperacion === 'EXTRACCION' ? 'bg-amber text-dark' : 'bg-neutral text-dark'">
+            {{ op.tipoOperacion === 'EXTRACCION' ? 'Centrifugado' : 'Ingreso Sala' }}
+          </span>
+        </div>
+        <div class="history-details">
+          <div class="details-text-group">
+            <span class="details-desc">
+              {{ op.tipoOperacion === 'EXTRACCION' ? 'Se procesaron ' + op.cantidadAlzas + ' Alzas de Sala' : 'Ingreso de alzas cosechadas del campo' }}
+            </span>
+            <!-- Listado de apiarios en el historial -->
+            <div class="apiarios-badge-list" *ngIf="op.apiariosNombres && op.apiariosNombres.length > 0">
+              <span class="apiarios-label-title">📍 Apiarios:</span>
+              <span class="apiario-name-tag" *ngFor="let name of op.apiariosNombres">{{ name }}</span>
+            </div>
+          </div>
+          <span class="details-value"
+            [ngClass]="op.tipoOperacion === 'EXTRACCION' ? 'text-amber' : 'text-orange'">
+            {{ op.tipoOperacion === 'EXTRACCION' ? '+' + op.kilosMiel + ' kg Miel' : '+' + op.cantidadAlzas + ' Alzas' }}
+          </span>
+        </div>
+      </article>
+    </section>
+</div>
+
+<button *ngIf="!mostrarModal()" (click)="abrirModal()" class="fab-button">+</button>
+
+<!-- MODAL: REGISTRO DE OPERACION -->
+<div *ngIf="mostrarModal()" class="modal-overlay">
+  <div class="modal-container">
+
+    <div class="modal-header">
+      <h2 class="modal-title">Nuevo Registro Logístico</h2>
+      <button (click)="cerrarModal()" class="modal-close-btn">
+        <span class="material-symbols-outlined close-icon">close</span>
+      </button>
+    </div>
+
+    <div class="form-toggle">
+      <button (click)="cambiarTipoFormulario('INGRESO')"
+        class="toggle-btn"
+        [ngClass]="tipoOperacionForm() === 'INGRESO' ? 'active-toggle' : 'inactive-toggle'">
+        <span class="material-symbols-outlined toggle-icon">input</span>1. Ingreso Sala
+      </button>
+      <button (click)="cambiarTipoFormulario('EXTRACCION')"
+        class="toggle-btn"
+        [ngClass]="tipoOperacionForm() === 'EXTRACCION' ? 'active-toggle' : 'inactive-toggle'">
+        <span class="material-symbols-outlined toggle-icon">reorder</span>2. Extracción
+      </button>
+    </div>
+
+    <div class="form-body">
+
+      <div class="form-group">
+        <label class="form-label">Fecha Operación</label>
+        <div class="input-wrapper">
+          <input [value]="fechaForm()" (input)="fechaForm.set($any($event.target).value)" type="date" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          {{ tipoOperacionForm() === 'INGRESO' ? 'Cantidad de Alzas Ingresadas' : 'Cantidad de Alzas a Centrifugar' }}
+        </label>
+        <div class="counter-control">
+          <button (click)="decrementarAlzas()" class="counter-btn">-</button>
+          <span class="counter-value">{{ cantidadAlzasForm() }}</span>
+          <button (click)="incrementarAlzas()" class="counter-btn btn-plus">+</button>
+        </div>
+        <p class="form-note">
+          {{ tipoOperacionForm() === 'INGRESO' ? 'Nota: Sumará al stock en espera.' : 'Nota: Descontará del stock de sala.' }}
+        </p>
+      </div>
+
+      <div *ngIf="tipoOperacionForm() === 'EXTRACCION'" class="form-group">
+        <label class="form-label">Volumen Miel Total Extraído</label>
+        <div class="volume-input-wrapper">
+          <input [value]="kilosMielForm()" (input)="kilosMielForm.set(+$any($event.target).value)" type="number" step="0.1"
+            min="0.1" placeholder="Ej: 350.5" class="form-input volume-input">
+          <span class="volume-unit">kg</span>
+        </div>
+      </div>
+
+      <!-- SELECCION MULTIPLE DE APIARIOS -->
+      <div class="form-group" *ngIf="apiariosFiltrados().length > 0">
+        <label class="form-label">Apiarios de Procedencia</label>
+        <div class="apiarios-checkbox-list">
+          <div *ngFor="let ap of apiariosFiltrados()" class="checkbox-container">
+            <input type="checkbox" 
+                   [id]="'apiario-' + ap.id"
+                   [checked]="apiariosSeleccionadosForm().includes(ap.id)"
+                   (change)="toggleApiarioSeleccionado(ap.id)">
+            <label [for]="'apiario-' + ap.id" class="checkbox-label-text">{{ ap.name }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" *ngIf="apiariosFiltrados().length === 0">
+        <p class="form-note-warning">⚠️ No hay apiarios registrados.</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button (click)="guardarRegistro()" class="submit-button">
+        {{ tipoOperacionForm() === 'INGRESO' ? 'Confirmar Ingreso a Sala' : 'Confirmar Centrifugado' }}
+      </button>
+    </div>
+  </div>
+</div>
