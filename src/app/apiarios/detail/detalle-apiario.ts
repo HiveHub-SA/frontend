@@ -47,6 +47,7 @@ export class ApiarioDetailComponent implements OnInit {
   }
 
   showForm: boolean = false;
+  showActionMenu: boolean = false;
 
   newColmena = {
     name: '',
@@ -55,6 +56,10 @@ export class ApiarioDetailComponent implements OnInit {
 
   toggleForm() {
     this.showForm = !this.showForm;
+  }
+
+  toggleActionMenu() {
+    this.showActionMenu = !this.showActionMenu;
   }
 
   cleanForm() {

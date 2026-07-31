@@ -33,8 +33,9 @@
   <main class="pb-[100px] px-margin py-md flex flex-col gap-lg overflow-y-auto">
 
     <!-- Bloque de Metadatos del Apiario (Creado / Ubicación) -->
-    <section class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-md shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-2">
-      <h2 class="font-label-lg text-on-surface uppercase tracking-wider border-b-2 border-surface-container pb-1">Información General</h2>
+    <section class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-md shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-3">
+      <div class="flex items-center justify-between border-b-2 border-surface-container pb-1">
+      </div>
       <p class="font-body-md text-on-surface-variant">
         <strong>Creado el:</strong> {{ datosApiario.createdAt | date:'dd/MM/yyyy' }}
       </p>
@@ -51,12 +52,6 @@
         <h2 class="font-label-lg text-on-surface uppercase tracking-wider">
           COLMENAS EN SITIO ({{ datosApiario.colmenas.length }})
         </h2>
-        <button
-          (click)="toggleForm()"
-          class="bg-[#FFB300] text-on-surface px-4 py-2 rounded-full border-2 border-on-surface font-bold text-[12px] shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect transition-transform flex items-center gap-1 uppercase"
-        >
-          <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">add</span> AÑADIR
-        </button>
       </div>
 
       <div class="form-overlay" *ngIf="showForm" (click)="toggleForm()">
@@ -114,6 +109,37 @@
       </div>
     </section>
   </main>
+  <!-- Floating Action Button Group -->
+  <div class="fab-container">
+    <!-- Secondary FABs -->
+    <div class="fab-menu" [class.open]="showActionMenu">
+      <a 
+        [routerLink]="['/apiarios', datosApiario.id, 'inspecciones']" 
+        (click)="toggleActionMenu()"
+        class="fab-item sink-effect"
+      >
+        <span>Inspecciones</span>
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment</span>
+      </a>
+      <button 
+        (click)="toggleForm(); toggleActionMenu()" 
+        class="fab-item sink-effect"
+      >
+        <span>Añadir Colmena</span>
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">hive</span>
+      </button>
+    </div>
+    <!-- Primary FAB -->
+    <button 
+      (click)="toggleActionMenu()"
+      class="fab-main-btn sink-effect"
+      [class.open]="showActionMenu"
+    >
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">
+        {{ showActionMenu ? 'remove' : 'add' }}
+      </span>
+    </button>
+  </div>
 </div>
 
 <app-confirm-delete-component

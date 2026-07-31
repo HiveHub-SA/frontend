@@ -1,0 +1,138 @@
+<div class="nueva-inspeccion-container">
+
+  <!-- Header Neo-brutalista -->
+  <header class="nueva-inspeccion-header">
+    <button
+      [routerLink]="['/apiarios', apiarioId, 'inspecciones']"
+      aria-label="Volver"
+      class="btn-back sink-effect"
+    >
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+
+    <div class="header-title-wrapper">
+      <p class="header-subtitle">
+        APIARIO {{ apiario()?.name ?? '' }}
+      </p>
+      <h1 class="header-title">
+        Nueva Inspección
+      </h1>
+    </div>
+
+    <!-- Indicador Persistente de Estado Offline/Online -->
+    <div class="offline-badge">
+      <span class="offline-dot"></span>
+      <span>Offline</span>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="nueva-inspeccion-main">
+
+    <!-- Loader -->
+    <div *ngIf="loading()" class="loader-box">
+      <p>Cargando inspección...</p>
+    </div>
+
+    <div *ngIf="!loading()" class="content-wrapper">
+
+      <!-- CARD 1: FECHA Y FLORACIÓN PREDOMINANTE -->
+      <section class="card-floracion">
+        <p class="fecha-text">Fecha: <strong>{{ fechaActual }}</strong></p>
+
+        <!-- Bloque Azul Floración Predominante -->
+        <div class="floracion-blue-box">
+          <div class="floracion-title-row">
+            <span class="floracion-title">Floración Predominante</span>
+            <span class="badge-id35">ID 35</span>
+          </div>
+
+          <!-- Nombre de Floración y Botones Mantener / Cambiar -->
+          <div class="floracion-controls-row">
+            <div class="floracion-display-box">
+              {{ floracionActual() }}
+            </div>
+
+            <div class="buttons-group">
+              <button
+                (click)="mantenerFloracion()"
+                [class.active-mantener]="!mostrarSelectorFloracion()"
+                class="btn-mantener sink-effect"
+              >
+                ✓ Mantener
+              </button>
+              <button
+                (click)="abrirSelectorFloracion()"
+                [class.active-cambiar]="mostrarSelectorFloracion()"
+                class="btn-cambiar sink-effect"
+              >
+                ✏ Cambiar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desplegable / Modal Card de Selección de Floración -->
+        <div *ngIf="mostrarSelectorFloracion()" class="floracion-selector-modal">
+          <p class="selector-title">Seleccionar tipo de floración:</p>
+          <div class="grid-floraciones">
+            <button
+              *ngFor="let opcion of opcionesFloracion"
+              (click)="seleccionarFloracion(opcion)"
+              [class.opcion-selected]="floracionActual() === opcion"
+              class="btn-opcion-floracion sink-effect"
+            >
+              {{ opcion }}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CARD 2: DETALLE POR COLMENA -->
+      <section class="detalle-colmena-section">
+        <div class="colmena-header-row">
+          <h2 class="section-heading">
+            Detalle por Colmena
+          </h2>
+
+          <!-- Badge de Progreso Completadas -->
+          <div class="badge-completadas">
+            {{ totalCompletadas }} / {{ colmenasEstado().length }} Completadas
+          </div>
+        </div>
+
+        <!-- Lista de Colmenas (Card entera cliqueable, sin botones redundantes) -->
+        <div class="colmenas-list">
+          <div
+            *ngFor="let colmena of colmenasEstado()"
+            (click)="seleccionarColmena(colmena)"
+            class="colmena-card sink-effect"
+          >
+            <h3 class="colmena-name">{{ colmena.name }}</h3>
+
+            <!-- Etiquetas de Estado -->
+            <div class="estado-label-wrapper">
+              <span *ngIf="colmena.completada" class="estado-text-guardada">
+                ✓ Inspección guardada
+              </span>
+              <span *ngIf="!colmena.completada" class="estado-text-pendiente">
+                Pendiente de revisión
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Botón Fijo Inferior Finalizar Inspección -->
+    <div class="btn-finalizar-container">
+      <button (click)="finalizarInspeccion()" class="btn-finalizar-inspeccion sink-effect">
+        FINALIZAR INSPECCIÓN
+      </button>
+    </div>
+  </main>
+
+  <!-- Navbar Global Universal -->
+  <app-navbar></app-navbar>
+</div>
