@@ -95,21 +95,6 @@ export class NuevaInspeccionComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar apiario para nueva inspección:', err);
-        const mockApiario: ApiarioDTO = {
-          id: this.apiarioId,
-          name: 'El Trébol',
-          createdAt: new Date().toISOString(),
-          latitude: -34.6037,
-          longitude: -58.3816,
-          colmenas: [
-            { id: 1, name: 'Colmena #01' },
-            { id: 2, name: 'Colmena #02' },
-            { id: 3, name: 'Colmena #03' },
-            { id: 4, name: 'Colmena #04' }
-          ]
-        };
-        this.apiario.set(mockApiario);
-        this.prepararColmenas(mockApiario);
         this.loading.set(false);
       }
     });
@@ -154,15 +139,40 @@ export class NuevaInspeccionComponent implements OnInit {
    */
   prepararColmenas(apiario: ApiarioDTO): void {
     const colmenas = apiario.colmenas || [];
+    
+    if (this.inspeccionId) {
+      this.inspeccionService.getInspeccionesColmenas(this.inspeccionId).subscribe({
+        next: (guardadas) => {
+          const idsGuardadas = new Set(guardadas.map(g => g.colmenaId));
+          const estados: ColmenaEstadoInspeccion[] = colmenas.map((c, index) => {
+            const id = (c['id'] as number) || index + 1;
+            const name = (c['name'] as string) || `Colmena #${String(index + 1).padStart(2, '0')}`;
+            const completada = idsGuardadas.has(id);
+            return {
+              id,
+              name,
+              completada,
+              estadoTexto: completada ? '✓ Inspección guardada' : 'Pendiente de revisión'
+            };
+          });
+          this.colmenasEstado.set(estados);
+        },
+        error: () => this.fallbackPrepararColmenas(colmenas)
+      });
+    } else {
+      this.fallbackPrepararColmenas(colmenas);
+    }
+  }
+
+  fallbackPrepararColmenas(colmenas: any[]): void {
     const estados: ColmenaEstadoInspeccion[] = colmenas.map((c, index) => {
       const id = (c['id'] as number) || index + 1;
       const name = (c['name'] as string) || `Colmena #${String(index + 1).padStart(2, '0')}`;
-      const completada = index === 0;
       return {
         id,
         name,
-        completada,
-        estadoTexto: completada ? '✓ Inspección guardada' : 'Pendiente de revisión'
+        completada: false,
+        estadoTexto: 'Pendiente de revisión'
       };
     });
     this.colmenasEstado.set(estados);
@@ -209,7 +219,35 @@ export class NuevaInspeccionComponent implements OnInit {
    * Manejador al seleccionar una tarjeta de colmena para inspeccionarla.
    */
   seleccionarColmena(colmena: ColmenaEstadoInspeccion): void {
-    console.log('Navegar a inspección de colmena:', colmena);
+    if (this.inspeccionId) {
+      this.router.navigate([
+        '/apiarios', this.apiarioId,
+        'inspecciones', this.inspeccionId,
+        'colmenas', colmena.id
+      ]);
+    } else {
+      // Si aún no se creó el borrador, se crea primero y luego navega
+      this.inspeccionService
+        .createInspeccion(this.apiarioId, {
+          fecha: new Date().toISOString(),
+          floracion: this.floracionActual(),
+          estado: 'EN_BORRADOR',
+          apiarioId: this.apiarioId
+        })
+        .subscribe({
+          next: (borrador) => {
+            this.inspeccionId = borrador.id || null;
+            this.router.navigate([
+              '/apiarios', this.apiarioId,
+              'inspecciones', borrador.id,
+              'colmenas', colmena.id
+            ]);
+          },
+          error: (err) => {
+            console.error('Error al crear borrador para colmena:', err);
+          }
+        });
+    }
   }
 
   /**

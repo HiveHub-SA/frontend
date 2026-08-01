@@ -8,6 +8,7 @@ import { Inicio } from './inicio/inicio';
 import { OperacionSalaComponent } from './operaciones_sala/operacion_sala.component';
 import { HistorialInspeccionesComponent } from './inspecciones/historial/historial-inspecciones';
 import { NuevaInspeccionComponent } from './inspecciones/nueva/nueva-inspeccion';
+import { InspeccionarColmenaComponent } from './inspecciones/colmena/inspeccionar-colmena';
 
 export const routes: Routes = [
   { path: '', component: MapaInteractivo },
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'apiarios/:id', component: ApiarioDetailComponent },
   { path: 'apiarios/:id/inspecciones', component: HistorialInspeccionesComponent },
   { path: 'apiarios/:id/inspecciones/nueva', component: NuevaInspeccionComponent },
+  { path: 'apiarios/:apiarioId/inspecciones/:inspeccionId/colmenas/:colmenaId', component: InspeccionarColmenaComponent },
   { path: 'colmenas/:id', component: ColmenaDetailComponent },
   { path: 'mapa', component: MapaInteractivo },
   { path: 'inicio', component: Inicio },

@@ -99,11 +99,17 @@ export class HistorialInspeccionesComponent implements OnInit {
         queryParams: { inspeccionId: borradorExistente.id }
       });
     } else {
-      // Crear un nuevo borrador de inspección
+      // Obtener la floración del registro más reciente si existe
+      const inspeccionesExistentes = this.inspecciones();
+      const ultimaFloracion = inspeccionesExistentes.length > 0 && inspeccionesExistentes[0].floracion
+        ? inspeccionesExistentes[0].floracion
+        : 'Girasol';
+
+      // Crear un nuevo borrador de inspección con la floración previa
       this.inspeccionService
         .createInspeccion(this.apiarioId, {
           fecha: new Date().toISOString(),
-          floracion: 'Girasol',
+          floracion: ultimaFloracion,
           estado: 'EN_BORRADOR',
           apiarioId: this.apiarioId
         })

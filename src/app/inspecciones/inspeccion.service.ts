@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { InspeccionDTO } from './inspeccion.model';
+import { InspeccionDTO, InspeccionColmenaDTO } from './inspeccion.model';
 
 /**
  * Servicio Angular para la gestión de solicitudes HTTP relativas a las inspecciones de apiarios.
@@ -64,5 +64,26 @@ export class InspeccionService {
    */
   finalizarInspeccion(id: number): Observable<InspeccionDTO> {
     return this.http.put<InspeccionDTO>(`${this.apiUrl}/inspecciones/${id}/finalizar`, {});
+  }
+
+  /**
+   * Obtiene el detalle de inspección para una colmena específica (US 32).
+   */
+  getInspeccionColmena(inspeccionId: number, colmenaId: number): Observable<InspeccionColmenaDTO> {
+    return this.http.get<InspeccionColmenaDTO>(`${this.apiUrl}/inspecciones/${inspeccionId}/colmenas/${colmenaId}`);
+  }
+
+  /**
+   * Guarda o actualiza el detalle de inspección para una colmena (US 32).
+   */
+  saveInspeccionColmena(inspeccionId: number, colmenaId: number, dto: InspeccionColmenaDTO): Observable<InspeccionColmenaDTO> {
+    return this.http.post<InspeccionColmenaDTO>(`${this.apiUrl}/inspecciones/${inspeccionId}/colmenas/${colmenaId}`, dto);
+  }
+
+  /**
+   * Obtiene la lista de detalles de inspección por colmena de una inspección general.
+   */
+  getInspeccionesColmenas(inspeccionId: number): Observable<InspeccionColmenaDTO[]> {
+    return this.http.get<InspeccionColmenaDTO[]>(`${this.apiUrl}/inspecciones/${inspeccionId}/colmenas`);
   }
 }

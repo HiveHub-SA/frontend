@@ -1,0 +1,330 @@
+/* Estilos Vanilla CSS Neo-Brutalist para Inspección Manual por Colmena (US 32) */
+
+.colmena-page-container {
+  min-height: 100vh;
+  background-color: var(--color-surface, #f9f9f9);
+  color: var(--color-on-surface, #1a1c1c);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  font-family: var(--font-body, 'Nunito Sans', sans-serif);
+}
+
+.header-tactile {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 72px;
+  background-color: var(--color-surface, #f9f9f9);
+  border-bottom: 2px solid var(--color-on-surface, #1a1c1c);
+  box-shadow: 0 4px 0 0 #1a1c1c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.btn-back {
+  width: 44px;
+  height: 44px;
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+  cursor: pointer;
+}
+
+.header-title-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  padding: 0 8px;
+}
+
+.header-subtitle {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-on-surface-variant, #514532);
+}
+
+.header-main-title {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-on-surface, #1a1c1c);
+  margin: 0;
+}
+
+.offline-tag {
+  height: 32px;
+  padding: 0 12px;
+  background-color: var(--color-surface-variant, #e2e2e2);
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+}
+
+.offline-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #847560;
+  border-radius: 9999px;
+}
+
+.offline-text {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Canvas principal */
+.colmena-main-canvas {
+  flex: 1;
+  padding: 20px;
+  padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+/* Seccion Nota de Voz Demo */
+.card-audio-container {
+  background-color: #ffdcc2;
+  border: 2px solid #1a1c1c;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 4px 0 0 #1a1c1c;
+}
+
+.audio-header {
+  margin-bottom: 12px;
+}
+
+.audio-title {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.audio-player-box {
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+}
+
+.btn-play {
+  width: 40px;
+  height: 40px;
+  background-color: #ff8f06;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+  color: #1a1c1c;
+}
+
+.audio-track-bar {
+  flex: 1;
+  height: 12px;
+  background-color: #ffdcc2;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.audio-track-progress {
+  height: 100%;
+  background-color: #ff8f06;
+  border-right: 2px solid #1a1c1c;
+  transition: width 0.3s ease;
+}
+
+.audio-timer {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.btn-transcripcion {
+  width: 100%;
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+  cursor: pointer;
+  text-align: center;
+}
+
+.transcripcion-box {
+  margin-top: 12px;
+  background-color: #ffffff;
+  border: 2px dashed #1a1c1c;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.transcripcion-text {
+  font-size: 14px;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Formulario por Colmena */
+.form-sections-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-card-tactile {
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 3px 0 0 #1a1c1c;
+}
+
+.form-card-title {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.grid-2-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.grid-3-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+/* Botones de Opcion Tactil */
+.btn-option,
+.btn-option-sm,
+.btn-option-lg {
+  border: 2px solid #1a1c1c;
+  border-radius: 12px;
+  padding: 10px 8px;
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.btn-option-sm {
+  font-size: 12px;
+  padding: 8px 4px;
+}
+
+.btn-option-lg {
+  padding: 14px 8px;
+}
+
+.inactive-opt {
+  background-color: var(--color-surface-variant, #e2e2e2);
+  opacity: 0.65;
+}
+
+.active-opt {
+  background-color: #cae6ff;
+  color: #001e30;
+  opacity: 1;
+}
+
+.active-opt-primary {
+  background-color: #ffb300;
+  color: #1a1c1c;
+  opacity: 1;
+}
+
+.active-opt-error {
+  background-color: #ffdad6;
+  color: #93000a;
+  opacity: 1;
+}
+
+.notes-textarea {
+  width: 100%;
+  height: 96px;
+  background-color: var(--color-surface-container, #eeeeee);
+  border: 2px solid #1a1c1c;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: var(--font-body, 'Nunito Sans', sans-serif);
+  font-size: 15px;
+  color: #1a1c1c;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.notes-textarea:focus {
+  outline: none;
+  background-color: #ffffff;
+}
+
+/* Barra inferior de guardado */
+.bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px 28px 20px;
+  background: linear-gradient(to top, rgba(249, 249, 249, 1), rgba(249, 249, 249, 0.9), rgba(249, 249, 249, 0));
+  z-index: 40;
+}
+
+.btn-save-colmena {
+  width: 100%;
+  height: 56px;
+  background-color: #ffb300;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1a1c1c;
+  box-shadow: 0 4px 0 0 #1a1c1c;
+  cursor: pointer;
+}
+
+.pressable:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #1a1c1c !important;
+}

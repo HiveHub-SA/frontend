@@ -1,0 +1,210 @@
+<div class="colmena-page-container">
+
+  <!-- Header Neo-Brutalista táctil -->
+  <header class="header-tactile">
+    <button 
+      [routerLink]="['/apiarios', apiarioId, 'inspecciones', 'nueva']"
+      [queryParams]="{ inspeccionId: inspeccionId }"
+      aria-label="Atrás" 
+      class="btn-back pressable"
+    >
+      <span class="material-symbols-outlined font-bold">arrow_back</span>
+    </button>
+    
+    <div class="header-title-box">
+      <span class="header-subtitle">Apiario {{ nombreApiario() }}</span>
+      <h1 class="header-main-title">{{ nombreColmena() }}</h1>
+    </div>
+    
+    <div class="offline-tag">
+      <div class="offline-dot"></div>
+      <span class="offline-text">Local</span>
+    </div>
+  </header>
+
+  <!-- Canvas desplazable -->
+  <main class="colmena-main-canvas">
+
+    <!-- Seccion 0: Nota de Voz en Campo (Modulo Visual Demo US 03 / US 18) -->
+    <section class="card-audio-container">
+      <div class="audio-header">
+        <h2 class="audio-title">🎙️ Nota de Voz en Campo</h2>
+      </div>
+
+      <!-- Reproductor táctil -->
+      <div class="audio-player-box">
+        <button (click)="toggleAudio()" class="btn-play pressable">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">
+            {{ isPlayingAudio() ? 'pause' : 'play_arrow' }}
+          </span>
+        </button>
+        <div class="audio-track-bar">
+          <div class="audio-track-progress" [style.width]="isPlayingAudio() ? '85%' : '40%'"></div>
+        </div>
+        <span class="audio-timer">00:14</span>
+      </div>
+
+      <!-- Botón Transcripción -->
+      <button (click)="toggleTranscripcion()" class="btn-transcripcion pressable">
+        📄 Transcripción en Alto Contraste
+      </button>
+
+      <!-- Panel Transcripción desplegable -->
+      <div *ngIf="mostrarTranscripcion()" class="transcripcion-box">
+        <p class="transcripcion-text">
+          "Población muy fuerte y saludable. Se observa postura buena de 1 día y reina activa. Nivel medio de alimento acumulado."
+        </p>
+      </div>
+    </section>
+
+    <!-- Formulario de Inspección Táctil por Colmena (US 32) -->
+    <section class="form-sections-wrapper">
+
+      <!-- Sección 1: Varroa -->
+      <div class="form-card-tactile">
+        <h3 class="form-card-title">Presencia de Varroa</h3>
+        <div class="grid-2-cols">
+          <button 
+            type="button"
+            (click)="setVarroa('NO_DETECTADA')"
+            [class.active-opt]="varroa() === 'NO_DETECTADA'"
+            [class.inactive-opt]="varroa() !== 'NO_DETECTADA'"
+            class="btn-option pressable"
+          >
+            No Detectada
+          </button>
+          <button 
+            type="button"
+            (click)="setVarroa('DETECTADA')"
+            [class.active-opt-error]="varroa() === 'DETECTADA'"
+            [class.inactive-opt]="varroa() !== 'DETECTADA'"
+            class="btn-option pressable"
+          >
+            ⚠️ Detectada
+          </button>
+        </div>
+      </div>
+
+      <!-- Sección 2: Reina -->
+      <div class="form-card-tactile">
+        <h3 class="form-card-title">Estado de la Reina</h3>
+        <div class="grid-2-cols">
+          <button 
+            type="button"
+            (click)="setEstadoReina('VISTA_Y_SANA')"
+            [class.active-opt-primary]="estadoReina() === 'VISTA_Y_SANA'"
+            [class.inactive-opt]="estadoReina() !== 'VISTA_Y_SANA'"
+            class="btn-option pressable"
+          >
+            👑 Vista y Sana
+          </button>
+          <button 
+            type="button"
+            (click)="setEstadoReina('NO_VISTA')"
+            [class.active-opt-primary]="estadoReina() === 'NO_VISTA'"
+            [class.inactive-opt]="estadoReina() !== 'NO_VISTA'"
+            class="btn-option pressable"
+          >
+            🔍 No Vista
+          </button>
+          <button 
+            type="button"
+            (click)="setEstadoReina('CELDA_REAL')"
+            [class.active-opt-primary]="estadoReina() === 'CELDA_REAL'"
+            [class.inactive-opt]="estadoReina() !== 'CELDA_REAL'"
+            class="btn-option pressable"
+          >
+            🥚 Celda Real
+          </button>
+          <button 
+            type="button"
+            (click)="setEstadoReina('AUSENTE')"
+            [class.active-opt-primary]="estadoReina() === 'AUSENTE'"
+            [class.inactive-opt]="estadoReina() !== 'AUSENTE'"
+            class="btn-option pressable"
+          >
+            ❌ Ausente
+          </button>
+        </div>
+      </div>
+
+      <!-- Sección 3: Alimento -->
+      <div class="form-card-tactile">
+        <h3 class="form-card-title">Nivel de Alimento</h3>
+        <div class="grid-3-cols">
+          <button 
+            type="button"
+            (click)="setNivelAlimento('BAJO')"
+            [class.active-opt-primary]="nivelAlimento() === 'BAJO'"
+            [class.inactive-opt]="nivelAlimento() !== 'BAJO'"
+            class="btn-option-sm pressable"
+          >
+            Bajo
+          </button>
+          <button 
+            type="button"
+            (click)="setNivelAlimento('MEDIO')"
+            [class.active-opt-primary]="nivelAlimento() === 'MEDIO'"
+            [class.inactive-opt]="nivelAlimento() !== 'MEDIO'"
+            class="btn-option-sm pressable"
+          >
+            Medio
+          </button>
+          <button 
+            type="button"
+            (click)="setNivelAlimento('ALTO')"
+            [class.active-opt-primary]="nivelAlimento() === 'ALTO'"
+            [class.inactive-opt]="nivelAlimento() !== 'ALTO'"
+            class="btn-option-sm pressable"
+          >
+            Alto
+          </button>
+        </div>
+      </div>
+
+      <!-- Sección 4: Miel -->
+      <div class="form-card-tactile">
+        <h3 class="form-card-title">¿Produjo Miel?</h3>
+        <div class="grid-2-cols">
+          <button 
+            type="button"
+            (click)="setProdujoMiel(true)"
+            [class.active-opt-primary]="produjoMiel() === true"
+            [class.inactive-opt]="produjoMiel() !== true"
+            class="btn-option-lg pressable"
+          >
+            🍯 Sí produjo
+          </button>
+          <button 
+            type="button"
+            (click)="setProdujoMiel(false)"
+            [class.active-opt-primary]="produjoMiel() === false"
+            [class.inactive-opt]="produjoMiel() !== false"
+            class="btn-option-lg pressable"
+          >
+            No produjo
+          </button>
+        </div>
+      </div>
+
+      <!-- Sección 5: Notas -->
+      <div class="form-card-tactile">
+        <h3 class="form-card-title">Observaciones Adicionales</h3>
+        <textarea 
+          [(ngModel)]="observaciones"
+          class="notes-textarea" 
+          placeholder="Escribe notas aquí..."
+        ></textarea>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Botón inferior para guardar -->
+  <footer class="bottom-action-bar">
+    <button (click)="guardarColmena()" class="btn-save-colmena pressable">
+      GUARDAR COLMENA
+    </button>
+  </footer>
+
+</div>
