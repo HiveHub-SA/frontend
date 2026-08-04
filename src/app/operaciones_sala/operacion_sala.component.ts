@@ -47,12 +47,29 @@ export class OperacionSalaComponent implements OnInit {
   ];
 
   // Declaración de estados mediante Signals
+  apiarios = signal<Apiario[]>([]);
   resumen = signal<ResumenSalaResponse>({ totalMielExtraida: 0, alzasProcesadas: 0, alzasEnEspera: 0 });
   historial = signal<OperacionSalaResponse[]>([]);
-  apiarios = signal<Apiario[]>([]);
-  
-  // Apiarios expuestos para la vista
+  // Apiarios que tienen al menos un ingreso registrado en la temporada actual (según historial)
+  apiariosConIngreso = computed(() => {
+    const historialActual = this.historial();
+    const apiariosTotales = this.apiarios();
+
+    const nombresConIngreso = new Set<string>();
+    historialActual
+      .filter(op => op.tipoOperacion === 'INGRESO')
+      .forEach(op => {
+        op.apiariosNombres?.forEach(nombre => nombresConIngreso.add(nombre));
+      });
+
+    return apiariosTotales.filter(ap => nombresConIngreso.has(ap.name));
+  });
+
+  // Apiarios expuestos para la vista según el tipo de operación
   apiariosFiltrados = computed(() => {
+    if (this.tipoOperacionForm() === 'EXTRACCION') {
+      return this.apiariosConIngreso();
+    }
     return this.apiarios();
   });
 
@@ -134,10 +151,23 @@ export class OperacionSalaComponent implements OnInit {
 
   cambiarTipoFormulario(tipo: 'INGRESO' | 'EXTRACCION'): void {
     this.tipoOperacionForm.set(tipo);
+    if (tipo === 'EXTRACCION') {
+      if (this.cantidadAlzasForm() > this.resumen().alzasEnEspera) {
+        this.cantidadAlzasForm.set(this.resumen().alzasEnEspera);
+      }
+      const permitidosIds = new Set(this.apiariosConIngreso().map(a => a.id));
+      this.apiariosSeleccionadosForm.update(ids => ids.filter(id => permitidosIds.has(id)));
+    }
   }
 
   incrementarAlzas(): void {
-    this.cantidadAlzasForm.update(alzas => alzas + 1);
+    if (this.tipoOperacionForm() === 'EXTRACCION') {
+      if (this.cantidadAlzasForm() < this.resumen().alzasEnEspera) {
+        this.cantidadAlzasForm.update(alzas => alzas + 1);
+      }
+    } else {
+      this.cantidadAlzasForm.update(alzas => alzas + 1);
+    }
   }
 
   decrementarAlzas(): void {
@@ -172,6 +202,10 @@ export class OperacionSalaComponent implements OnInit {
         alert(`No se pueden procesar más alzas de las que están en espera en la sala. Alzas disponibles: ${this.resumen().alzasEnEspera}`);
         return;
       }
+      if (this.apiariosSeleccionadosForm().length === 0) {
+        alert('Debe seleccionar al menos un apiario con ingreso registrado para realizar la extracción.');
+        return;
+      }
     }
 
     const payload: OperacionSalaRequest = {
@@ -188,7 +222,8 @@ export class OperacionSalaComponent implements OnInit {
         this.cargarDatosPantalla();
       },
       error: (err) => {
-        alert('Error en el registro.');
+        const errorMsg = err?.error?.message || (typeof err?.error === 'string' ? err.error : 'Error en el registro de operación.');
+        alert(errorMsg);
         console.error(err);
       }
     });
