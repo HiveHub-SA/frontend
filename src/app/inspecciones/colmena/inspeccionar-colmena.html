@@ -15,11 +15,6 @@
       <span class="header-subtitle">Apiario {{ nombreApiario() }}</span>
       <h1 class="header-main-title">{{ nombreColmena() }}</h1>
     </div>
-    
-    <div class="offline-tag">
-      <div class="offline-dot"></div>
-      <span class="offline-text">Local</span>
-    </div>
   </header>
 
   <!-- Canvas desplazable -->
@@ -197,14 +192,14 @@
         ></textarea>
       </div>
 
+      <!-- Botón para guardar al final del formulario -->
+      <button (click)="guardarColmena()" class="btn-save-colmena pressable">
+        GUARDAR COLMENA
+      </button>
+
     </section>
   </main>
 
-  <!-- Botón inferior para guardar -->
-  <footer class="bottom-action-bar">
-    <button (click)="guardarColmena()" class="btn-save-colmena pressable">
-      GUARDAR COLMENA
-    </button>
-  </footer>
+  <app-navbar></app-navbar>
 
 </div>

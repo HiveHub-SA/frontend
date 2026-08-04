@@ -86,4 +86,11 @@ export class InspeccionService {
   getInspeccionesColmenas(inspeccionId: number): Observable<InspeccionColmenaDTO[]> {
     return this.http.get<InspeccionColmenaDTO[]>(`${this.apiUrl}/inspecciones/${inspeccionId}/colmenas`);
   }
+
+  /**
+   * Elimina un registro de inspección por su ID.
+   */
+  deleteInspeccion(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/inspecciones/${id}`);
+  }
 }

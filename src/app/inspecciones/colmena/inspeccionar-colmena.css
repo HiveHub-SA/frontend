@@ -63,32 +63,6 @@
   margin: 0;
 }
 
-.offline-tag {
-  height: 32px;
-  padding: 0 12px;
-  background-color: var(--color-surface-variant, #e2e2e2);
-  border: 2px solid #1a1c1c;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 0 0 #1a1c1c;
-}
-
-.offline-dot {
-  width: 10px;
-  height: 10px;
-  background-color: #847560;
-  border-radius: 9999px;
-}
-
-.offline-text {
-  font-family: var(--font-display, 'Quicksand', sans-serif);
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
 /* Canvas principal */
 .colmena-main-canvas {
   flex: 1;
@@ -298,17 +272,6 @@
   background-color: #ffffff;
 }
 
-/* Barra inferior de guardado */
-.bottom-action-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px 20px 28px 20px;
-  background: linear-gradient(to top, rgba(249, 249, 249, 1), rgba(249, 249, 249, 0.9), rgba(249, 249, 249, 0));
-  z-index: 40;
-}
-
 .btn-save-colmena {
   width: 100%;
   height: 56px;
@@ -322,6 +285,7 @@
   color: #1a1c1c;
   box-shadow: 0 4px 0 0 #1a1c1c;
   cursor: pointer;
+  margin-top: 12px;
 }
 
 .pressable:active {

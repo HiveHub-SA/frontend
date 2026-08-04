@@ -104,24 +104,66 @@
   margin: 0 0 4px 0;
 }
 
+/* Contenedor Swipe to Delete */
+.swipe-card-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background-color: #ef4444;
+  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  user-select: none;
+}
+
+.swipe-background-action {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 100px;
+  background-color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.btn-delete-swipe {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
 .inspeccion-card {
+  position: relative;
+  z-index: 2;
   width: 100%;
   padding: 16px;
   background-color: #ffffff;
-  border: 2px solid var(--color-on-surface, #1a1c1c);
-  border-radius: 12px;
-  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
-  cursor: pointer;
+  border: none;
+  cursor: grab;
   box-sizing: border-box;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition: transform 0.2s ease-out;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  touch-action: pan-y;
 }
 
 .inspeccion-card:active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
+  cursor: grabbing;
 }
 
 .card-header {
@@ -189,11 +231,113 @@
   text-align: center;
   padding: 32px 16px;
   background-color: #ffffff;
-  border: 2px solid dashed var(--color-on-surface, #1a1c1c);
+  border: 2px dashed var(--color-on-surface, #1a1c1c);
   border-radius: 12px;
   font-weight: 600;
   font-size: 14px;
   color: #4b5563;
+}
+
+/* Modal de Advertencia de Seguridad */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(26, 28, 28, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-card-tactile {
+  background-color: #ffffff;
+  border: 3px solid #1a1c1c;
+  border-radius: 24px;
+  padding: 24px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 6px 6px 0px 0px #1a1c1c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.modal-icon-header {
+  width: 56px;
+  height: 56px;
+  background-color: #fee2e2;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+}
+
+.modal-warn-icon {
+  font-size: 32px;
+  color: #ef4444;
+}
+
+.modal-title {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a1c1c;
+  margin: 0 0 12px 0;
+}
+
+.modal-message {
+  font-family: var(--font-body, 'Nunito Sans', sans-serif);
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.4;
+  margin: 0 0 24px 0;
+}
+
+.modal-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn-modal-cancel {
+  padding: 12px;
+  background-color: #f3f4f6;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1c1c;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+  cursor: pointer;
+}
+
+.btn-modal-delete {
+  padding: 12px;
+  background-color: #ef4444;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+  cursor: pointer;
+}
+
+.pressable:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #1a1c1c !important;
 }
 
 /* Botón Flotante Nueva Inspección */

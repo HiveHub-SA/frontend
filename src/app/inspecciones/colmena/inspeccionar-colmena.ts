@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { InspeccionService } from '../inspeccion.service';
 import { ApiarioService } from '../../apiarios/apiario.service';
 import { InspeccionColmenaDTO } from '../inspeccion.model';
+import { NavbarComponent } from '../../navbar/navbar.component';
 
 /**
  * Componente para la pantalla de Inspección Manual por Colmena (US 32).
@@ -14,7 +15,7 @@ import { InspeccionColmenaDTO } from '../inspeccion.model';
 @Component({
   selector: 'app-inspeccionar-colmena',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, NavbarComponent],
   templateUrl: './inspeccionar-colmena.html',
   styleUrl: './inspeccionar-colmena.css',
 })

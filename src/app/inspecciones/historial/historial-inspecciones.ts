@@ -32,6 +32,23 @@ export class HistorialInspeccionesComponent implements OnInit {
   /** Estado de carga */
   loading = signal<boolean>(true);
 
+  /** ID de la inspección actualmente deslizada hacia la izquierda */
+  swipedCardId = signal<number | null>(null);
+
+  /** ID de la tarjeta que se está arrastrando en este instante */
+  activeDragCardId = signal<number | null>(null);
+
+  /** Registro de desplazamiento en px para la tarjeta activa */
+  dragOffsets = signal<{ [key: number]: number }>({});
+
+  /** Inspección seleccionada para confirmación de eliminación de seguridad */
+  inspeccionAEliminar = signal<InspeccionDTO | null>(null);
+
+  private startX: number = 0;
+  private isMouseDown: boolean = false;
+  private initialOffset: number = 0;
+  private hasDragged: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -72,40 +89,44 @@ export class HistorialInspeccionesComponent implements OnInit {
 
   /**
    * Manejador al hacer clic en una tarjeta de inspección.
-   * Si la inspección está EN BORRADOR, navega a la pantalla de edición para retomar el progreso.
    */
   verInspeccion(inspeccion: InspeccionDTO): void {
+    // Si se realizó un arrastre o la tarjeta está deslizada, cerrar swipe en lugar de navegar
+    if (this.hasDragged) {
+      this.hasDragged = false;
+      return;
+    }
+
+    if (this.swipedCardId() === inspeccion.id) {
+      this.swipedCardId.set(null);
+      return;
+    }
+
     if (inspeccion.estado === 'EN_BORRADOR' && inspeccion.id) {
-      // Retomar la inspección en borrador existente
       this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva'], {
         queryParams: { inspeccionId: inspeccion.id }
       });
-    } else {
-      console.log('Visualizar detalle de inspección sincronizada:', inspeccion);
+    } else if (inspeccion.id) {
+      this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', inspeccion.id]);
     }
   }
 
   /**
    * Redirige a la pantalla de Nueva Inspección.
-   * Si ya existe un borrador pendiente en el apiario, retoma dicho borrador;
-   * de lo contrario, crea un borrador nuevo y navega hacia él.
    */
   crearNuevaInspeccion(): void {
     const borradorExistente = this.inspecciones().find((i) => i.estado === 'EN_BORRADOR');
 
     if (borradorExistente && borradorExistente.id) {
-      // Retomar borrador activo existente
       this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva'], {
         queryParams: { inspeccionId: borradorExistente.id }
       });
     } else {
-      // Obtener la floración del registro más reciente si existe
       const inspeccionesExistentes = this.inspecciones();
       const ultimaFloracion = inspeccionesExistentes.length > 0 && inspeccionesExistentes[0].floracion
         ? inspeccionesExistentes[0].floracion
         : 'Girasol';
 
-      // Crear un nuevo borrador de inspección con la floración previa
       this.inspeccionService
         .createInspeccion(this.apiarioId, {
           fecha: new Date().toISOString(),
@@ -144,5 +165,94 @@ export class HistorialInspeccionesComponent implements OnInit {
     } catch {
       return fechaIso;
     }
+  }
+
+  /* ARRASTRE Y SWIPE EXCLUSIVAMENTE HORIZONTAL */
+  onDragStart(event: TouchEvent | MouseEvent, id?: number): void {
+    if (!id) return;
+    this.isMouseDown = true;
+    this.hasDragged = false;
+    this.activeDragCardId.set(id);
+    this.startX = 'touches' in event ? event.touches[0].clientX : (event as MouseEvent).clientX;
+    this.initialOffset = this.swipedCardId() === id ? -100 : 0;
+  }
+
+  onDragMove(event: TouchEvent | MouseEvent, id?: number): void {
+    if (!this.isMouseDown || !id || this.activeDragCardId() !== id) return;
+    const currentX = 'touches' in event ? event.touches[0].clientX : (event as MouseEvent).clientX;
+    const diffX = currentX - this.startX;
+
+    if (Math.abs(diffX) > 8) {
+      this.hasDragged = true;
+    }
+
+    let newOffset = this.initialOffset + diffX;
+    if (newOffset > 0) newOffset = 0;
+    if (newOffset < -100) newOffset = -100;
+
+    this.dragOffsets.update((map) => ({ ...map, [id]: newOffset }));
+  }
+
+  onDragEnd(event?: TouchEvent | MouseEvent, id?: number): void {
+    if (!this.isMouseDown) return;
+    this.isMouseDown = false;
+
+    const targetId = id || this.activeDragCardId();
+    if (!targetId) return;
+
+    const currentOffset = this.dragOffsets()[targetId] ?? this.initialOffset;
+
+    if (currentOffset <= -45) {
+      this.swipedCardId.set(targetId);
+    } else {
+      if (this.swipedCardId() === targetId) {
+        this.swipedCardId.set(null);
+      }
+    }
+
+    this.activeDragCardId.set(null);
+    this.dragOffsets.update((map) => {
+      const copy = { ...map };
+      delete copy[targetId];
+      return copy;
+    });
+  }
+
+  getCardTransform(id?: number): string {
+    if (!id) return 'translateX(0px)';
+    if (this.activeDragCardId() === id && this.dragOffsets()[id] !== undefined) {
+      return `translateX(${this.dragOffsets()[id]}px)`;
+    }
+    if (this.swipedCardId() === id) {
+      return 'translateX(-100px)';
+    }
+    return 'translateX(0px)';
+  }
+
+  pedirConfirmacionEliminar(inspeccion: InspeccionDTO, event: MouseEvent): void {
+    event.stopPropagation();
+    this.inspeccionAEliminar.set(inspeccion);
+  }
+
+  cancelarEliminacion(): void {
+    this.inspeccionAEliminar.set(null);
+    this.swipedCardId.set(null);
+  }
+
+  confirmarEliminacion(): void {
+    const target = this.inspeccionAEliminar();
+    if (!target || !target.id) return;
+
+    this.inspeccionService.deleteInspeccion(target.id).subscribe({
+      next: () => {
+        this.inspecciones.set(this.inspecciones().filter((i) => i.id !== target.id));
+        this.inspeccionAEliminar.set(null);
+        this.swipedCardId.set(null);
+      },
+      error: (err) => {
+        console.error('Error al eliminar inspección:', err);
+        this.inspeccionAEliminar.set(null);
+      }
+    });
   }
 }

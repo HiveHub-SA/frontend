@@ -34,31 +34,51 @@
     <div *ngIf="!loading()" class="registros-section">
       <p class="section-title">Registros Realizados</p>
 
-      <div
-        *ngFor="let insp of inspecciones()"
-        (click)="verInspeccion(insp)"
-        class="inspeccion-card sink-effect"
-      >
-        <!-- Fila Fecha & Estado -->
-        <div class="card-header">
-          <div class="card-date-group">
-            <span class="material-symbols-outlined card-date-icon">calendar_today</span>
-            <span class="card-date-text">{{ formatFecha(insp.fecha) }}</span>
+      <div *ngFor="let insp of inspecciones()" class="swipe-card-wrapper">
+        
+        <!-- Capa trasera con el botón de eliminación -->
+        <div class="swipe-background-action">
+          <button (click)="pedirConfirmacionEliminar(insp, $event)" class="btn-delete-swipe pressable">
+            <span class="material-symbols-outlined font-bold">delete</span>
+            <span>ELIMINAR</span>
+          </button>
+        </div>
+
+        <!-- Tarjeta frontal de inspección deslizable -->
+        <div
+          (click)="verInspeccion(insp)"
+          (mousedown)="onDragStart($event, insp.id)"
+          (mousemove)="onDragMove($event, insp.id)"
+          (mouseup)="onDragEnd($event, insp.id)"
+          (mouseleave)="onDragEnd($event, insp.id)"
+          (touchstart)="onDragStart($event, insp.id)"
+          (touchmove)="onDragMove($event, insp.id)"
+          (touchend)="onDragEnd($event, insp.id)"
+          [style.transform]="getCardTransform(insp.id)"
+          class="inspeccion-card"
+        >
+          <!-- Fila Fecha & Estado -->
+          <div class="card-header">
+            <div class="card-date-group">
+              <span class="material-symbols-outlined card-date-icon">calendar_today</span>
+              <span class="card-date-text">{{ formatFecha(insp.fecha) }}</span>
+            </div>
+
+            <!-- Badge de Estado -->
+            <span *ngIf="insp.estado === 'EN_BORRADOR'" class="badge-estado badge-borrador">
+              <span class="material-symbols-outlined badge-icon">edit_note</span> EN BORRADOR
+            </span>
+            <span *ngIf="insp.estado === 'SINCRONIZADA'" class="badge-estado badge-sincronizada">
+              <span class="material-symbols-outlined badge-icon">check_circle</span> SINCRONIZADA
+            </span>
           </div>
 
-          <!-- Badge de Estado -->
-          <span *ngIf="insp.estado === 'EN_BORRADOR'" class="badge-estado badge-borrador">
-            <span class="material-symbols-outlined badge-icon">edit_note</span> EN BORRADOR
-          </span>
-          <span *ngIf="insp.estado === 'SINCRONIZADA'" class="badge-estado badge-sincronizada">
-            <span class="material-symbols-outlined badge-icon">check_circle</span> SINCRONIZADA
-          </span>
+          <!-- Fila Floración -->
+          <div class="card-floracion-group">
+            <span>Floración: <strong>{{ insp.floracion }}</strong></span>
+          </div>
         </div>
 
-        <!-- Fila Floración -->
-        <div class="card-floracion-group">
-          <span>Floración: <strong>{{ insp.floracion }}</strong></span>
-        </div>
       </div>
 
       <!-- Estado vacío -->
@@ -75,6 +95,30 @@
       </button>
     </div>
   </main>
+
+  <!-- Modal de Advertencia de Seguridad para Eliminación -->
+  <div *ngIf="inspeccionAEliminar()" class="modal-overlay">
+    <div class="modal-card-tactile">
+      <div class="modal-icon-header">
+        <span class="material-symbols-outlined modal-warn-icon">warning</span>
+      </div>
+      <h2 class="modal-title">¿Eliminar Inspección?</h2>
+      <p class="modal-message">
+        Se eliminará permanentemente el registro del 
+        <strong>{{ formatFecha(inspeccionAEliminar()?.fecha || '') }}</strong> 
+        y todos los detalles sanitarios por colmena asociados. Esta acción no se puede deshacer.
+      </p>
+
+      <div class="modal-actions-row">
+        <button (click)="cancelarEliminacion()" class="btn-modal-cancel pressable">
+          CANCELAR
+        </button>
+        <button (click)="confirmarEliminacion()" class="btn-modal-delete pressable">
+          SÍ, ELIMINAR
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Navbar Global Universal -->
   <app-navbar></app-navbar>

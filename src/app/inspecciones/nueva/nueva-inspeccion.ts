@@ -8,10 +8,10 @@ import { ColmenaEstadoInspeccion, OPCIONES_FLORACION, TipoFloracion } from '../i
 import { NavbarComponent } from '../../navbar/navbar.component';
 
 /**
- * Componente para la pantalla de Nueva Inspección (o edición de Borrador existente).
- * Permite visualizar y editar la Floración Predominante del apiario (US 35),
- * mantener la sesión en estado "EN_BORRADOR" si el usuario sale o retrocede,
- * y cambiar su estado a "SINCRONIZADA" al presionar "FINALIZAR INSPECCIÓN".
+ * Componente para la pantalla de Nueva Inspección.
+ * Permite visualizar la fecha actual, precargar o modificar la Floración Predominante del apiario,
+ * visualizar la lista de colmenas con sus estados ("✓ Inspección guardada" vs "Pendiente de revisión")
+ * y finalizar la inspección.
  */
 @Component({
   selector: 'app-nueva-inspeccion',
@@ -99,7 +99,7 @@ export class NuevaInspeccionComponent implements OnInit {
       }
     });
 
-    // Si viene inspeccionId, obtener sus datos específicos; de lo contrario buscar el último borrador
+    // Si viene inspeccionId, obtener sus datos específicos; de lo contrario buscar el último borrador u última floración
     if (this.inspeccionId) {
       this.inspeccionService.getInspeccionById(this.inspeccionId).subscribe({
         next: (insp) => {
@@ -122,7 +122,6 @@ export class NuevaInspeccionComponent implements OnInit {
               this.floracionOriginal = borrador.floracion;
             }
           } else {
-            // Cargar la floración del registro más reciente del apiario (ya viene ordenado por fecha desc)
             const ultima = list[0];
             if (ultima && ultima.floracion) {
               this.floracionActual.set(ultima.floracion);
@@ -135,15 +134,15 @@ export class NuevaInspeccionComponent implements OnInit {
   }
 
   /**
-   * Prepara la lista de colmenas asignándoles su estado de revisión.
+   * Prepara la lista de colmenas asignándoles su estado de revisión según la inspección en curso.
    */
   prepararColmenas(apiario: ApiarioDTO): void {
     const colmenas = apiario.colmenas || [];
-    
+
     if (this.inspeccionId) {
       this.inspeccionService.getInspeccionesColmenas(this.inspeccionId).subscribe({
         next: (guardadas) => {
-          const idsGuardadas = new Set(guardadas.map(g => g.colmenaId));
+          const idsGuardadas = new Set(guardadas.map((g) => g.colmenaId));
           const estados: ColmenaEstadoInspeccion[] = colmenas.map((c, index) => {
             const id = (c['id'] as number) || index + 1;
             const name = (c['name'] as string) || `Colmena #${String(index + 1).padStart(2, '0')}`;
@@ -206,7 +205,6 @@ export class NuevaInspeccionComponent implements OnInit {
     this.floracionActual.set(opcion);
     this.mostrarSelectorFloracion.set(false);
 
-    // Guardado continuo en el borrador si existe el ID de la inspección
     if (this.inspeccionId) {
       this.inspeccionService.updateFloracion(this.inspeccionId, opcion).subscribe({
         next: () => console.log('Floración actualizada en el borrador:', opcion),
@@ -216,7 +214,7 @@ export class NuevaInspeccionComponent implements OnInit {
   }
 
   /**
-   * Manejador al seleccionar una tarjeta de colmena para inspeccionarla.
+   * Manejador al seleccionar una tarjeta de colmena para inspeccionarla (US 32).
    */
   seleccionarColmena(colmena: ColmenaEstadoInspeccion): void {
     if (this.inspeccionId) {
@@ -226,7 +224,6 @@ export class NuevaInspeccionComponent implements OnInit {
         'colmenas', colmena.id
       ]);
     } else {
-      // Si aún no se creó el borrador, se crea primero y luego navega
       this.inspeccionService
         .createInspeccion(this.apiarioId, {
           fecha: new Date().toISOString(),
@@ -251,7 +248,7 @@ export class NuevaInspeccionComponent implements OnInit {
   }
 
   /**
-   * Finaliza la inspección cambiando el estado del borrador de "EN_BORRADOR" a "SINCRONIZADA".
+   * Finaliza la inspección cambiando el estado del borrador a "SINCRONIZADA".
    */
   finalizarInspeccion(): void {
     if (this.inspeccionId) {
