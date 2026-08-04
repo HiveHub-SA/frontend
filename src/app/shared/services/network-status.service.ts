@@ -1,6 +1,6 @@
-import { Injectable, NgZone, OnDestroy, effect, inject, signal } from '@angular/core';
+import { Injectable, NgZone, OnDestroy, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { interval, Subscription } from 'rxjs';
+import { interval, Subscription, timeout } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -9,6 +9,9 @@ export class NetworkStatusService implements OnDestroy {
 
     private http = inject(HttpClient);
     private zone = inject(NgZone);
+    private readonly API_URL = 'http://localhost:8080';
+    private readonly POLLING_INTERVAL = 5000;
+    private readonly RECOVERY_DELAY = 500;
 
     readonly online = signal<boolean>(navigator.onLine);
 
@@ -16,21 +19,19 @@ export class NetworkStatusService implements OnDestroy {
 
     constructor() {
 
-        effect(() => {
-            console.log("ONLINE =", this.online());
-        });
         window.addEventListener('online', this.onBrowserOnline);
 
         window.addEventListener('offline', this.onBrowserOffline);
 
         this.iniciarPolling();
+
     }
 
     private iniciarPolling(): void {
 
         this.verificarConexion();
 
-        this.polling = interval(5000).subscribe(() => {
+        this.polling = interval(this.POLLING_INTERVAL).subscribe(() => {
 
             if (!navigator.onLine) {
 
@@ -54,16 +55,18 @@ export class NetworkStatusService implements OnDestroy {
             return;
         }
 
-        this.http.get('/health', {
-            responseType: 'text'
-        }).subscribe({
+        this.http.get(
+            `${this.API_URL}/health?t=${Date.now()}`,
+            {
+                responseType: 'text'
+            }
+        ).pipe(
+            timeout(3000)
+        ).subscribe({
 
             next: () => {
 
-                // Sólo estamos online si:
-                // 1) el navegador tiene red
-                // 2) el backend respondió
-                this.online.set(navigator.onLine);
+                this.online.set(true);
 
             },
 
@@ -83,7 +86,10 @@ export class NetworkStatusService implements OnDestroy {
 
             // Esperamos un instante para que la interfaz de red
             // realmente vuelva antes de consultar el backend.
-            setTimeout(() => this.verificarConexion(), 500);
+            setTimeout(
+                () => this.verificarConexion(),
+                this.RECOVERY_DELAY
+            );
 
         });
 
