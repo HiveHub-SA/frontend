@@ -1,0 +1,198 @@
+<div class="recorder-page">
+  <header class="recorder-page-header">
+    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">HiveHub · Prototipo</span>
+    <h1 class="font-headline-md text-headline-md">Grabador de voz</h1>
+    <p class="recorder-page-subtitle">Capturá notas de inspección sin soltar el equipo. Se guardan en este dispositivo hasta que tengas señal.</p>
+  </header>
+
+  <div class="storage-warning" *ngIf="storageWarning" role="alert">
+    <span class="material-symbols-outlined">warning</span>
+    {{ storageWarning }}
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Tarjeta principal: Nota de Voz en Campo -->
+  <!-- ============================================================ -->
+  <section class="voice-note-card">
+    <div class="voice-note-header">
+      <h2 class="voice-note-title">🎙️ Nota de Voz en Campo</h2>
+
+      <span class="voice-note-badge" *ngIf="recorderState === 'idle'">
+        {{ savedAudios.length }} guardado{{ savedAudios.length === 1 ? '' : 's' }}
+      </span>
+      <span class="voice-note-badge voice-note-badge-recording" *ngIf="recorderState === 'recording'">
+        <span class="badge-pulse-dot"></span>
+        {{ formatDuration(recordingSeconds) }}
+      </span>
+      <span class="voice-note-badge" *ngIf="recorderState === 'preview'">
+        Vista previa
+      </span>
+    </div>
+
+    <div [ngSwitch]="recorderState">
+
+      <!-- Estado: idle -->
+      <div *ngSwitchCase="'idle'" class="recorder-idle">
+        <button type="button" class="record-button sink-effect" (click)="startRecording()">
+          <span class="material-symbols-outlined">mic</span>
+          Iniciar grabación
+        </button>
+      </div>
+
+      <!-- Estado: pidiendo permiso -->
+      <div *ngSwitchCase="'requesting-permission'" class="recorder-status">
+        <span class="spinner" aria-hidden="true"></span>
+        Solicitando acceso al micrófono…
+      </div>
+
+      <!-- Estado: grabando -->
+      <div *ngSwitchCase="'recording'" class="recorder-recording">
+        <button type="button" class="stop-button sink-effect" (click)="stopRecording()">
+          <span class="material-symbols-outlined">stop</span>
+          Detener grabación
+        </button>
+      </div>
+
+      <!-- Estado: previsualización -->
+      <div *ngSwitchCase="'preview'" class="recorder-preview">
+        <div class="audio-player-bar">
+          <button
+            type="button"
+            class="play-btn sink-effect"
+            (click)="togglePlay(previewPlayer)"
+          >
+            <span class="material-symbols-outlined">{{ previewPlayer.paused ? 'play_arrow' : 'pause' }}</span>
+          </button>
+          <div class="progress-track" #previewTrack (click)="seekTo($event, previewTrack, previewPlayer)">
+            <div class="progress-fill" [style.width.%]="getProgressPercent(previewPlayer)"></div>
+          </div>
+          <span class="player-time">{{ getPlayerTimeLabel(previewPlayer) }}</span>
+          <audio
+            #previewPlayer
+            [src]="previewUrl"
+            (timeupdate)="onPlayerTick()"
+            (play)="onPlayerTick()"
+            (pause)="onPlayerTick()"
+            (ended)="onPlayerTick()"
+            class="hidden-native-audio"
+          ></audio>
+        </div>
+
+        <div class="preview-actions">
+          <button
+            type="button"
+            class="submit-button-inline sink-effect"
+            (click)="savePreview()"
+            [disabled]="isSavingPreview"
+          >
+            <span class="spinner spinner-inline" *ngIf="isSavingPreview" aria-hidden="true"></span>
+            <span class="material-symbols-outlined" *ngIf="!isSavingPreview">check</span>
+            {{ isSavingPreview ? 'Guardando…' : 'Guardar audio' }}
+          </button>
+          <button
+            type="button"
+            class="ghost-button sink-effect"
+            (click)="discardPreview()"
+            [disabled]="isSavingPreview"
+          >
+            <span class="material-symbols-outlined">delete</span>
+            Descartar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <p class="error-message" *ngIf="recorderErrorMessage" role="alert">
+      {{ recorderErrorMessage }}
+    </p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- Audios guardados -->
+  <!-- ============================================================ -->
+  <section class="saved-list-section">
+    <h2 class="font-headline-sm text-headline-sm mb-sm">Audios guardados</h2>
+
+    <div class="list-loading" *ngIf="isLoadingList">
+      <span class="spinner" aria-hidden="true"></span>
+      Cargando…
+    </div>
+
+    <div class="list-empty" *ngIf="!isLoadingList && savedAudios.length === 0">
+      Todavía no grabaste ningún audio. Los que guardes van a aparecer acá, incluso sin conexión.
+    </div>
+
+    <div class="audio-item-card" *ngFor="let audio of savedAudios">
+      <div class="audio-item-header">
+        <span class="audio-item-label">{{ audio.label }}</span>
+        <span
+          class="status-badge"
+          [class.status-badge-pending]="audio.transcriptionStatus === 'pending'"
+          [class.status-badge-transcribing]="audio.transcriptionStatus === 'transcribing'"
+          [class.status-badge-done]="audio.transcriptionStatus === 'done'"
+          [class.status-badge-error]="audio.transcriptionStatus === 'error'"
+        >
+          <ng-container [ngSwitch]="audio.transcriptionStatus">
+            <ng-container *ngSwitchCase="'pending'">Sin transcribir</ng-container>
+            <ng-container *ngSwitchCase="'transcribing'">Transcribiendo…</ng-container>
+            <ng-container *ngSwitchCase="'done'">✓ Transcripto</ng-container>
+            <ng-container *ngSwitchCase="'error'">Error</ng-container>
+          </ng-container>
+        </span>
+      </div>
+
+      <span class="audio-item-meta">
+        {{ formatDuration(audio.durationSeconds) }} · {{ formatSize(audio.sizeBytes) }} · WAV 16kHz
+      </span>
+
+      <div class="audio-player-bar">
+        <button type="button" class="play-btn sink-effect" (click)="togglePlay(itemPlayer)">
+          <span class="material-symbols-outlined">{{ itemPlayer.paused ? 'play_arrow' : 'pause' }}</span>
+        </button>
+        <div class="progress-track" #itemTrack (click)="seekTo($event, itemTrack, itemPlayer)">
+          <div class="progress-fill" [style.width.%]="getProgressPercent(itemPlayer)"></div>
+        </div>
+        <span class="player-time">{{ getPlayerTimeLabel(itemPlayer) }}</span>
+        <audio
+          #itemPlayer
+          [src]="getAudioUrl(audio)"
+          (timeupdate)="onPlayerTick()"
+          (play)="onPlayerTick()"
+          (pause)="onPlayerTick()"
+          (ended)="onPlayerTick()"
+          class="hidden-native-audio"
+        ></audio>
+      </div>
+
+      <button
+        type="button"
+        class="transcribe-button sink-effect"
+        (click)="transcribeAudio(audio)"
+        [disabled]="audio.transcriptionStatus === 'transcribing'"
+      >
+        <span class="spinner spinner-inline" *ngIf="audio.transcriptionStatus === 'transcribing'" aria-hidden="true"></span>
+        <span class="material-symbols-outlined" *ngIf="audio.transcriptionStatus !== 'transcribing'">description</span>
+        <ng-container [ngSwitch]="audio.transcriptionStatus">
+          <ng-container *ngSwitchCase="'transcribing'">Transcribiendo…</ng-container>
+          <ng-container *ngSwitchCase="'done'">Transcribir de nuevo</ng-container>
+          <ng-container *ngSwitchCase="'error'">Reintentar</ng-container>
+          <ng-container *ngSwitchDefault>Transcripción en Alto Contraste</ng-container>
+        </ng-container>
+      </button>
+
+      <p class="transcription-text" *ngIf="audio.transcriptionStatus === 'done' && audio.transcriptionText">
+        {{ audio.transcriptionText }}
+      </p>
+      <p class="transcription-error" *ngIf="audio.transcriptionStatus === 'error' && audio.transcriptionError" role="alert">
+        {{ audio.transcriptionError }}
+      </p>
+
+      <div class="audio-item-footer">
+        <button type="button" class="text-button-primary delete-action" (click)="deleteAudio(audio)">
+          <span class="material-symbols-outlined text-btn-icon">delete</span>
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
