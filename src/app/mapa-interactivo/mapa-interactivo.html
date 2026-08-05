@@ -1,7 +1,7 @@
 <div class="mapa-contenedor">
   <div id="mapa"></div>
 
-  <!-- Controles flotantes laterales (Zoom y Ubicación) -->
+  <!-- Controles flotantes laterales -->
   <div class="controles-laterales">
     <button class="btn-control pressable" (click)="zoomIn()" title="Acercar">
       <span class="material-symbols-outlined">add</span>
@@ -11,18 +11,27 @@
       <span class="material-symbols-outlined">remove</span>
     </button>
 
-    <button class="btn-control btn-ubicacion pressable" (click)="getUbicacionActual()" title="Mi Ubicación">
-      <span class="material-symbols-outlined text-icon-ubicacion">my_location</span>
-    </button>
-  </div>
+    <!-- Botón desplegable para Mi Ubicación -->
+    <div class="desplegable-control">
+      <button class="btn-control btn-ubicacion pressable" (click)="getUbicacionActual()" title="Mi Ubicación">
+        <span class="material-symbols-outlined text-icon-ubicacion">my_location</span>
+      </button>
 
-  <!-- Botón de acción principal centrado abajo -->
+      <div class="label-desplegable" (click)="getUbicacionActual()">
+        Mi Ubicación
+      </div>
+    </div>
 
-  <div class="contenedor-flotante-inferior">
-    <button class="btn-principal pressable" (click)="onAnadirApiario()">
-      <span class="material-symbols-outlined icono-principal" style="font-variation-settings: 'FILL' 1;">add_circle</span>
-      Añadir Apiario
-    </button>
+    <!-- Botón desplegable para Añadir Apiario -->
+    <div class="desplegable-control">
+      <button class="btn-control btn-apiario pressable" (click)="onAnadirApiario()" title="Añadir Apiario">
+        <span class="material-symbols-outlined text-icon-apiario" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+      </button>
+
+      <div class="label-desplegable" (click)="onAnadirApiario()">
+        Añadir Apiario
+      </div>
+    </div>
   </div>
 </div>
 
