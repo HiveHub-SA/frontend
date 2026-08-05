@@ -90,6 +90,43 @@ describe('OperacionSalaComponent', () => {
     expect(component.cantidadAlzasForm()).toBe(0);
   });
 
+  it('should not increment alzas above alzasEnEspera when type is EXTRACCION', () => {
+    component.resumen.set({ totalMielExtraida: 100, alzasProcesadas: 10, alzasEnEspera: 2 });
+    component.tipoOperacionForm.set('EXTRACCION');
+    component.cantidadAlzasForm.set(1);
+
+    component.incrementarAlzas();
+    expect(component.cantidadAlzasForm()).toBe(2);
+
+    // Intento de incrementar más allá de alzasEnEspera (2)
+    component.incrementarAlzas();
+    expect(component.cantidadAlzasForm()).toBe(2);
+  });
+
+  it('should filter apiarios for EXTRACCION to only include apiarios with INGRESO in historial', () => {
+    component.apiarios.set([
+      { id: 1, name: 'Apiario Con Ingreso', createdAt: '2026-07-10T12:00:00', latitude: -34.0, longitude: -59.0 },
+      { id: 2, name: 'Apiario Sin Ingreso', createdAt: '2026-07-10T12:00:00', latitude: -34.0, longitude: -59.0 }
+    ]);
+    component.historial.set([
+      {
+        id: 101,
+        fecha: '2026-07-01',
+        tipoOperacion: 'INGRESO',
+        cantidadAlzas: 5,
+        temporada: '2025/2026',
+        apiariosNombres: ['Apiario Con Ingreso']
+      }
+    ]);
+
+    expect(component.apiariosConIngreso().length).toBe(1);
+    expect(component.apiariosConIngreso()[0].id).toBe(1);
+
+    component.cambiarTipoFormulario('EXTRACCION');
+    expect(component.apiariosFiltrados().length).toBe(1);
+    expect(component.apiariosFiltrados()[0].id).toBe(1);
+  });
+
   it('should submit registration and refresh data', () => {
     component.abrirModal();
     component.fechaForm.set('2026-11-10');
