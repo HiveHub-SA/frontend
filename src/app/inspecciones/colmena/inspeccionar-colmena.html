@@ -187,6 +187,7 @@
         <h3 class="form-card-title">Observaciones Adicionales</h3>
         <textarea 
           [(ngModel)]="observaciones"
+          (ngModelChange)="onObservacionesChange()"
           class="notes-textarea" 
           placeholder="Escribe notas aquí..."
         ></textarea>

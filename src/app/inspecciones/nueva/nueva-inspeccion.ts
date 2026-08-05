@@ -7,6 +7,8 @@ import { InspeccionService } from '../inspeccion.service';
 import { ColmenaEstadoInspeccion, OPCIONES_FLORACION, TipoFloracion } from '../inspeccion.model';
 import { NavbarComponent } from '../../navbar/navbar.component';
 
+import { InspeccionDraftService } from '../inspeccion-draft.service';
+
 /**
  * Componente para la pantalla de Nueva Inspección.
  * Permite visualizar la fecha actual, precargar o modificar la Floración Predominante del apiario,
@@ -58,7 +60,8 @@ export class NuevaInspeccionComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private apiarioService: ApiarioService,
-    private inspeccionService: InspeccionService
+    private inspeccionService: InspeccionService,
+    private draftService: InspeccionDraftService
   ) {}
 
   ngOnInit(): void {
@@ -78,6 +81,15 @@ export class NuevaInspeccionComponent implements OnInit {
     this.fechaActual = `${dia}/${mes}/${anio}`;
 
     if (this.apiarioId) {
+      // US 15.1: Verificar borrador local previo tras crash o recarga
+      const localDraft = this.draftService.getDraft(this.apiarioId);
+      if (localDraft) {
+        if (localDraft.inspeccionId) this.inspeccionId = localDraft.inspeccionId;
+        if (localDraft.floracion) {
+          this.floracionActual.set(localDraft.floracion);
+          this.floracionOriginal = localDraft.floracion;
+        }
+      }
       this.cargarDatosApiario();
     }
   }
@@ -106,6 +118,7 @@ export class NuevaInspeccionComponent implements OnInit {
           if (insp && insp.floracion) {
             this.floracionActual.set(insp.floracion);
             this.floracionOriginal = insp.floracion;
+            this.draftService.saveDraft(this.apiarioId, { inspeccionId: insp.id, floracion: insp.floracion });
           }
         }
       });
@@ -120,6 +133,7 @@ export class NuevaInspeccionComponent implements OnInit {
             if (borrador.floracion) {
               this.floracionActual.set(borrador.floracion);
               this.floracionOriginal = borrador.floracion;
+              this.draftService.saveDraft(this.apiarioId, { inspeccionId: borrador.id, floracion: borrador.floracion });
             }
           } else {
             const ultima = list[0];
@@ -138,11 +152,16 @@ export class NuevaInspeccionComponent implements OnInit {
    */
   prepararColmenas(apiario: ApiarioDTO): void {
     const colmenas = apiario.colmenas || [];
+    const localDraft = this.draftService.getDraft(this.apiarioId);
+    const colmenasGuardadasLocal = localDraft?.colmenasGuardadas || {};
 
     if (this.inspeccionId) {
       this.inspeccionService.getInspeccionesColmenas(this.inspeccionId).subscribe({
         next: (guardadas) => {
           const idsGuardadas = new Set(guardadas.map((g) => g.colmenaId));
+          // Incluir también las guardadas en local draft (US 15.1)
+          Object.keys(colmenasGuardadasLocal).forEach((cId) => idsGuardadas.add(Number(cId)));
+
           const estados: ColmenaEstadoInspeccion[] = colmenas.map((c, index) => {
             const id = (c['id'] as number) || index + 1;
             const name = (c['name'] as string) || `Colmena #${String(index + 1).padStart(2, '0')}`;
@@ -164,14 +183,18 @@ export class NuevaInspeccionComponent implements OnInit {
   }
 
   fallbackPrepararColmenas(colmenas: any[]): void {
+    const localDraft = this.draftService.getDraft(this.apiarioId);
+    const colmenasGuardadasLocal = localDraft?.colmenasGuardadas || {};
+
     const estados: ColmenaEstadoInspeccion[] = colmenas.map((c, index) => {
       const id = (c['id'] as number) || index + 1;
       const name = (c['name'] as string) || `Colmena #${String(index + 1).padStart(2, '0')}`;
+      const completada = !!colmenasGuardadasLocal[id];
       return {
         id,
         name,
-        completada: false,
-        estadoTexto: 'Pendiente de revisión'
+        completada,
+        estadoTexto: completada ? '✓ Inspección guardada' : 'Pendiente de revisión'
       };
     });
     this.colmenasEstado.set(estados);
@@ -205,6 +228,9 @@ export class NuevaInspeccionComponent implements OnInit {
     this.floracionActual.set(opcion);
     this.mostrarSelectorFloracion.set(false);
 
+    // US 15: Guardado continuo local
+    this.draftService.saveDraft(this.apiarioId, { floracion: opcion });
+
     if (this.inspeccionId) {
       this.inspeccionService.updateFloracion(this.inspeccionId, opcion).subscribe({
         next: () => console.log('Floración actualizada en el borrador:', opcion),
@@ -234,6 +260,7 @@ export class NuevaInspeccionComponent implements OnInit {
         .subscribe({
           next: (borrador) => {
             this.inspeccionId = borrador.id || null;
+            this.draftService.saveDraft(this.apiarioId, { inspeccionId: borrador.id, floracion: this.floracionActual() });
             this.router.navigate([
               '/apiarios', this.apiarioId,
               'inspecciones', borrador.id,
@@ -251,14 +278,18 @@ export class NuevaInspeccionComponent implements OnInit {
    * Finaliza la inspección cambiando el estado del borrador a "SINCRONIZADA".
    */
   finalizarInspeccion(): void {
+    const onFinalizedSuccess = () => {
+      // US 15 / 15.1: Purga limpia del borrador local
+      this.draftService.clearDraft(this.apiarioId);
+      this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones']);
+    };
+
     if (this.inspeccionId) {
       this.inspeccionService.finalizarInspeccion(this.inspeccionId).subscribe({
-        next: () => {
-          this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones']);
-        },
+        next: onFinalizedSuccess,
         error: (err) => {
           console.error('Error al finalizar inspección:', err);
-          this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones']);
+          onFinalizedSuccess();
         }
       });
     } else {
@@ -270,12 +301,10 @@ export class NuevaInspeccionComponent implements OnInit {
           apiarioId: this.apiarioId
         })
         .subscribe({
-          next: () => {
-            this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones']);
-          },
+          next: onFinalizedSuccess,
           error: (err) => {
             console.error('Error al crear y finalizar inspección:', err);
-            this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones']);
+            onFinalizedSuccess();
           }
         });
     }

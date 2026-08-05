@@ -7,6 +7,8 @@ import { ApiarioService } from '../../apiarios/apiario.service';
 import { InspeccionColmenaDTO } from '../inspeccion.model';
 import { NavbarComponent } from '../../navbar/navbar.component';
 
+import { InspeccionDraftService } from '../inspeccion-draft.service';
+
 /**
  * Componente para la pantalla de Inspección Manual por Colmena (US 32).
  * Muestra el formulario táctil con los campos de Varroa, Reina, Alimento, Miel,
@@ -43,7 +45,8 @@ export class InspeccionarColmenaComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private apiarioService: ApiarioService,
-    private inspeccionService: InspeccionService
+    private inspeccionService: InspeccionService,
+    private draftService: InspeccionDraftService
   ) {}
 
   ngOnInit(): void {
@@ -71,9 +74,22 @@ export class InspeccionarColmenaComponent implements OnInit {
   }
 
   cargarDetalleColmena(): void {
+    // US 15.1: Primeramente restaurar borrador local en progreso si existe tras crash o recarga
+    const localForm = this.draftService.getColmenaDraftData(this.apiarioId, this.colmenaId);
+    if (localForm) {
+      if (localForm.varroa) this.varroa.set(localForm.varroa);
+      if (localForm.estadoReina) this.estadoReina.set(localForm.estadoReina);
+      if (localForm.nivelAlimento) this.nivelAlimento.set(localForm.nivelAlimento);
+      if (localForm.produjoMiel !== undefined) this.produjoMiel.set(localForm.produjoMiel);
+      if (localForm.observaciones) this.observaciones = localForm.observaciones;
+      if (localForm.colmenaName) this.nombreColmena.set(localForm.colmenaName);
+      this.loading.set(false);
+    }
+
+    // Consultar backend para sincronizar
     this.inspeccionService.getInspeccionColmena(this.inspeccionId, this.colmenaId).subscribe({
       next: (dto) => {
-        if (dto) {
+        if (dto && !localForm) {
           if (dto.varroa) this.varroa.set(dto.varroa);
           if (dto.estadoReina) this.estadoReina.set(dto.estadoReina);
           if (dto.nivelAlimento) this.nivelAlimento.set(dto.nivelAlimento);
@@ -87,20 +103,42 @@ export class InspeccionarColmenaComponent implements OnInit {
     });
   }
 
+  private autoSaveLocal(): void {
+    // US 15: Guardado continuo paso a paso en localStorage
+    this.draftService.saveColmenaFormProgress(this.apiarioId, this.colmenaId, {
+      inspeccionId: this.inspeccionId,
+      colmenaId: this.colmenaId,
+      colmenaName: this.nombreColmena(),
+      varroa: this.varroa(),
+      estadoReina: this.estadoReina(),
+      nivelAlimento: this.nivelAlimento(),
+      produjoMiel: this.produjoMiel(),
+      observaciones: this.observaciones
+    });
+  }
+
   setVarroa(val: 'NO_DETECTADA' | 'DETECTADA'): void {
     this.varroa.set(val);
+    this.autoSaveLocal();
   }
 
   setEstadoReina(val: 'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'): void {
     this.estadoReina.set(val);
+    this.autoSaveLocal();
   }
 
   setNivelAlimento(val: 'BAJO' | 'MEDIO' | 'ALTO'): void {
     this.nivelAlimento.set(val);
+    this.autoSaveLocal();
   }
 
   setProdujoMiel(val: boolean): void {
     this.produjoMiel.set(val);
+    this.autoSaveLocal();
+  }
+
+  onObservacionesChange(): void {
+    this.autoSaveLocal();
   }
 
   toggleTranscripcion(): void {
@@ -115,12 +153,16 @@ export class InspeccionarColmenaComponent implements OnInit {
     const payload: InspeccionColmenaDTO = {
       inspeccionId: this.inspeccionId,
       colmenaId: this.colmenaId,
+      colmenaName: this.nombreColmena(),
       varroa: this.varroa(),
       estadoReina: this.estadoReina(),
       nivelAlimento: this.nivelAlimento(),
       produjoMiel: this.produjoMiel(),
       observaciones: this.observaciones
     };
+
+    // US 15: Consolidar en borrador local como completada
+    this.draftService.saveColmenaCompletada(this.apiarioId, this.colmenaId, payload);
 
     this.inspeccionService.saveInspeccionColmena(this.inspeccionId, this.colmenaId, payload).subscribe({
       next: () => {
