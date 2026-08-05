@@ -53,6 +53,9 @@ export class NuevaInspeccionComponent implements OnInit {
   /** Estado de carga de la pantalla */
   loading = signal<boolean>(true);
 
+  /** Evita envíos duplicados por clics múltiples (APB) */
+  isSubmitting = signal<boolean>(false);
+
   /** Indicador persistente del estado de conexión (Offline) */
   isOffline = signal<boolean>(true);
 
