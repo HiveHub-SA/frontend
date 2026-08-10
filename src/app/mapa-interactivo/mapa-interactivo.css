@@ -184,3 +184,11 @@
   transform: translateY(3px); 
   box-shadow: 0px 0px 0px 0px #1a1c1c; 
 }
+
+
+/* Botón "VER TIEMPO" en el popup */
+::ng-deep .btn-popup-clima {
+  background-color: #80c9ff !important; /* Blue tertiary */
+  color: #00547c !important;
+  margin-top: 8px !important;
+}

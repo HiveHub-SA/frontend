@@ -37,8 +37,17 @@
 
 <router-outlet></router-outlet>
 
+<!-- Modal Registrar Apiario -->
 <app-registrar-apiario
   [visible]="mostrarRegistrarApiario"
   (creado)="onApiarioCreado($event)"
   (cancelado)="onApiarioCancelado()"
 ></app-registrar-apiario>
+
+
+<!-- Modal Módulo Climático -->
+<app-modulo-climatico
+  [visible]="mostrarModuloClimatico"
+  [apiario]="apiarioClimaSeleccionado"
+  (cerrado)="mostrarModuloClimatico = false"
+></app-modulo-climatico>

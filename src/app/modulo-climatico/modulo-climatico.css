@@ -1,0 +1,258 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 28, 28, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: var(--space-margin, 16px);
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-content {
+  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
+  padding: 20px;
+  max-width: 440px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: popIn 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-sizing: border-box;
+  background-color: var(--color-surface-container-lowest, #ffffff);
+}
+
+.header-modal {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.modal-header-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.tag-apiario {
+  font-size: 11px;
+  font-weight: 800;
+  color: #707070;
+}
+
+.modal-title {
+  margin: 2px 0 0 0;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* Arreglo del botón cerrar X */
+.btn-cerrar-modal {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.btn-cerrar-modal .material-symbols-outlined {
+  font-size: 22px;
+  color: #1a1c1c;
+}
+
+/* Tarjeta Principal */
+.clima-summary-card {
+  background-color: #fca311; /* Tono naranja-amarillo brutalista */
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 2px 2px 0px 0px #1a1c1c;
+}
+
+.temp-main-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.temp-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.temp-value {
+  font-family: var(--font-headline, sans-serif);
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  color: #1a1c1c;
+}
+
+.clima-icon-main {
+  font-size: 32px;
+  color: #1a1c1c;
+}
+
+.temp-condicion {
+  text-transform: capitalize;
+  color: #1a1c1c;
+  font-weight: 800;
+  margin-top: 6px;
+  max-width: 180px;
+}
+
+/* Óvalo con borde 2px negro remarcado */
+.stat-pill {
+  background: #ffffff;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 1px 1px 0px 0px #1a1c1c;
+}
+
+.humidity-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.humidity-val {
+  font-weight: 900;
+  color: #1a1c1c;
+  font-size: 13px;
+}
+
+.humidity-lbl {
+  font-size: 10px;
+  color: #555;
+  font-weight: 700;
+}
+
+/* Tarjetas de Alertas Climáticas */
+.alerta-card {
+  border: 2px solid #1a1c1c;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 2px 2px 0px 0px #1a1c1c;
+}
+
+.alerta-lluvia {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.alerta-calor {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+.alerta-frio {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.alerta-info .alerta-titulo {
+  font-weight: 900;
+  display: block;
+  font-size: 12px;
+}
+
+.alerta-info .alerta-mensaje {
+  margin: 2px 0 0 0;
+  font-size: 11px;
+}
+
+/* Horas */
+.section-subtitle {
+  margin: 0 0 8px 0;
+  font-weight: 900;
+  font-size: 11px;
+  color: #555;
+}
+
+.horas-scroll-grid {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.hora-card {
+  flex: 1;
+  min-width: 60px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 1px 1px 0px 0px #1a1c1c;
+}
+
+.hora-icon {
+  font-size: 18px;
+  color: #1a1c1c;
+}
+
+.temp-hora {
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.prob-lluvia {
+  color: #0284c7;
+  font-weight: 800;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid #1a1c1c;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

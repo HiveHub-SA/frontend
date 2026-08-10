@@ -8,6 +8,9 @@
 *.env
 .vcm_meta
 
+src/environments/environment.ts
+src/environments/environment.prod.ts
+
 
 # 2. Compilación, Dependencias y Artefactos (Node / Angular)
 # ==========================================
