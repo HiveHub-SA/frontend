@@ -186,7 +186,10 @@ private cargarApiariosEnMapa() {
             { icon: markerIcon } as any
           )
             .addTo(this.mapa)
-            .bindPopup(popupContenedor);
+            .bindPopup(popupContenedor, {
+              maxWidth: 160,
+              minWidth: 130,
+            });
 
           // Guardamos los datos del apiario en la instancia del marker
           (marker as any).apiarioData = apiario;

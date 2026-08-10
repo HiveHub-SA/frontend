@@ -236,7 +236,7 @@ export class RutaManagerService {
 
         this.rutaPolylineIda = L.geoJSON(geometryIda, {
             style: {
-                color: 'yellow',
+                color: '#00c2e0',
                 weight: 5,
                 opacity: 0.95
             }
@@ -244,7 +244,7 @@ export class RutaManagerService {
 
         this.rutaPolylineVuelta = L.geoJSON(geometryVuelta, {
             style: {
-                color: '#2196f3',
+                color: '#0057d9',
                 weight: 5,
                 opacity: 0.95,
                 dashArray: '10,10'
@@ -365,7 +365,7 @@ export class RutaManagerService {
 
                 this.rutaPolylineIda = L.geoJSON(res.ida.routes[0].geometry, {
                     style: {
-                        color: 'yellow',
+                        color: '#00c2e0',
                         weight: 5,
                         opacity: 0.95
                     }
@@ -373,7 +373,7 @@ export class RutaManagerService {
 
                 this.rutaPolylineVuelta = L.geoJSON(res.vuelta.routes[0].geometry, {
                     style: {
-                        color: '#2196f3',
+                        color: '#0057d9',
                         weight: 5,
                         opacity: 0.95,
                         dashArray: '10,10'

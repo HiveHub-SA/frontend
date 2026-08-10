@@ -1,8 +1,9 @@
 <div class="mapa-contenedor">
   <div id="mapa"></div>
 
-  <!-- Panel de distancia -->
-  <div class="panel-distancia" *ngIf="rutaManager.infoRuta() as info">
+<!-- Panel de distancia -->
+<div class="panel-distancia" *ngIf="rutaManager.infoRuta() as info">
+  <div class="panel-distancia-principal">
     <span class="material-symbols-outlined">route</span>
 
     <div class="panel-distancia-info">
@@ -12,6 +13,19 @@
       </span>
     </div>
   </div>
+
+  <!-- Referencia de ida / vuelta -->
+  <div class="panel-distancia-leyenda">
+    <div class="leyenda-item">
+      <span class="leyenda-linea leyenda-ida"></span>
+      <span>Ida</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-linea leyenda-vuelta"></span>
+      <span>Vuelta</span>
+    </div>
+  </div>
+</div>
 
   <!-- Controles flotantes laterales -->
   <div class="controles-laterales">
