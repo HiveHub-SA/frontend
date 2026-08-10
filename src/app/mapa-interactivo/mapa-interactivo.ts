@@ -1,16 +1,20 @@
 import { AfterViewInit, Component, OnInit, inject, NgZone, ChangeDetectorRef} from '@angular/core';
 import * as L from 'leaflet';
 import { Router, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RutaManagerService } from '../ruta/ruta-manager.service';
+import { RutaPanelComponent } from '../ruta/ruta.component';
 import { ApiarioService } from '../apiarios/apiario.service';
 import { RegistrarApiarioComponent } from '../registrar-apiario/registrar-apiario';
 import { ModuloClimaticoComponent } from '../modulo-climatico/modulo-climatico';
 
 @Component({
   selector: 'app-mapa-interactivo',
-  imports: [RegistrarApiarioComponent, RouterOutlet, ModuloClimaticoComponent],
+  imports: [RegistrarApiarioComponent, RouterOutlet, ModuloClimaticoComponent, CommonModule, RutaPanelComponent],
   templateUrl: './mapa-interactivo.html',
   styleUrl: './mapa-interactivo.css',
 })
+
 export class MapaInteractivo implements AfterViewInit, OnInit {
   
   //Atributos para el modulo climatico
@@ -22,10 +26,12 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
   //Atributos para el mapa y sus marcadores
   private mapa: any;
   private userMarker: L.Marker<any> | undefined;
+  private apiariosMarkers: L.Marker[] = [];
 
   // Inyectamos el servicio del apiario usando inject
   private apiarioService = inject(ApiarioService);
   private router = inject(Router);
+  rutaManager = inject(RutaManagerService);
 
   // Icono por defecto para la ubicacion del usuario
   private usuarioIcono = L.icon({
@@ -38,11 +44,17 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
     shadowSize: [41, 41],
   });
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     this.iniciarMapa();
     this.cargarApiariosEnMapa(); // Llamamos a la carga de datos al iniciar el mapa
+    if (this.rutaManager.rutaActiva()) {
+      this.rutaManager.redibujarRuta(
+        this.mapa,
+        this.apiariosMarkers
+      );
+    }
   }
 
   private iniciarMapa() {
@@ -104,129 +116,100 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
     if (this.mapa) this.mapa.zoomOut();
   }
 
-  // // Método que trae los apiarios del backend y los dibuja
-  // private cargarApiariosEnMapa() {
-  //   this.apiarioService.getAll().subscribe({
-  //     next: (apiario) => {
-  //       apiario.forEach((apiario) => {
-  //         if (apiario.latitude && apiario.longitude) {
-  //           // Creación del contenedor HTML para el popup
-  //           const popupContenedor = document.createElement('div');
-  //           popupContenedor.style.textAlign = 'center';
 
-  //           // Título del Apiario
-  //           const titulo = document.createElement('h4');
-  //           titulo.style.margin = '0 0 8px 0';
-  //           titulo.innerHTML = `<strong>Apiario:</strong> ${apiario.name}`;
-  //           // popupContenedor.appendChild(titulo);
-
-  //           // Botón de "Ver detalles"
-  //           const botonDetalles = document.createElement('button');
-  //           botonDetalles.innerText = 'Ver detalles';
-  //           botonDetalles.className = 'btn-popup-detalles';
-  //           botonDetalles.onclick = () => {
-  //             this.router.navigate([`/apiarios/${apiario.id}`]);
-  //           };
-  //           popupContenedor.appendChild(botonDetalles);
-
-  //           // Botón de "Ver tiempo"
-  //           const botonClima = document.createElement('button');
-  //           botonClima.innerText = 'Ver tiempo';
-  //           botonClima.className = 'btn-popup-detalles btn-popup-clima';
-  //           botonClima.onclick = () => {
-  //             this.ngZone.run(() => {
-  //               this.apiarioClimaSeleccionado = {
-  //                 nombre: apiario.name,
-  //                 lat: apiario.latitude,
-  //                 lng: apiario.longitude,
-  //               };
-  //               this.mostrarModuloClimatico = true;
-  //             });
-  //           };
-  //           popupContenedor.appendChild(botonClima);
-
-
-  //           // Marcador HTML dinámico usando el diseño de extrusión y la etiqueta
-  //           const markerIcon = L.divIcon({
-  //             className: 'hive-marker-wrapper', // Clase principal invisible
-  //             html: `
-  //               <div class="hive-marker">
-  //                 <div class="hive-icon-bg">
-  //                   <span class="material-symbols-outlined icono-panal" style="font-variation-settings: 'FILL' 1;">hive</span>
-  //                 </div>
-  //                 <div class="hive-label">${apiario.name}</div>
-  //               </div>
-  //             `,
-  //             iconSize: [60, 60],
-  //             iconAnchor: [30, 45], // El ancla en la base del panal
-  //             popupAnchor: [0, -40],
-  //           });
-
-  //           L.marker([apiario.latitude, apiario.longitude], { icon: markerIcon })
-  //             .addTo(this.mapa)
-  //             .bindPopup(popupContenedor);
-              
-  //         }
-          
-  //       });
-  //     },
-  //     error: (err) => {
-  //       console.error('Error al cargar los apiarios:', err);
-  //     },
-  //   });
-  // }
-
-  private cargarApiariosEnMapa() {
+private cargarApiariosEnMapa() {
   this.apiarioService.getAll().subscribe({
     next: (apiarios) => {
       apiarios.forEach((apiario) => {
-      if (apiario.latitude && apiario.longitude) {
-        const popupContenedor = document.createElement('div');
-        popupContenedor.style.textAlign = 'center';
+        if (apiario.latitude && apiario.longitude) {
+          const popupContenedor = document.createElement('div');
+          popupContenedor.style.textAlign = 'center';
 
-        const botonDetalles = document.createElement('button');
-        botonDetalles.innerText = 'Ver detalles';
-        botonDetalles.className = 'btn-popup-detalles';
-        botonDetalles.onclick = () => {
-          this.router.navigate([`/apiarios/${apiario.id}`]);
-        };
-        popupContenedor.appendChild(botonDetalles);
+          const botonDetalles = document.createElement('button');
+          botonDetalles.innerText = 'Ver detalles';
+          botonDetalles.className = 'btn-popup-detalles';
+          botonDetalles.onclick = () => {
+            this.router.navigate([`/apiarios/${apiario.id}`]);
+          };
+          popupContenedor.appendChild(botonDetalles);
 
-        const botonClima = document.createElement('button');
-        botonClima.innerText = 'Ver tiempo';
-        botonClima.className = 'btn-popup-detalles btn-popup-clima';
-        popupContenedor.appendChild(botonClima);
+          const botonClima = document.createElement('button');
+          botonClima.innerText = 'Ver tiempo';
+          botonClima.className = 'btn-popup-detalles btn-popup-clima';
+          popupContenedor.appendChild(botonClima);
 
-        const markerIcon = L.divIcon({
-          className: 'hive-marker-wrapper',
-          html: `
-            <div class="hive-marker">
-              <div class="hive-icon-bg">
-                <span class="material-symbols-outlined icono-panal" style="font-variation-settings: 'FILL' 1;">hive</span>
+          const botonRuta = document.createElement('button');
+          botonRuta.className = 'btn-popup-detalles';
+          botonRuta.style.marginTop = '8px';
+          botonRuta.innerText = this.rutaManager.obtenerTextoBotonRuta();
+
+          botonRuta.onclick = () => {
+            if (
+              this.rutaManager.esInicio(apiario) ||
+              this.rutaManager.esDestino(apiario)
+            ) {
+              this.rutaManager.quitarDesdePopup(apiario);
+            } else {
+              this.rutaManager.agregarDesdePopup(apiario);
+            }
+
+            marker.closePopup();
+            this.cargarApiariosEnMapa();
+          };
+
+          popupContenedor.appendChild(botonRuta);
+
+          const orden = this.rutaManager.obtenerOrden(apiario);
+          const nombre =
+            this.rutaManager.rutaActiva() && orden !== null
+              ? `${orden}. ${apiario.name}`
+              : apiario.name;
+
+          // Marcador HTML dinámico usando el diseño de extrusión y la etiqueta
+          const markerIcon = L.divIcon({
+            className: 'hive-marker-wrapper', // Clase principal invisible
+            html: `
+              <div class="hive-marker">
+                <div class="hive-icon-bg">
+                  <span class="material-symbols-outlined icono-panal" style="font-variation-settings: 'FILL' 1;">hive</span>
+                </div>
+                <div class="hive-label">${nombre}</div>
               </div>
-              <div class="hive-label">${apiario.name}</div>
-            </div>
-          `,
-          iconSize: [60, 60],
-          iconAnchor: [30, 45],
-          popupAnchor: [0, -40],
-        });
+            `,
+            iconSize: [60, 60],
+            iconAnchor: [30, 45], // El ancla en la base del panal
+            popupAnchor: [0, -40],
+          });
 
-        // Guardamos los datos tanto en las opciones como en la instancia
-        const marker = L.marker([apiario.latitude, apiario.longitude], { 
-          icon: markerIcon,
-          apiarioData: apiario 
-        } as any).addTo(this.mapa).bindPopup(popupContenedor);
+          const marker = L.marker(
+            [apiario.latitude, apiario.longitude],
+            { icon: markerIcon } as any
+          )
+            .addTo(this.mapa)
+            .bindPopup(popupContenedor);
 
-        (marker as any).apiarioData = apiario;
-      }
+          // Guardamos los datos del apiario en la instancia del marker
+          (marker as any).apiarioData = apiario;
+
+          marker.on('popupopen', () => {
+            if (this.rutaManager.esInicio(apiario)) {
+              botonRuta.innerText = 'Quitar inicio';
+            } else if (this.rutaManager.esDestino(apiario)) {
+              botonRuta.innerText = 'Quitar de la ruta';
+            } else {
+              botonRuta.innerText = this.rutaManager.obtenerTextoBotonRuta();
+            }
+          });
+
+          this.apiariosMarkers.push(marker);
+        }
       });
     },
     error: (err) => {
       console.error('Error al cargar los apiarios:', err);
     },
   });
-}
+  }
 
   // Método para obtener la ubicación del usuario
   getUbicacionActual() {
@@ -258,13 +241,39 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
     }
   }
 
+  onBotonRuta() {
+
+    const habiaRuta = this.rutaManager.rutaActiva();
+
+    this.rutaManager.manejarBotonRuta(
+      this.mapa,
+      this.apiariosMarkers
+    );
+
+    const intervalo = setInterval(() => {
+
+      if (
+        !this.rutaManager.calculandoRuta &&
+        !habiaRuta &&
+        this.rutaManager.rutaActiva()
+      ) {
+
+        clearInterval(intervalo);
+
+        this.cargarApiariosEnMapa();
+
+      }
+
+    }, 100);
+
+  }
+
   // estado que controla si el popup está abierto
   mostrarRegistrarApiario = false;
 
   onAnadirApiario() {
     this.mostrarRegistrarApiario = true;
   }
-
   onApiarioCreado(apiario: any) {
     this.mostrarRegistrarApiario = false;
     this.cargarApiariosEnMapa();
@@ -273,5 +282,12 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
   onApiarioCancelado() {
     this.mostrarRegistrarApiario = false;
   }
-}
 
+  limpiarRuta() {
+    this.rutaManager.limpiarRuta(
+      this.mapa,
+      this.apiariosMarkers
+    );
+    this.cargarApiariosEnMapa();
+  }
+}

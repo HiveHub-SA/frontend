@@ -1,0 +1,9 @@
+<button class="btn-control btn-ruta pressable" [class.btn-ruta-activa]="rutaManager.rutaActiva()"
+    [disabled]="rutaManager.calculandoRuta" [title]="rutaManager.rutaActiva() ? 'Borrar ruta' : 'Calcular ruta'"
+    (click)="rutaManager.rutaActiva() ? limpiar.emit() : calcular.emit()">
+
+    <span class="material-symbols-outlined">
+        {{ rutaManager.rutaActiva() ? 'delete' : 'route' }}
+    </span>
+
+</button>

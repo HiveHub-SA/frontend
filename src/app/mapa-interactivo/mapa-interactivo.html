@@ -1,6 +1,18 @@
 <div class="mapa-contenedor">
   <div id="mapa"></div>
 
+  <!-- Panel de distancia -->
+  <div class="panel-distancia" *ngIf="rutaManager.infoRuta() as info">
+    <span class="material-symbols-outlined">route</span>
+
+    <div class="panel-distancia-info">
+      <span class="titulo">Distancia</span>
+      <span class="valor">
+        {{ info.distanciaTotalKm }} km
+      </span>
+    </div>
+  </div>
+
   <!-- Controles flotantes laterales -->
   <div class="controles-laterales">
     <button class="btn-control pressable" (click)="zoomIn()" title="Acercar">
@@ -32,6 +44,9 @@
         Añadir Apiario
       </div>
     </div>
+
+    <app-ruta-panel [rutaManager]="rutaManager" (calcular)="onBotonRuta()" (limpiar)="limpiarRuta()">
+    </app-ruta-panel>
   </div>
 </div>
 
@@ -43,7 +58,6 @@
   (creado)="onApiarioCreado($event)"
   (cancelado)="onApiarioCancelado()"
 ></app-registrar-apiario>
-
 
 <!-- Modal Módulo Climático -->
 <app-modulo-climatico
