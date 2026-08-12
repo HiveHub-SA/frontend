@@ -1,0 +1,101 @@
+.grupo-card {
+    background-color: var(--color-surface-container-lowest);
+    border: var(--border-dark);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.grupo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.grupo-label {
+    font-family: var(--font-headline);
+    font-size: 13px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-on-surface);
+}
+
+.grupo-count {
+    font-family: var(--font-headline);
+    font-size: 11px;
+    font-weight: 900;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    border: var(--border-dark);
+    background-color: var(--color-primary-container);
+}
+
+.chips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    border-radius: 10px;
+    border: 2px solid var(--color-on-surface);
+    background-color: var(--color-surface-container-lowest);
+    box-shadow: var(--shadow-sm);
+}
+
+.chip--asignado {
+    background-color: var(--color-surface-container);
+    opacity: 0.6;
+    box-shadow: none;
+}
+
+.chip-id {
+    font-family: var(--font-headline);
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--color-on-surface);
+}
+
+.chip-detalle {
+    font-family: var(--font-headline);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.chip-estado {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-on-surface-variant);
+    text-align: center;
+}
+
+.filtro-btn {
+    font-family: var(--font-headline);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    border: var(--border-dark);
+    background-color: var(--color-surface-container);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.1s ease;
+}
+
+.filtro-btn--active {
+    background-color: var(--color-primary-container);
+    transform: translateY(1px);
+    box-shadow: none;
+}
