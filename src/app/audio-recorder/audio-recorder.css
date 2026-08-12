@@ -1,0 +1,458 @@
+/* ============================================================
+   Estilos del Grabador de Voz — HiveHub
+   ============================================================ */
+
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.recorder-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--space-margin) var(--space-margin) var(--space-xl);
+}
+
+/* ============================================================
+   Header de página
+   ============================================================ */
+
+.recorder-page-header {
+  margin-bottom: var(--space-lg);
+}
+
+.recorder-page-header h1 {
+  margin: var(--space-xs) 0 var(--space-base);
+}
+
+.recorder-page-subtitle {
+  margin: 0;
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  line-height: 20px;
+  max-width: 40ch;
+}
+
+.storage-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-base);
+  background-color: var(--color-error-container);
+  color: var(--color-error);
+  border: var(--border-dark);
+  border-radius: var(--radius-default);
+  padding: var(--space-sm);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-hard-small);
+}
+
+.storage-warning .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* ============================================================
+   Tarjeta principal: Nota de Voz en Campo
+   ============================================================ */
+
+.voice-note-card {
+  background-color: var(--color-secondary-fixed);
+  border: var(--border-dark);
+  border-radius: 18px;
+  padding: var(--space-gutter);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-lg);
+}
+
+.voice-note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-base);
+  margin-bottom: var(--space-gutter);
+}
+
+.voice-note-title {
+  font-family: var(--font-headline);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  display: flex;
+  align-items: center;
+  gap: var(--space-base);
+  margin: 0;
+}
+
+.voice-note-badge {
+  background-color: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: var(--border-dark);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-hard-small);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.voice-note-badge-recording {
+  background-color: var(--color-error-container);
+  color: var(--color-error);
+}
+
+.badge-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-error);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* ============================================================
+   Estados del grabador
+   ============================================================ */
+
+.recorder-idle,
+.recorder-recording {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-base) 0;
+}
+
+.recorder-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-base);
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  font-weight: 600;
+  padding: var(--space-lg) 0;
+}
+
+.record-button,
+.stop-button {
+  width: 100%;
+  height: 56px;
+  border: var(--border-dark);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-base);
+  font-family: var(--font-headline);
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.record-button {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.stop-button {
+  background-color: var(--color-error-container);
+  color: var(--color-error);
+}
+
+.recorder-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-gutter);
+}
+
+.preview-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.preview-actions > button {
+  flex: 1;
+}
+
+.error-message {
+  margin: var(--space-gutter) 0 0;
+  color: var(--color-error);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   Reproductor de audio custom (play/pausa + barra de progreso)
+   ============================================================ */
+
+.audio-player-bar {
+  background-color: var(--color-surface-container-lowest);
+  border: var(--border-dark);
+  border-radius: var(--radius-default);
+  padding: var(--space-base);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  box-shadow: var(--shadow-hard-small);
+}
+
+.hidden-native-audio {
+  display: none;
+}
+
+.play-btn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  background-color: var(--color-secondary-container);
+  border: var(--border-dark);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-secondary);
+  cursor: pointer;
+}
+
+.play-btn .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.progress-track {
+  flex: 1;
+  height: 12px;
+  background-color: var(--color-secondary-fixed);
+  border: var(--border-dark);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--color-secondary-container);
+  border-right: var(--border-dark);
+}
+
+.player-time {
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  min-width: 38px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Botones de acción (Guardar / Descartar / Transcribir)
+   ============================================================ */
+
+.submit-button-inline,
+.ghost-button,
+.transcribe-button {
+  border: var(--border-dark);
+  border-radius: var(--radius-default);
+  padding: var(--space-sm) var(--space-gutter);
+  font-family: var(--font-headline);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-base);
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-small);
+}
+
+.submit-button-inline .material-symbols-outlined,
+.ghost-button .material-symbols-outlined,
+.transcribe-button .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.submit-button-inline:disabled,
+.ghost-button:disabled,
+.transcribe-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submit-button-inline {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.ghost-button {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface);
+  opacity: 0.85;
+}
+
+.transcribe-button {
+  width: 100%;
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  margin-top: var(--space-sm);
+}
+
+/* ============================================================
+   Lista de audios guardados
+   ============================================================ */
+
+.saved-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.list-loading,
+.list-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-base);
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  padding: var(--space-sm) 0;
+}
+
+.audio-item-card {
+  background-color: var(--color-surface-container-lowest);
+  border: var(--border-dark);
+  border-radius: 24px;
+  padding: var(--space-gutter);
+  box-shadow: var(--shadow-hard-small);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.audio-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-base);
+}
+
+.audio-item-label {
+  font-family: var(--font-headline);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.audio-item-meta {
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+  font-weight: 600;
+  margin-top: -6px;
+}
+
+.status-badge {
+  font-family: var(--font-headline);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-on-surface);
+  white-space: nowrap;
+}
+
+.status-badge-pending {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+}
+
+.status-badge-transcribing {
+  background-color: var(--color-tertiary-container);
+  color: var(--color-on-tertiary-container);
+}
+
+.status-badge-done {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.status-badge-error {
+  background-color: var(--color-error-container);
+  color: var(--color-error);
+}
+
+.transcription-text {
+  background-color: var(--color-surface-container);
+  border-radius: 8px;
+  padding: var(--space-sm);
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.transcription-error {
+  color: var(--color-error);
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.audio-item-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 2px dashed var(--color-surface-container-high);
+  padding-top: var(--space-base);
+}
+
+.delete-action {
+  color: var(--color-error) !important;
+}
+
+/* ============================================================
+   Spinner
+   ============================================================ */
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--color-surface-container-high);
+  border-top-color: var(--color-primary);
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+.spinner-inline {
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-pulse-dot,
+  .spinner {
+    animation: none;
+  }
+}

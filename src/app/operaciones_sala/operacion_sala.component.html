@@ -118,7 +118,9 @@
         <div class="counter-control">
           <button (click)="decrementarAlzas()" class="counter-btn">-</button>
           <span class="counter-value">{{ cantidadAlzasForm() }}</span>
-          <button (click)="incrementarAlzas()" class="counter-btn btn-plus">+</button>
+          <button (click)="incrementarAlzas()" 
+                  [disabled]="tipoOperacionForm() === 'EXTRACCION' && cantidadAlzasForm() >= resumen().alzasEnEspera"
+                  class="counter-btn btn-plus">+</button>
         </div>
         <p class="form-note">
           {{ tipoOperacionForm() === 'INGRESO' ? 'Nota: Sumará al stock en espera.' : 'Nota: Descontará del stock de sala.' }}
@@ -136,7 +138,9 @@
 
       <!-- SELECCION MULTIPLE DE APIARIOS -->
       <div class="form-group" *ngIf="apiariosFiltrados().length > 0">
-        <label class="form-label">Apiarios de Procedencia</label>
+        <label class="form-label">
+          {{ tipoOperacionForm() === 'EXTRACCION' ? 'Apiarios de Procedencia (con ingreso)' : 'Apiarios de Procedencia' }}
+        </label>
         <div class="apiarios-checkbox-list">
           <div *ngFor="let ap of apiariosFiltrados()" class="checkbox-container">
             <input type="checkbox" 
@@ -148,7 +152,9 @@
         </div>
       </div>
       <div class="form-group" *ngIf="apiariosFiltrados().length === 0">
-        <p class="form-note-warning">⚠️ No hay apiarios registrados.</p>
+        <p class="form-note-warning">
+          {{ tipoOperacionForm() === 'EXTRACCION' ? '⚠️ No hay apiarios con alzas ingresadas a la sala en esta temporada.' : '⚠️ No hay apiarios registrados.' }}
+        </p>
       </div>
     </div>
 

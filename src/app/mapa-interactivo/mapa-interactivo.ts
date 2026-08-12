@@ -1,22 +1,27 @@
 import { AfterViewInit, Component, OnInit, inject } from '@angular/core';
 import * as L from 'leaflet';
 import { Router, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RutaManagerService } from '../ruta/ruta-manager.service';
+import { RutaPanelComponent } from '../ruta/ruta.component';
 import { ApiarioService } from '../apiarios/apiario.service';
 import { RegistrarApiarioComponent } from '../registrar-apiario/registrar-apiario';
 
 @Component({
   selector: 'app-mapa-interactivo',
-  imports: [RegistrarApiarioComponent, RouterOutlet],
+  imports: [RegistrarApiarioComponent, RouterOutlet, CommonModule, RutaPanelComponent],
   templateUrl: './mapa-interactivo.html',
   styleUrl: './mapa-interactivo.css',
 })
 export class MapaInteractivo implements AfterViewInit, OnInit {
   private mapa: any;
   private userMarker: L.Marker<any> | undefined;
+  private apiariosMarkers: L.Marker[] = [];
 
   // Inyectamos el servicio del apiario usando inject
   private apiarioService = inject(ApiarioService);
   private router = inject(Router);
+  rutaManager = inject(RutaManagerService);
 
   // Icono por defecto para la ubicacion del usuario
   private usuarioIcono = L.icon({
@@ -29,11 +34,17 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
     shadowSize: [41, 41],
   });
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     this.iniciarMapa();
     this.cargarApiariosEnMapa(); // Llamamos a la carga de datos al iniciar el mapa
+    if (this.rutaManager.rutaActiva()) {
+      this.rutaManager.redibujarRuta(
+        this.mapa,
+        this.apiariosMarkers
+      );
+    }
   }
 
   private iniciarMapa() {
@@ -71,11 +82,16 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
   private cargarApiariosEnMapa() {
     this.apiarioService.getAll().subscribe({
       next: (apiario) => {
+        this.apiariosMarkers.forEach(marker =>
+          this.mapa.removeLayer(marker)
+        );
+        this.apiariosMarkers = [];
         apiario.forEach((apiario) => {
           if (apiario.latitude && apiario.longitude) {
             // Creación del contenedor HTML para el popup
             const popupContenedor = document.createElement('div');
             popupContenedor.style.textAlign = 'center';
+            popupContenedor.style.width = '150px';
 
             // Título del Apiario
             const titulo = document.createElement('h4');
@@ -92,6 +108,38 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
             };
             popupContenedor.appendChild(botonDetalles);
 
+            const botonRuta = document.createElement('button');
+            botonRuta.className = 'btn-popup-detalles';
+            botonRuta.style.marginTop = '8px';
+            botonRuta.innerText = this.rutaManager.obtenerTextoBotonRuta();
+
+            botonRuta.onclick = () => {
+
+              if (
+                this.rutaManager.esInicio(apiario) ||
+                this.rutaManager.esDestino(apiario)
+              ) {
+
+                this.rutaManager.quitarDesdePopup(apiario);
+
+              } else {
+
+                this.rutaManager.agregarDesdePopup(apiario);
+
+              }
+
+              marker.closePopup();
+              this.cargarApiariosEnMapa()
+
+            };
+
+            popupContenedor.appendChild(botonRuta);
+            const orden = this.rutaManager.obtenerOrden(apiario);
+
+            const nombre =
+              this.rutaManager.rutaActiva() && orden !== null
+                ? `${orden}. ${apiario.name}`
+                : apiario.name;
             // Marcador HTML dinámico usando el diseño de extrusión y la etiqueta
             const markerIcon = L.divIcon({
               className: 'hive-marker-wrapper', // Clase principal invisible
@@ -100,17 +148,38 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
                   <div class="hive-icon-bg">
                     <span class="material-symbols-outlined icono-panal" style="font-variation-settings: 'FILL' 1;">hive</span>
                   </div>
-                  <div class="hive-label">${apiario.name}</div>
+                  <div class="hive-label">${nombre}</div>
                 </div>
               `,
               iconSize: [60, 60],
               iconAnchor: [30, 45], // El ancla en la base del panal
               popupAnchor: [0, -40],
             });
-
-            L.marker([apiario.latitude, apiario.longitude], { icon: markerIcon })
+            const marker = L.marker(
+              [apiario.latitude, apiario.longitude],
+              { icon: markerIcon }
+            )
               .addTo(this.mapa)
               .bindPopup(popupContenedor);
+            marker.on('popupopen', () => {
+
+              if (this.rutaManager.esInicio(apiario)) {
+
+                botonRuta.innerText = 'Quitar inicio';
+
+              } else if (this.rutaManager.esDestino(apiario)) {
+
+                botonRuta.innerText = 'Quitar de la ruta';
+
+              } else {
+
+                botonRuta.innerText =
+                  this.rutaManager.obtenerTextoBotonRuta();
+
+              }
+
+            });
+            this.apiariosMarkers.push(marker);
           }
         });
       },
@@ -150,13 +219,39 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
     }
   }
 
+  onBotonRuta() {
+
+    const habiaRuta = this.rutaManager.rutaActiva();
+
+    this.rutaManager.manejarBotonRuta(
+      this.mapa,
+      this.apiariosMarkers
+    );
+
+    const intervalo = setInterval(() => {
+
+      if (
+        !this.rutaManager.calculandoRuta &&
+        !habiaRuta &&
+        this.rutaManager.rutaActiva()
+      ) {
+
+        clearInterval(intervalo);
+
+        this.cargarApiariosEnMapa();
+
+      }
+
+    }, 100);
+
+  }
+
   // estado que controla si el popup está abierto
   mostrarRegistrarApiario = false;
 
   onAnadirApiario() {
     this.mostrarRegistrarApiario = true;
   }
-
   onApiarioCreado(apiario: any) {
     this.mostrarRegistrarApiario = false;
     this.cargarApiariosEnMapa();
@@ -165,5 +260,12 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
   onApiarioCancelado() {
     this.mostrarRegistrarApiario = false;
   }
-}
 
+  limpiarRuta() {
+    this.rutaManager.limpiarRuta(
+      this.mapa,
+      this.apiariosMarkers
+    );
+    this.cargarApiariosEnMapa();
+  }
+}
