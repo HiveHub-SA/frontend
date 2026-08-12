@@ -64,6 +64,22 @@
   </div>
 </div>
 
+<!-- Toast Flotante para Alertas Climáticas Iniciales -->
+<div 
+  *ngIf="alertasService.alertaToastInicial() as toast" 
+  class="toast-alerta-inicio"
+  [ngClass]="'tipo-' + toast.tipo"
+>
+  <span class="material-symbols-outlined toast-icon">warning</span>
+  <div class="toast-body">
+    <span class="toast-apiario">{{ toast.nombreApiario }}</span>
+    <span class="toast-titulo">{{ toast.titulo }}</span>
+    <p class="toast-msg">{{ toast.mensaje }}</p>
+  </div>
+  <button type="button" class="btn-cerrar-toast" (click)="alertasService.cerrarToast()">✕</button>
+</div>
+
+
 <router-outlet></router-outlet>
 
 <!-- Modal Registrar Apiario -->

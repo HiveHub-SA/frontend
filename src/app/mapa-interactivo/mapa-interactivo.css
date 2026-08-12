@@ -284,3 +284,75 @@
     transparent 7px
   );
 }
+
+/* estilos para el toast de las alertas */
+.toast-alerta-inicio {
+  position: fixed; /* 'fixed' para evitar que las capas relativas del mapa lo oculten */
+  top: 90px;
+  left: 35.20px;
+  z-index: 9999 !important; /* Prioridad máxima por encima del lienzo del mapa */
+  background-color: #ffdad6;
+  color: #410002;
+  border: 2px solid #1a1c1c;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 320px;
+  box-shadow: 4px 4px 0px 0px #1a1c1c;
+}
+
+.toast-icon {
+  font-size: 24px;
+  color: #ba1a1a;
+}
+
+.toast-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.toast-apiario {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #707070;
+}
+
+.toast-titulo {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.toast-msg {
+  font-size: 11px;
+  margin: 2px 0 0 0;
+}
+
+.btn-cerrar-toast {
+  background: transparent;
+  border: none;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 0 4px;
+  color: #1a1c1c;
+}
+
+.toast-alerta-inicio.tipo-calor {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+.toast-alerta-inicio.tipo-calor .toast-icon { color: #ea580c; }
+
+.toast-alerta-inicio.tipo-frio {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+.toast-alerta-inicio.tipo-frio .toast-icon { color: #0284c7; }
+
+.toast-alerta-inicio.tipo-lluvia {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.toast-alerta-inicio.tipo-lluvia .toast-icon { color: #1e40af; }

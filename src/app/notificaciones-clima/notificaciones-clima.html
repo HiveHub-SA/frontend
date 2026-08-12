@@ -1,0 +1,42 @@
+<div class="notificaciones-clima-flotante">
+  <button 
+    type="button"
+    class="btn-notification border-2 border-on-surface pressable"
+    [class.has-alerts]="alertasService.alertas().length > 0"
+    (click)="toggleDropdown()"
+    title="Alertas de Clima Extremo"
+  >
+    <span class="material-symbols-outlined icon-bell">notifications</span>
+    <span *ngIf="alertasService.alertas().length > 0" class="badge-count">
+      {{ alertasService.alertas().length }}
+    </span>
+  </button>
+
+  <div *ngIf="mostrarDropdown" class="alertas-dropdown border-2 border-on-surface">
+    <div class="dropdown-header border-b-2 border-on-surface">
+      <span class="font-label-lg uppercase">Alertas de Clima</span>
+      <span class="font-label-xs count-text">{{ alertasService.alertas().length }} activas</span>
+    </div>
+
+    <div class="dropdown-body">
+      <div *ngIf="alertasService.alertas().length === 0" class="empty-alerts">
+        <span class="material-symbols-outlined text-green">check_circle</span>
+        <p class="font-body-sm">Sin alertas extremas registradas.</p>
+    </div>
+    
+    <div 
+    *ngFor="let alerta of alertasService.alertas()" 
+    class="alerta-item"
+    [ngClass]="'nivel-' + alerta.nivel + ' tipo-' + alerta.tipo"
+    (click)="seleccionarAlerta(alerta)"
+    >
+    <span class="material-symbols-outlined alerta-icon" [ngClass]="'icon-' + alerta.tipo">{{ alerta.icono }}</span>
+    <div class="alerta-content">
+    <span class="alerta-apiario">{{ alerta.nombreApiario }}</span>
+    <span class="alerta-titulo">{{ alerta.titulo }}</span>
+    <p class="alerta-texto">{{ alerta.mensaje }}</p>
+    </div>
+    </div>
+</div>
+  </div>
+</div>

@@ -7,6 +7,7 @@ import { RutaPanelComponent } from '../ruta/ruta.component';
 import { ApiarioService } from '../apiarios/apiario.service';
 import { RegistrarApiarioComponent } from '../registrar-apiario/registrar-apiario';
 import { ModuloClimaticoComponent } from '../modulo-climatico/modulo-climatico';
+import { AlertasClimaService } from '../modulo-climatico/alertas-clima.service';
 
 @Component({
   selector: 'app-mapa-interactivo',
@@ -17,6 +18,9 @@ import { ModuloClimaticoComponent } from '../modulo-climatico/modulo-climatico';
 
 export class MapaInteractivo implements AfterViewInit, OnInit {
   
+  //Inyectamos el servicio para las alertas climaticas
+  public alertasService = inject(AlertasClimaService);
+
   //Atributos para el modulo climatico
   private ngZone = inject(NgZone);
   mostrarModuloClimatico: boolean = false;
@@ -120,6 +124,19 @@ export class MapaInteractivo implements AfterViewInit, OnInit {
 private cargarApiariosEnMapa() {
   this.apiarioService.getAll().subscribe({
     next: (apiarios) => {
+
+      // Mapeamos los apiarios al formato que consume AlertasClimaService
+      const apiariosAdaptados = apiarios.map((a) => ({
+        id: a.id,
+        nombre: a.name,
+        lat: a.latitude,
+        lng: a.longitude,
+      }));
+
+      // Disparamos la evaluación climática para que el Header y el Toast se actualicen
+      this.alertasService.evaluarApiarios(apiariosAdaptados);
+
+      // A partir de aca empezamos a cargar cada apiario
       apiarios.forEach((apiario) => {
         if (apiario.latitude && apiario.longitude) {
           const popupContenedor = document.createElement('div');

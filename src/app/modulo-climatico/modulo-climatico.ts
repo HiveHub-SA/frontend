@@ -75,14 +75,14 @@ export class ModuloClimaticoComponent implements OnChanges {
       this.alertasActivas.push({
         tipo: 'calor',
         titulo: 'Alerta por Calor Extremo',
-        mensaje: 'Temperatura superior a 38°C. Riesgo de derretimiento de panales.',
+        mensaje: 'Temperatura superior o igual a 38°C. Riesgo de derretimiento de panales.',
         icono: 'wb_sunny'
       });
-    } else if (data.temp < 10) {
+    } else if (data.temp <= 10) {
       this.alertasActivas.push({
         tipo: 'frio',
         titulo: 'Alerta por Frío Bajo',
-        mensaje: 'Temperatura inferior a 10°C. Las abejas mantendrán el bolo invernal.',
+        mensaje: 'Temperatura inferior o igual a 10°C. Las abejas mantendrán el bolo invernal.',
         icono: 'ac_unit'
       });
     }
