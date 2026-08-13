@@ -1,9 +1,11 @@
-<div class="flex flex-col h-screen overflow-y-auto">
+<div class="content-container">
+
+  <div class="flex flex-col h-screen overflow-y-auto">
 
     <!-- Header -->
     <div
         class="sticky top-0 z-50 flex items-center justify-between px-margin py-md bg-primary-fixed border-b-2 border-on-surface shadow-[4px_4px_0px_0px_rgba(26,28,28,1)]">
-        <h1 class="font-headline-sm">Materiales</h1>
+        <h1 class="font-headline-sm">MATERIALES</h1>
         <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">inventory_2</span>
     </div>
 
@@ -58,4 +60,5 @@
     <app-registrar-material *ngIf="mostrarFormulario()" (registrado)="onRegistrado()"
         (cerrado)="mostrarFormulario.set(false)" />
 
+  </div>
 </div>

@@ -18,17 +18,12 @@
 
 .nav-disabled {
   z-index: 0;
-  opacity: 0.5;
   pointer-events: none;
 }
 
 .nav-enabled {
   z-index: 40;
   opacity: 1;
-}
-
-.blurred-overlay {
-  filter: blur(4px);
 }
 
 .nav-item {

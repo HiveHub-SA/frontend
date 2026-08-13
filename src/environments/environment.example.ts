@@ -5,5 +5,5 @@
 //src/environments/environment.ts
 export const environment = {
   production: false,
-  weatherApiKey: 'AQUI_VA_TU_API_KEY'
+  weatherApiKey: 'AQUI_VA_TU_API_KEY',
 };
