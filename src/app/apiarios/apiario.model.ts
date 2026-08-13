@@ -1,7 +1,4 @@
-// acá solo se usa colmenas.length para contar colmenas.
-export interface ColmenaDTO {
-  [key: string]: unknown;
-}
+import { ColmenaDTO } from "../colmenas/colmena.model";
 
 export interface ApiarioDTO {
   id: number;
