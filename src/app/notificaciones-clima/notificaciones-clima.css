@@ -1,0 +1,242 @@
+.notificaciones-clima-flotante {
+  position: absolute;
+  top: 10px;
+  right: 150px;
+  z-index: 9000;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.btn-notification {
+  background: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0px 4px 0px 0px #1a1c1c;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btn-notification:active {
+  transform: translateY(4px);
+  box-shadow: 0px 0px 0px 0px #1a1c1c;
+}
+
+.btn-notification.has-alerts {
+  background-color: #ffb300;
+}
+
+.icon-bell {
+  font-size: 20px;
+  color: #1a1c1c;
+}
+
+.badge-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: #ba1a1a;
+  color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* Panel desplegable */
+.alertas-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 20px);
+  width: 320px;
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 14px;
+  box-shadow: 4px 4px 0px 0px #1a1c1c;
+  overflow: hidden;
+  animation: caerDesplegable 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Flechita que conecta visualmente el panel con la campana */
+.alertas-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-left: 2px solid #1a1c1c;
+  border-top: 2px solid #1a1c1c;
+  transform: rotate(45deg);
+}
+
+@keyframes caerDesplegable {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-header {
+  background-color: #ffb300;
+  border-bottom: 2px solid #1a1c1c;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-header .font-label-lg {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #1a1c1c;
+}
+
+.dropdown-header .count-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b4900;
+}
+
+.dropdown-body {
+  max-height: 320px;
+  overflow-y: auto;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  cursor: grab;
+}
+
+.dropdown-body:active {
+  cursor: grabbing;
+}
+
+.empty-alerts {
+  padding: 28px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #555;
+}
+
+.empty-alerts .text-green {
+  color: #2e7d32;
+  font-size: 30px;
+}
+
+.alerta-item {
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #ececec;
+  transition: background 0.15s ease;
+}
+
+.alerta-item:last-child {
+  border-bottom: none;
+}
+
+.alerta-item:hover {
+  background-color: #fafafa;
+}
+
+/* Ícono con fondo circular de color según el tipo de alerta */
+.alerta-icon {
+  flex-shrink: 0;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: 2px solid #1a1c1c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alerta-icon.icon-calor {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+.alerta-icon.icon-frio {
+  background-color: #dbeafe;
+  color: #0369a1;
+}
+
+.alerta-icon.icon-lluvia {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.alerta-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.alerta-apiario {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #8a8a8a;
+}
+
+.alerta-titulo {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1a1c1c;
+  margin-top: 1px;
+}
+
+.alerta-texto {
+  font-size: 11.5px;
+  margin: 3px 0 0 0;
+  color: #3b1f00;
+  line-height: 1.35;
+}
+
+/* Barrita lateral de nivel, sutil, sin gritar tanto como el borde grueso anterior */
+.alerta-item.nivel-peligro {
+  box-shadow: inset 3px 0 0 #ba1a1a;
+}
+
+.alerta-item.nivel-advertencia {
+  box-shadow: inset 3px 0 0 #d97706;
+}
+
+@media (max-width: 600px) {
+  .notificaciones-clima-flotante {
+    top: 10px;
+    right: 155px; 
+  }
+
+  .alertas-dropdown {
+    position: fixed;
+    top: 70px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  /* .alertas-dropdown::before {
+    right: 115px; 
+  } */
+}

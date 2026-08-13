@@ -7,14 +7,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px;
-  position: sticky;
-  top: 0;
-  z-index: 40;
   transition: all 0.3s ease;
 }
 
 .blurred-overlay {
-  filter: blur(4px);
   pointer-events: none;
 }
 
@@ -95,3 +91,10 @@
   font-size: 20px;
 
 }
+
+
+
+
+
+
+

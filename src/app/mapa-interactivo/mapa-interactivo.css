@@ -1,274 +1,374 @@
-  .mapa-contenedor {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1;
-    overflow: hidden;
-  }
+.mapa-contenedor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
 
-  #mapa {
-    width: 100%;
-    height: 100%;
-    background-color: #1a1c1c;
-    /* Color de fondo mientras cargan los tiles */
-  }
+#mapa {
+  width: 100%;
+  height: 100%;
+  background-color: #1a1c1c;
+  /* Color de fondo mientras cargan los tiles */
+}
 
-  /* CONTROLES LATERALES FLOTANTES */
-  .controles-laterales {
-    position: absolute;
-    top: 100px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    z-index: 1000;
-    /* Asegura que esté por encima de Leaflet */
-  }
+/* CONTROLES LATERALES FLOTANTES */
+.controles-laterales {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+  /* Asegura que esté por encima de Leaflet */
+}
 
-  .btn-control {
-    background-color: #ffffff;
-    border: 2px solid #1a1c1c;
-    border-radius: 12px;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0px 4px 0px 0px #1a1c1c;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
-    color: #1a1c1c;
-  }
+.btn-control {
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0px 4px 0px 0px #1a1c1c;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  color: #1a1c1c;
+}
 
-  /* Botón especial de ubicación usando el color "Hive Orange" */
-  .btn-control.btn-ubicacion {
-    background-color: #ff8f06;
-    margin-top: 8px;
-  }
+/* Botón especial de ubicación usando el color "Hive Orange" */
+.btn-control.btn-ubicacion {
+  background-color: #ff8f06;
+  margin-top: 8px;
+}
 
-  .btn-control.btn-ubicacion .text-icon-ubicacion {
-    color: #623300;
-  }
+.btn-control.btn-ubicacion .text-icon-ubicacion {
+  color: #623300;
+}
 
-  /* Boton Añadir Apiario */
-  .contenedor-flotante-inferior {
-    position: absolute;
-    bottom: 24px;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 0 20px;
-    z-index: 1000;
-    box-sizing: border-box;
-    padding-bottom: 10px;
-  }
+/* Botón Añadir Apiario usando "Honey Yellow" */
+.btn-control.btn-apiario {
+  background-color: #ffb300;
+}
 
-  .btn-principal {
-    background-color: #ffb300;
-    /* Honey Yellow */
-    color: #6b4900;
-    width: 100%;
-    max-width: 400px;
-    height: 60px;
-    border: 2px solid #1a1c1c;
-    border-radius: 9999px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    cursor: pointer;
-    box-shadow: 0px 4px 0px 0px #1a1c1c;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
-  }
+.btn-control.btn-apiario .text-icon-apiario {
+  color: #6b4900;
+}
 
-  .btn-principal .icono-principal {
-    font-size: 28px;
-  }
+/* CONTENEDOR DESPLEGABLE REUTILIZABLE */
+.desplegable-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 
-  /* ANIMACIÓN "PRESSABLE" GENERAL */
-  .pressable:active {
-    transform: translateY(4px);
-    box-shadow: 0px 0px 0px 0px #1a1c1c;
-  }
+/* Etiqueta flotante desplegable hacia la izquierda */
+.label-desplegable {
+  position: absolute;
+  right: calc(100% + 10px);
+  /* Se posiciona a la izquierda del botón */
+  background-color: #1a1c1c;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0px 3px 0px 0px #000000;
+  cursor: pointer;
 
-  /* ESTILOS DE MARCADORES (Se inyectan en Leaflet)
-    Usamos ::ng-deep para saltar la encapsulación */
-  ::ng-deep .hive-marker-wrapper {
-    background: transparent;
-    border: none;
-  }
+  /* Estado oculto e interactivo inicial */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  pointer-events: none;
+}
 
-  ::ng-deep .hive-marker {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+/* Flecha decorativa de los desplegables */
+.label-desplegable::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  border-width: 6px 0 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent transparent #1a1c1c;
+}
 
-  ::ng-deep .hive-icon-bg {
-    background-color: #ffb300;
-    border: 2px solid #1a1c1c;
-    border-radius: 16px;
-    padding: 8px;
-    box-shadow: 0px 4px 0px 0px #1a1c1c;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+/* Despliegue al pasar el mouse (PC) o foco (PWA) */
+.desplegable-control:hover .label-desplegable,
+.desplegable-control:focus-within .label-desplegable {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
 
-  ::ng-deep .hive-icon-bg .icono-panal {
-    font-size: 28px;
-    color: #6b4900;
-  }
+/* ANIMACIÓN "PRESSABLE" GENERAL */
+.pressable:active {
+  transform: translateY(4px);
+  box-shadow: 0px 0px 0px 0px #1a1c1c;
+}
 
-  ::ng-deep .hive-label {
-    margin-top: 10px;
-    background: #1a1c1c;
-    color: #f9f9f9;
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    white-space: nowrap;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
-  }
+/* ESTILOS DE MARCADORES (Se inyectan en Leaflet) */
+::ng-deep .hive-marker-wrapper {
+  background: transparent;
+  border: none;
+}
 
-  /*
-    ESTILOS DEL POPUP DE LEAFLET  con ::ng-deep
-  */
+::ng-deep .hive-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
-  ::ng-deep .btn-popup-detalles {
-    background-color: #ffb300;
-    color: #1a1c1c;
-    border: 2px solid #1a1c1c;
-    padding: 10px 16px;
+::ng-deep .hive-icon-bg {
+  background-color: #ffb300;
+  border: 2px solid #1a1c1c;
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0px 4px 0px 0px #1a1c1c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    /* Tipografía idéntica a tus títulos/etiquetas */
-    font-family: 'Quicksand', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-radius: 8px;
+::ng-deep .hive-icon-bg .icono-panal {
+  font-size: 28px;
+  color: #6b4900;
+}
 
-    cursor: pointer;
-    width: 100%;
-    margin-top: 2px;
+::ng-deep .hive-label {
+  margin-top: 10px;
+  background: #1a1c1c;
+  color: #f9f9f9;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}
 
-    /* Sombra sólida de extrusión (indica visualmente que es un bloque presionable) */
-    box-shadow: 0px 3px 0px 0px #1a1c1c;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
-    display: inline-block;
-    box-sizing: border-box;
-  }
+/* ESTILOS DEL POPUP DE LEAFLET */
+::ng-deep .btn-popup-detalles {
+  background-color: #ffb300;
+  color: #1a1c1c;
+  border: 2px solid #1a1c1c;
+  padding: 10px 16px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 2px;
+  box-shadow: 0px 3px 0px 0px #1a1c1c;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  display: inline-block;
+  box-sizing: border-box;
+}
 
-  /* Efecto de hundimiento realista al hacer click */
-  ::ng-deep .btn-popup-detalles:active {
-    transform: translateY(3px);
-    box-shadow: 0px 0px 0px 0px #1a1c1c;
-  }
+::ng-deep .btn-popup-detalles:active {
+  transform: translateY(3px);
+  box-shadow: 0px 0px 0px 0px #1a1c1c;
+}
 
-  .panel-ruta {
-    position: absolute;
-    top: 100px;
-    left: 20px;
+/* Botón "VER TIEMPO" en el popup */
+::ng-deep .btn-popup-clima {
+  background-color: #80c9ff !important;
+  /* Blue tertiary */
+  color: #00547c !important;
+  margin-top: 8px !important;
+}
 
-    z-index: 1000;
+.panel-distancia {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 14px;
+  box-shadow: 0px 4px 0px #1a1c1c;
+  min-width: 180px;
+  user-select: none;
+  -webkit-user-select: none;
+}
 
-    background: #ffffff;
-    border: 2px solid #1a1c1c;
-    border-radius: 12px;
-    box-shadow: 0px 4px 0px 0px #1a1c1c;
+.panel-distancia-principal {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-    padding: 12px 16px;
+.panel-distancia .material-symbols-outlined {
+  font-size: 26px;
+  color: #ff8f06;
+}
 
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.panel-distancia-info {
+  display: flex;
+  flex-direction: column;
+}
 
-    min-width: 180px;
-  }
+.panel-distancia-info .titulo {
+  font-family: Quicksand;
+  font-size: 11px;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+}
 
-  .panel-ruta-titulo {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: #1a1c1c;
+.panel-distancia-info .valor {
+  font-family: Quicksand;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1c1c;
+}
 
-    border-bottom: 1px solid #ececec;
-    padding-bottom: 6px;
-  }
+/* Leyenda de referencia ida / vuelta */
+.panel-distancia-leyenda {
+  display: flex;
+  gap: 14px;
+  border-top: 1px solid #ececec;
+  padding-top: 8px;
+}
 
-  .panel-ruta-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a1c1c;
+  text-transform: uppercase;
+}
 
-    font-family: 'Quicksand', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a1c1c;
-  }
+.leyenda-linea {
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+}
 
-  .panel-ruta-item .material-symbols-outlined {
-    color: #ff8f06;
-    font-size: 22px;
-  }
+.leyenda-ida {
+  background-color: #00c2e0;
+}
 
-  .panel-distancia {
-    position: absolute;
+.leyenda-vuelta {
+  background: repeating-linear-gradient(
+    to right,
+    #0057d9 0px,
+    #0057d9 4px,
+    transparent 4px,
+    transparent 7px
+  );
+}
 
-    top: 90px;
+/* estilos para el toast de las alertas */
+.toast-alerta-inicio {
+  position: fixed; /* 'fixed' para evitar que las capas relativas del mapa lo oculten */
+  top: 90px;
+  left: 35.20px;
+  z-index: 9999 !important; /* Prioridad máxima por encima del lienzo del mapa */
+  background-color: #ffdad6;
+  color: #410002;
+  border: 2px solid #1a1c1c;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 320px;
+  box-shadow: 4px 4px 0px 0px #1a1c1c;
+}
+
+.toast-icon {
+  font-size: 24px;
+  color: #ba1a1a;
+}
+
+.toast-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.toast-apiario {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #707070;
+}
+
+.toast-titulo {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.toast-msg {
+  font-size: 11px;
+  margin: 2px 0 0 0;
+}
+
+.btn-cerrar-toast {
+  background: transparent;
+  border: none;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 0 4px;
+  color: #1a1c1c;
+}
+
+.toast-alerta-inicio.tipo-calor {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+.toast-alerta-inicio.tipo-calor .toast-icon { color: #ea580c; }
+
+.toast-alerta-inicio.tipo-frio {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+.toast-alerta-inicio.tipo-frio .toast-icon { color: #0284c7; }
+
+.toast-alerta-inicio.tipo-lluvia {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.toast-alerta-inicio.tipo-lluvia .toast-icon { color: #1e40af; }
+
+@media (max-width: 600px) {
+  .toast-alerta-inicio {
     left: 50%;
     transform: translateX(-50%);
-
-    z-index: 1000;
-
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    padding: 12px 20px;
-
-    background: #ffffff;
-    border: 2px solid #1a1c1c;
-    border-radius: 14px;
-    box-shadow: 0px 4px 0px #1a1c1c;
-
-    min-width: 180px;
+    width: calc(100vw - 32px);
+    max-width: 320px;
   }
+}
 
-  .panel-distancia .material-symbols-outlined {
-    font-size: 26px;
-    color: #ff8f06;
-  }
-
-  .panel-distancia-info {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .panel-distancia-info .titulo {
-    font-family: Quicksand;
-    font-size: 11px;
-    font-weight: 700;
-    color: #666;
-    text-transform: uppercase;
-  }
-
-  .panel-distancia-info .valor {
-    font-family: Quicksand;
-    font-size: 18px;
-    font-weight: 700;
-    color: #1a1c1c;
-  }

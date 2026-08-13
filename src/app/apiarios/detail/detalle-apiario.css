@@ -1,7 +1,235 @@
-.form-container {
-  margin-bottom: var(--space-sm);
+/* ============================================================
+   Estado de carga
+   ============================================================ */
+.loading-state {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
 }
 
+.loading-state__text {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+.apiario-detail__header {
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items: center;
+  height: 64px;
+  border-bottom: 2px solid var(--color-on-surface);
+  background-color: var(--color-primary-fixed);
+  box-shadow: var(--shadow-md);
+  padding-left: var(--space-margin);
+  padding-right: var(--space-margin);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.apiario-detail__back-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-on-surface);
+  background-color: var(--color-surface-container-lowest);
+  box-shadow: var(--shadow-sm);
+}
+
+.apiario-detail__title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.delete-header-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: end;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-error);
+  background-color: var(--color-error-container);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-error);
+  transition: background-color 0.15s ease, transform 0.08s ease;
+}
+
+.delete-header-btn .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.delete-header-btn:hover {
+  background-color: var(--color-error);
+  color: var(--color-on-error);
+}
+
+/* ============================================================
+   Contenido principal
+   ============================================================ */
+.apiario-detail__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-md) var(--space-margin) 100px;
+  overflow-y: auto;
+}
+
+/* --- Tarjeta "Información General" --- */
+.info-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-base);
+  background-color: var(--color-surface-container-lowest);
+  border: 2px solid var(--color-on-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-md);
+}
+
+.info-card__title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--color-on-surface);
+  border-bottom: 2px solid var(--color-surface-container);
+  padding-bottom: var(--space-xs);
+}
+
+.info-card__text {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-on-surface-variant);
+}
+
+.info-card__material {
+  margin-top: var(--space-base);
+  padding-top: var(--space-base);
+  border-top: 2px solid var(--color-surface-container);
+}
+
+/* --- Sección "Colmenas en sitio" --- */
+.hives-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.hives-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-base);
+}
+
+.hives-section__title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--color-on-surface);
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background-color: var(--color-primary-container);
+  color: var(--color-on-surface);
+  border: 2px solid var(--color-on-surface);
+  border-radius: var(--radius-full);
+  padding: var(--space-base) var(--space-gutter);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease;
+}
+
+.add-btn__icon {
+  font-size: 16px;
+}
+
+/* --- Lista de colmenas --- */
+.hive-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.hive-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-base);
+  width: 100%;
+  padding: var(--space-md);
+  background-color: var(--color-surface-container-lowest);
+  border: 2px solid var(--color-on-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-sm);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.hive-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--color-surface-container);
+  padding-bottom: var(--space-base);
+}
+
+.hive-card__title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.hive-card__icon {
+  color: var(--color-primary);
+}
+
+.hive-list__empty {
+  text-align: center;
+  padding: var(--space-gutter) 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-on-surface-variant);
+  background-color: var(--color-surface-container);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--color-on-surface);
+}
+
+/* ============================================================
+   Modal "Nueva Colmena"
+   ============================================================ */
 .form-overlay {
   position: fixed;
   top: 0;
@@ -9,7 +237,6 @@
   right: 0;
   bottom: 0;
   background: rgba(26, 28, 28, 0.6);
-  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,23 +338,53 @@
   border-color: var(--color-tertiary);
 }
 
-.form-actions {
-  display: flex;
-  gap: var(--space-sm);
-  justify-content: flex-end;
+/* --- Bloque "Material asignado" --- */
+.material-section {
+  border-top: 2px solid var(--color-surface-container);
+  padding-top: var(--space-sm);
+  margin-top: var(--space-base);
 }
 
-.btn-submit {
-  font-family: var(--font-display);
-  font-size: 12px;
+.material-section__label {
+  font-family: var(--font-body);
+  font-size: 14px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--color-on-surface-variant);
+  margin-bottom: var(--space-sm);
+}
+
+.form-error {
+  margin-bottom: var(--space-gutter);
+  padding: var(--space-base);
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 2px solid #ef4444;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  box-shadow: 2px 2px 0px 0px rgba(239, 68, 68, 1);
+}
+
+/* --- Acciones del formulario --- */
+.form-actions {
+  display: flex;
+  gap: var(--space-base);
+  margin-top: var(--space-gutter);
+}
+
+.btn-cancel,
+.btn-submit {
+  flex: 1 1 0%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-base);
+  padding: var(--space-base);
   border: 2px solid var(--color-on-surface);
   border-radius: var(--radius-full);
-  padding: var(--space-base) var(--space-md);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
   transition: transform 0.08s ease, box-shadow 0.08s ease, margin-bottom 0.08s ease;
 }
 
@@ -137,54 +394,22 @@
 }
 
 .btn-submit {
-  background-color: var(--color-primary-container);
-  color: var(--color-on-surface);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 .btn-submit[disabled] {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
   box-shadow: none;
 }
 
-.btn-cancel:active,
-.btn-submit:not([disabled]):active {
-  transform: translateY(4px);
-  box-shadow: none;
-  margin-bottom: 4px;
+.btn-submit__spinner {
+  font-size: 16px;
+  animation: spin 1s linear infinite;
 }
 
-.delete-header-btn {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--color-error);
-  background-color: var(--color-error-container);
-  box-shadow: var(--shadow-sm);
-  color: var(--color-error);
-  margin-left: var(--space-gutter);
-  transition: background-color 0.15s ease, transform 0.08s ease;
-}
-
-.delete-header-btn .material-symbols-outlined {
-  font-size: 22px;
-}
-
-.delete-header-btn:hover {
-  background-color: var(--color-error);
-  color: var(--color-on-error);
-}
-
-.header-grid {
-  display: grid;
-  grid-template-columns: 56px 1fr 56px;
-  align-items: center;
-}
-
-.header-grid .delete-header-btn {
-  margin-left: 0;
-  justify-self: end;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

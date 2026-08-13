@@ -1,37 +1,35 @@
-<div *ngIf="loading()" class="flex h-screen items-center justify-center">
-  <p class="font-headline-md">Cargando detalles de la colmena...</p>
+<div *ngIf="loading()" class="loading-container">
+  <p class="loading-text">Cargando detalles de la colmena...</p>
 </div>
 
 <div *ngIf="!loading() && colmena() as datosColmena">
 
-  <header
-    class="header-grid h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] px-margin sticky top-0 z-50 shrink-0">
+  <header class="header-grid colmena-header">
     <button [routerLink]="['/apiarios/', datosColmena.apiarioId]" aria-label="Volver"
-      class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-on-surface bg-surface-container-lowest shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect mr-4">
-      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_back</span>
+      class="header-back-btn sink-effect">
+      <span class="material-symbols-outlined icon-fill">arrow_back</span>
     </button>
-    <h1 class="font-headline-sm text-headline-sm text-center uppercase tracking-wide">
+    <h1 class="header-title">
       COLMENA: {{ datosColmena.name }}
     </h1>
     <button (click)="openDeleteModal()" aria-label="Eliminar Colmena" class="delete-header-btn sink-effect">
-      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">delete</span>
+      <span class="material-symbols-outlined icon-fill">delete</span>
     </button>
   </header>
 
-  <main class="pb-[100px] px-margin py-md flex flex-col gap-lg overflow-y-auto">
+  <main class="main-container">
 
-    <section
-      class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-md shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-2">
-      <h2 class="font-label-lg text-on-surface uppercase tracking-wider border-b-2 border-surface-container pb-1">
+    <section class="info-card">
+      <h2 class="info-title">
         Información General
       </h2>
-      <p class="font-body-md text-on-surface-variant">
+      <p class="info-text">
         <strong>Creada el:</strong> {{ datosColmena.createdAt | date: 'dd/MM/yyyy' }}
       </p>
-      <p class="font-body-md text-on-surface-variant">
+      <p class="info-text">
         <strong>Apiario asociado:</strong> #{{ datosColmena.apiarioId }}
       </p>
-      <p class="font-body-md text-on-surface-variant">
+      <p class="info-text">
         <strong>Material actual:</strong>
         {{ composicion().camaras }} {{ composicion().camaras === 1 ? 'Cámara' : 'Cámaras' }},
         {{ composicion().alzas }} {{ composicion().alzas === 1 ? 'Alza' : 'Alzas' }}
@@ -40,36 +38,32 @@
       </p>
     </section>
 
-    <section class="w-full flex flex-col items-center" style="gap: 16px;">
-      <button (click)="toggleEditMode()" style="width: auto; max-width: 264px;"
-        class="bg-primary text-on-primary py-4 px-6 rounded-full border-2 border-on-surface font-bold shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] sink-effect flex items-center justify-center gap-2">
+    <section class="action-section">
+      <button (click)="toggleEditMode()" class="btn-edit sink-effect">
         <span class="material-symbols-outlined">edit</span> EDITAR COLMENA
       </button>
     </section>
 
     <!-- Edit Overlay -->
-    <div class="form-overlay fixed inset-0 z-[60] flex items-start justify-center pt-16 p-4 bg-black/20"
-      *ngIf="editMode()" (click)="toggleEditMode()">
-      <div class="form-card w-full max-w-sm max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+    <div class="modal-overlay" *ngIf="editMode()" (click)="toggleEditMode()">
+      <div class="modal-container modal-scrollable" (click)="$event.stopPropagation()">
         <div class="form-icon-wrapper">
-          <span class="material-symbols-outlined form-icon" style="font-variation-settings: 'FILL' 1;">edit</span>
+          <span class="material-symbols-outlined form-icon icon-fill">edit</span>
         </div>
-        <h3 class="section-title text-center text-xl font-bold mb-4">Editar Colmena</h3>
+        <h3 class="form-title">Editar Colmena</h3>
 
-        <div *ngIf="saveError()"
-          class="p-2 bg-red-100 text-red-700 rounded border-2 border-red-500 font-bold text-sm text-center shadow-[2px_2px_0px_0px_rgba(239,68,68,1)]">
+        <div *ngIf="saveError()" class="error-banner">
           {{ saveError() }}
         </div>
 
-        <div class="form-body flex flex-col gap-4">
-          <div class="form-field flex flex-col gap-2">
-            <label class="form-label font-bold text-sm">Identificador / Nombre</label>
-            <input type="text" name="nombre" [(ngModel)]="nombreEdit" required
-              class="form-input border-2 border-on-surface rounded p-2" />
+        <div class="form-body">
+          <div class="form-field">
+            <label class="form-label">Identificador / Nombre</label>
+            <input type="text" name="nombre" [(ngModel)]="nombreEdit" required class="form-input" />
           </div>
 
-          <div style="border-top: 2px solid var(--color-surface-container); padding-top: 12px; margin-top: 8px;">
-            <p class="form-label text-sm font-bold" style="margin-bottom: 12px;">MATERIAL ASIGNADO</p>
+          <div class="form-section-divider">
+            <p class="form-label form-section-title">MATERIAL ASIGNADO</p>
 
             <app-inventario-selector tipo="CAMARA" [max]="2" [seleccionados]="idsCamaras"
               [preAsignados]="camarasActuales()" (seleccionadosChange)="idsCamaras = $event" />
@@ -81,13 +75,10 @@
               (seleccionadosChange)="idsNucleos = $event" />
           </div>
 
-          <div class="form-actions flex gap-2 mt-4">
-            <button type="button" class="btn-cancel flex-1 p-2 border-2 rounded-full font-bold text-sm sink-effect"
-              (click)="toggleEditMode()">Cancelar</button>
-            <button type="button"
-              class="btn-submit flex-1 p-2 border-2 rounded-full font-bold text-sm bg-primary sink-effect text-on-primary flex items-center justify-center gap-2 disabled:opacity-50"
-              (click)="guardarColmena()" [disabled]="saving() || !nombreEdit">
-              <span *ngIf="saving()" class="material-symbols-outlined animate-spin" style="font-size:16px">sync</span>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel sink-effect" (click)="toggleEditMode()">Cancelar</button>
+            <button type="button" class="btn-submit sink-effect" (click)="guardarColmena()" [disabled]="saving() || !nombreEdit">
+              <span *ngIf="saving()" class="material-symbols-outlined icon-spin">sync</span>
               Guardar
             </button>
           </div>

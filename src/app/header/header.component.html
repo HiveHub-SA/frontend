@@ -3,6 +3,9 @@
     <span class="material-symbols-outlined brand-icon">hive</span>
     <span class="brand-title">HiveHub</span>
   </div>
+  
+  
+  <!-- Indicador Online / Offline -->
   <div class="status-badge" [class.online]="networkStatus.online()" [class.offline]="!networkStatus.online()">
     <span class="status-text">
       {{ networkStatus.online() ? 'ONLINE' : 'OFFLINE' }}

@@ -1,7 +1,9 @@
 <div class="mapa-contenedor">
   <div id="mapa"></div>
-  <!-- Panel de distancia -->
-  <div class="panel-distancia" *ngIf="rutaManager.infoRuta() as info">
+
+<!-- Panel de distancia -->
+<div class="panel-distancia" *ngIf="rutaManager.infoRuta() as info">
+  <div class="panel-distancia-principal">
     <span class="material-symbols-outlined">route</span>
 
     <div class="panel-distancia-info">
@@ -12,7 +14,20 @@
     </div>
   </div>
 
-  <!-- Controles flotantes laterales (Zoom y Ubicación) -->
+  <!-- Referencia de ida / vuelta -->
+  <div class="panel-distancia-leyenda">
+    <div class="leyenda-item">
+      <span class="leyenda-linea leyenda-ida"></span>
+      <span>Ida</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-linea leyenda-vuelta"></span>
+      <span>Vuelta</span>
+    </div>
+  </div>
+</div>
+
+  <!-- Controles flotantes laterales -->
   <div class="controles-laterales">
     <button class="btn-control pressable" (click)="zoomIn()" title="Acercar">
       <span class="material-symbols-outlined">add</span>
@@ -22,24 +37,64 @@
       <span class="material-symbols-outlined">remove</span>
     </button>
 
-    <button class="btn-control btn-ubicacion pressable" (click)="getUbicacionActual()" title="Mi Ubicación">
-      <span class="material-symbols-outlined text-icon-ubicacion">my_location</span>
-    </button>
+    <!-- Botón desplegable para Mi Ubicación -->
+    <div class="desplegable-control">
+      <button class="btn-control btn-ubicacion pressable" (click)="getUbicacionActual()" title="Mi Ubicación">
+        <span class="material-symbols-outlined text-icon-ubicacion">my_location</span>
+      </button>
+
+      <div class="label-desplegable" (click)="getUbicacionActual()">
+        Mi Ubicación
+      </div>
+    </div>
+
+    <!-- Botón desplegable para Añadir Apiario -->
+    <div class="desplegable-control">
+      <button class="btn-control btn-apiario pressable" (click)="onAnadirApiario()" title="Añadir Apiario">
+        <span class="material-symbols-outlined text-icon-apiario" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+      </button>
+
+      <div class="label-desplegable" (click)="onAnadirApiario()">
+        Añadir Apiario
+      </div>
+    </div>
+
     <app-ruta-panel [rutaManager]="rutaManager" (calcular)="onBotonRuta()" (limpiar)="limpiarRuta()">
     </app-ruta-panel>
   </div>
-
-  <!-- Botón de acción principal centrado abajo -->
-
-  <div class="contenedor-flotante-inferior">
-    <button class="btn-principal pressable" (click)="onAnadirApiario()">
-      <span class="material-symbols-outlined icono-principal"
-        style="font-variation-settings: 'FILL' 1;">add_circle</span>
-      Añadir Apiario
-    </button>
-  </div>
 </div>
 
+<!-- Toast Flotante para Alertas Climáticas Iniciales -->
+<div 
+  *ngIf="alertasService.alertaToastInicial()" 
+  class="toast-alerta-inicio"
+  style="background-color: #ffedd5; color: #9a3412;"
+>
+  <span class="material-symbols-outlined toast-icon" style="color: #ea580c;">warning</span>
+  
+  <div class="toast-body">
+    <span class="toast-titulo">Alertas Climáticas</span>
+    <p class="toast-msg">
+      Tienes <strong>{{ alertasService.alertas().length }}</strong> notificación(es) activa(s) en tus apiarios. Revisa la campana.
+    </p>
+  </div>
+
+  <button type="button" class="btn-cerrar-toast" (click)="alertasService.cerrarToast()">✕</button>
+</div>
+
+
 <router-outlet></router-outlet>
-<app-registrar-apiario [visible]="mostrarRegistrarApiario" (creado)="onApiarioCreado($event)"
-  (cancelado)="onApiarioCancelado()"></app-registrar-apiario>
+
+<!-- Modal Registrar Apiario -->
+<app-registrar-apiario
+  [visible]="mostrarRegistrarApiario"
+  (creado)="onApiarioCreado($event)"
+  (cancelado)="onApiarioCancelado()"
+></app-registrar-apiario>
+
+<!-- Modal Módulo Climático -->
+<app-modulo-climatico
+  [visible]="mostrarModuloClimatico"
+  [apiario]="apiarioClimaSeleccionado"
+  (cerrado)="mostrarModuloClimatico = false"
+></app-modulo-climatico>

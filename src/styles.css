@@ -112,6 +112,8 @@ body {
   -webkit-tap-highlight-color: transparent;
   background-color: var(--color-background);
   color: var(--color-on-background);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 h1,
@@ -173,12 +175,6 @@ button {
    COMPONENTES NEUBRUTALISTAS
    ============================================================ */
 
-/* Desenfoque de fondo general para elementos inactivos */
-.blurred-overlay {
-  filter: blur(4px);
-  pointer-events: none;
-}
-
 /* Modales */
 .modal-overlay {
   position: fixed;
@@ -186,23 +182,23 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 100;
+  background-color: rgba(15, 17, 17, 0.6); /* Oscurecido suave sin romper Leaflet ni layouts */
+  z-index: 10500;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  backdrop-filter: blur(4px);
+  animation: fadeInOverlay 0.15s ease-out;
 }
 
 .modal-container {
   background-color: var(--color-surface-container-lowest);
   border: var(--border-dark);
-  border-radius: 8px;
+  border-radius: 16px; /* Curva suave (antes estaba en 8px) */
+  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1); /* Sombra ajustada (antes 8px 8px) */
   padding: 20px;
   width: 100%;
   max-width: 380px;
-  box-shadow: 8px 8px 0px 0px rgba(26, 28, 28, 1);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -558,12 +554,12 @@ button {
 @keyframes slideInUp {
   from {
     transform: translateY(20px);
-    opacity: 0;
+    /* opacity: 0; */
   }
 
   to {
     transform: translateY(0);
-    opacity: 1;
+    /* opacity: 1; */
   }
 }
 
@@ -836,9 +832,7 @@ button {
 }
 
 /* --- Valores puntuales que en Stitch venían como "arbitrary
-   values" de Tailwind (bg-[#...], shadow-[...], texto entre
-   corchetes). Quedan acá para que el HTML funcione tal cual
-   está, sin tener que tocarlo. --- */
+   values" de Tailwind --- */
 [class~="shadow-[4px_4px_0px_0px_rgba(26,28,28,1)]"] {
   box-shadow: var(--shadow-md);
 }
@@ -875,12 +869,6 @@ button {
   margin-bottom: 4px;
 }
 
-/* ============================================================
-   CLASES FALTANTES detectadas en colmena-detalle.component.html
-   Ninguna de estas estaba definida ni acá ni en el CSS propio del
-   componente — por eso no importaba qué valor les pusieras, no
-   hacían absolutamente nada.
-   ============================================================ */
 
 /* --- Layout / posicionamiento --- */
 .fixed {
@@ -1065,4 +1053,22 @@ button:disabled[class~="disabled:opacity-50"] {
 
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+/* CORRECCIÓN DE INVERSIÓN GPU EN WEBKIT / SAFARI (PWA & iOS) */
+.leaflet-container,
+.leaflet-pane,
+.leaflet-map-pane,
+.leaflet-tile-container,
+.leaflet-layer {
+  -webkit-transform-style: flat !important;
+  transform-style: flat !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+}
+
+/* Evita la colisión de capas 3D al abrir overlays fixed */
+.leaflet-tile {
+  -webkit-transform-style: flat !important;
+  transform-style: flat !important;
 }
