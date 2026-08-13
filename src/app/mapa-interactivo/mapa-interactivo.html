@@ -66,16 +66,19 @@
 
 <!-- Toast Flotante para Alertas Climáticas Iniciales -->
 <div 
-  *ngIf="alertasService.alertaToastInicial() as toast" 
+  *ngIf="alertasService.alertaToastInicial()" 
   class="toast-alerta-inicio"
-  [ngClass]="'tipo-' + toast.tipo"
+  style="background-color: #ffedd5; color: #9a3412;"
 >
-  <span class="material-symbols-outlined toast-icon">warning</span>
+  <span class="material-symbols-outlined toast-icon" style="color: #ea580c;">warning</span>
+  
   <div class="toast-body">
-    <span class="toast-apiario">{{ toast.nombreApiario }}</span>
-    <span class="toast-titulo">{{ toast.titulo }}</span>
-    <p class="toast-msg">{{ toast.mensaje }}</p>
+    <span class="toast-titulo">Alertas Climáticas</span>
+    <p class="toast-msg">
+      Tienes <strong>{{ alertasService.alertas().length }}</strong> notificación(es) activa(s) en tus apiarios. Revisa la campana.
+    </p>
   </div>
+
   <button type="button" class="btn-cerrar-toast" (click)="alertasService.cerrarToast()">✕</button>
 </div>
 

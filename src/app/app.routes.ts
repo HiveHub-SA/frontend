@@ -6,7 +6,8 @@ import { MapaInteractivo } from './mapa-interactivo/mapa-interactivo';
 import { App } from './app';
 import { Inicio } from './inicio/inicio';
 import { OperacionSalaComponent } from './operaciones_sala/operacion_sala.component';
-
+import { AudioRecorderComponent } from './audio-recorder/audio-recorder';
+import { MaterialesComponent } from './materiales/materiales.component';
 
 export const routes: Routes = [
   { path: '', component: MapaInteractivo },

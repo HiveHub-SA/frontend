@@ -5,11 +5,11 @@
   right: 0;
   bottom: 0;
   background: rgba(26, 28, 28, 0.6);
-  backdrop-filter: blur(2px);
+  /* backdrop-filter: blur(2px); */
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 10500;
   padding: var(--space-margin, 16px);
   animation: fadeIn 0.15s ease;
 }
@@ -22,9 +22,9 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  animation: popIn 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-sizing: border-box;
   background-color: var(--color-surface-container-lowest, #ffffff);
+  animation: popIn 0.15s ease-out;
 }
 
 .header-modal {
@@ -51,7 +51,6 @@
   font-weight: 900;
 }
 
-/* Arreglo del botón cerrar X */
 .btn-cerrar-modal {
   background: transparent;
   border: none;
@@ -70,7 +69,7 @@
 
 /* Tarjeta Principal */
 .clima-summary-card {
-  background-color: #fca311; /* Tono naranja-amarillo brutalista */
+  background-color: #fca311;
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -111,7 +110,6 @@
   max-width: 180px;
 }
 
-/* Óvalo con borde 2px negro remarcado */
 .stat-pill {
   background: #ffffff;
   padding: 6px 14px;
@@ -177,7 +175,6 @@
   font-size: 11px;
 }
 
-/* Horas */
 .section-subtitle {
   margin: 0 0 8px 0;
   font-weight: 900;
@@ -245,11 +242,11 @@
 @keyframes popIn {
   from {
     opacity: 0;
-    transform: scale(0.92) translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
   }
 }
 

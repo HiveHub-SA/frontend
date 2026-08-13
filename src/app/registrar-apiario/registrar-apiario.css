@@ -6,11 +6,10 @@
   right: 0;
   bottom: 0;
   background: rgba(26, 28, 28, 0.6);
-  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 10500;
   padding: var(--space-margin);
   animation: fadeIn 0.15s ease;
 }

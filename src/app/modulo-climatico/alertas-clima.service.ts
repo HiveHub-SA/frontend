@@ -1,5 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ClimaService, WeatherData } from './clima.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export interface AlertaExtrema {
   id: string;
@@ -20,59 +22,59 @@ export interface AlertaExtrema {
 export class AlertasClimaService {
   private climaService = inject(ClimaService);
   
-  // Signals para estado reactivo
   alertas = signal<AlertaExtrema[]>([]);
-  alertaToastInicial = signal<AlertaExtrema | null>(null);
+  alertaToastInicial = signal<boolean>(false);
+  private toastCerradoManual = false; // Evita que se vuelva a abrir si el usuario lo cerró manualmente
 
-  private colaToast: AlertaExtrema[] = [];
-  private idsDescartados = new Set<string>(); // para que no se abran de vuelta al recargar pagina
-
-  /* Evalúa el clima de una lista de apiarios y genera alertas activas. */
+  /* se evualua el clima de todos los apiarios en paralelo */
   evaluarApiarios(apiarios: Array<{ id?: any; nombre: string; lat: number; lng: number }>): void {
-    const nuevasAlertas: AlertaExtrema[] = [];
+    if (!apiarios || apiarios.length === 0) {
+      this.alertas.set([]);
+      this.alertaToastInicial.set(false);
+      return;
+    }
 
-    apiarios.forEach((apiario) => {
-      this.climaService.obtenerClimaApiario(apiario.lat, apiario.lng).subscribe({
-        next: (clima) => {
+    // se prepara el array de peticiones HTTP
+    const peticiones$ = apiarios.map((apiario) =>
+      this.climaService.obtenerClimaApiario(apiario.lat, apiario.lng).pipe(
+        catchError(() => of(null)) // Si falla la consulta de un apiario no se interrumpe el resto
+      )
+    );
+
+    // se usa forkJoin para ejecutar todas las peticiones al mismo tiempo y esperar a que terminen
+    forkJoin(peticiones$).subscribe({
+      next: (resultadosClima) => {
+        const nuevasAlertas: AlertaExtrema[] = [];
+        resultadosClima.forEach((clima, index) => {
           if (!clima) return;
+          const apiario = apiarios[index];
           const halladas = this.analizarCondiciones(apiario, clima);
           nuevasAlertas.push(...halladas);
-          this.alertas.set([...nuevasAlertas]);
+        });
 
-          halladas.forEach((alerta) => this.encolarToast(alerta));
+        // aca se actualiza la lista de alertas para la campanita del header
+        this.alertas.set(nuevasAlertas);
+
+        // verificamos si existe alguna alerta relevante para mostrar
+        const hayAlertasRelevantes = nuevasAlertas.some(
+          a => a.tipo === 'calor' || a.tipo === 'frio' || (a.tipo === 'lluvia' && a.nivel === 'peligro')
+        );
+
+        // solo se muestra el cartel si hay alertas y el usuario no lo cerro previamente
+        if (hayAlertasRelevantes && !this.toastCerradoManual) {
+          this.alertaToastInicial.set(true);
+        } else {
+          this.alertaToastInicial.set(false);
         }
-      });
+      }
     });
   }
 
-    private encolarToast(alerta: AlertaExtrema): void {
-    const esImportante =
-      alerta.tipo === 'calor' ||
-      alerta.tipo === 'frio' ||
-      (alerta.tipo === 'lluvia' && alerta.nivel === 'peligro');
-
-    if (!esImportante) return;
-    if (this.idsDescartados.has(alerta.id)) return; // punto 3
-    if (this.colaToast.some(a => a.id === alerta.id)) return;
-
-    this.colaToast.push(alerta);
-
-    if (!this.alertaToastInicial()) {
-      this.mostrarSiguienteToast();
-    }
-  }
-
-    private mostrarSiguienteToast(): void {
-    const siguiente = this.colaToast.shift();
-    this.alertaToastInicial.set(siguiente ?? null);
-  }
-
+  /* Cierra el cartel flotante de forma definitiva */
   cerrarToast(): void {
-    const actual = this.alertaToastInicial();
-    if (actual) this.idsDescartados.add(actual.id);
-    this.mostrarSiguienteToast();
+    this.toastCerradoManual = true;
+    this.alertaToastInicial.set(false);
   }
-
 
   private analizarCondiciones(
     apiario: { id?: any; nombre: string; lat: number; lng: number },
@@ -80,7 +82,7 @@ export class AlertasClimaService {
   ): AlertaExtrema[] {
     const res: AlertaExtrema[] = [];
 
-    // 1. Calor Extremo (≥ 38°C - Riesgo de derretimiento de panales)
+    // Calor Extremo (≥ 38°C)
     if (clima.temp >= 38) {
       res.push({
         id: `${apiario.nombre}-calor`,
@@ -96,7 +98,7 @@ export class AlertasClimaService {
       });
     }
 
-    // 2. Caída brusca / Frío Extremo (≤ 10°C)
+    // Frio Extremo (≤ 10°C)
     if (clima.temp <= 10) {
       res.push({
         id: `${apiario.nombre}-frio`,
@@ -112,7 +114,7 @@ export class AlertasClimaService {
       });
     }
 
-    // 3. Precipitaciones Extremas / Tormenta
+    // Lluvias Extremas / Tormenta
     const cond = clima.condicion?.toLowerCase() || '';
     const probLluvia = clima.horas?.[0]?.probabilidadLluvia || 0;
 
@@ -133,5 +135,4 @@ export class AlertasClimaService {
 
     return res;
   }
-
 }
