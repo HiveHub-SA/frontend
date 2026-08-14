@@ -34,11 +34,11 @@
     <div *ngIf="!loading()" class="registros-section">
       <p class="section-title">Registros Realizados</p>
 
-      <div *ngFor="let insp of inspecciones()" class="swipe-card-wrapper">
+      <div *ngFor="let insp of inspecciones()" class="swipe-item-wrapper">
         
         <!-- Capa trasera con el botón de eliminación -->
-        <div class="swipe-background-action">
-          <button (click)="pedirConfirmacionEliminar(insp, $event)" class="btn-delete-swipe pressable">
+        <div class="swipe-delete-bg">
+          <button (click)="pedirConfirmacionEliminar(insp, $event)" class="btn-swipe-delete pressable">
             <span class="material-symbols-outlined font-bold">delete</span>
             <span>ELIMINAR</span>
           </button>

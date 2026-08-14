@@ -89,6 +89,7 @@
   gap: var(--space-lg);
   padding: var(--space-md) var(--space-margin) 100px;
   overflow-y: auto;
+  padding-top: 85px;
 }
 
 /* --- Tarjeta "Información General" --- */

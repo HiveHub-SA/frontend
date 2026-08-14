@@ -56,16 +56,13 @@ export class NuevaInspeccionComponent implements OnInit {
   /** Evita envíos duplicados por clics múltiples (APB) */
   isSubmitting = signal<boolean>(false);
 
-  /** Indicador persistente del estado de conexión (Offline) */
-  isOffline = signal<boolean>(true);
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private apiarioService: ApiarioService,
     private inspeccionService: InspeccionService,
     private draftService: InspeccionDraftService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.params['id'];

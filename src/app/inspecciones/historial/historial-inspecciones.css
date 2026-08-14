@@ -6,6 +6,7 @@
   background-color: #FFF9ED;
   color: var(--color-on-surface, #1a1c1c);
   font-family: var(--font-body, 'Quicksand', sans-serif);
+  padding-top: 68px;
 }
 
 /* Header Neo-Brutalista */
@@ -120,7 +121,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: 80px;
+  width: 100px;
   display: flex;
   align-items: center;
   justify-content: center;

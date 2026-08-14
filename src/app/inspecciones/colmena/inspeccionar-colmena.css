@@ -8,6 +8,7 @@
   flex-direction: column;
   position: relative;
   font-family: var(--font-body, 'Nunito Sans', sans-serif);
+  padding-top: 68px;
 }
 
 .header-tactile {

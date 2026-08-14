@@ -6,6 +6,7 @@
   background-color: #FFF9ED;
   color: var(--color-on-surface, #1a1c1c);
   font-family: var(--font-body, 'Quicksand', sans-serif);
+  padding-top: 67px;
 }
 
 /* Header Neo-Brutalista */
@@ -63,25 +64,9 @@
   margin: 0;
 }
 
-/* Indicador Persistente Offline */
-.offline-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  border: 2px solid var(--color-on-surface, #1a1c1c);
-  background-color: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
-  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
-}
-
-.offline-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 9999px;
-  background-color: #6b7280;
+/* Espaciador del header para centrado */
+.header-spacer {
+  width: 40px;
 }
 
 /* Main Content */
