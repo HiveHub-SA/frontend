@@ -171,24 +171,32 @@ button {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-/* ============================================================
-   COMPONENTES NEUBRUTALISTAS
-   ============================================================ */
-
-/* Desenfoque de fondo general para elementos inactivos */
-.blurred-overlay {
-  pointer-events: none;
+/* Barra Superior Fija (Header Global) */
+app-header {
+  display: block;
+  position: relative;
+  z-index: 1000;
 }
 
-/* Modales */
-.modal-overlay {
+.app-top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 99999 !important;
+  width: 100%;
+  background-color: var(--color-surface-container-lowest, #ffffff);
+}
+
+/* Modales y Formularios Popup */
+.modal-overlay,
+.form-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(15, 17, 17, 0.6); /* Oscurecido suave sin romper Leaflet ni layouts */
-  z-index: 10500;
+  background-color: rgba(15, 17, 17, 0.6);
+  /* Oscurecido suave que cubre la pantalla entera incluyendo headers */
+  z-index: 200000 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -198,8 +206,10 @@ button {
 .modal-container {
   background-color: var(--color-surface-container-lowest);
   border: var(--border-dark);
-  border-radius: 16px; /* Curva suave (antes estaba en 8px) */
-  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1); /* Sombra ajustada (antes 8px 8px) */
+  border-radius: 16px;
+  /* Curva suave (antes estaba en 8px) */
+  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
+  /* Sombra ajustada (antes 8px 8px) */
   padding: 20px;
   width: 100%;
   max-width: 380px;

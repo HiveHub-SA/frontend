@@ -16,8 +16,8 @@
   box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
   padding: 0 16px;
   position: sticky;
-  top: 0;
-  z-index: 50;
+  top: 68px;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -105,33 +105,30 @@
 }
 
 /* Contenedor Swipe to Delete */
-.swipe-card-wrapper {
+.swipe-item-wrapper {
   position: relative;
-  width: 100%;
-  border-radius: 14px;
   overflow: hidden;
+  border-radius: 16px;
+  border: 2px solid #1a1c1c;
+  box-shadow: 3px 3px 0 0 #1a1c1c;
   background-color: #ef4444;
-  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
-  border: 2px solid var(--color-on-surface, #1a1c1c);
-  user-select: none;
+  touch-action: pan-x;
 }
 
-.swipe-background-action {
+.swipe-delete-bg {
   position: absolute;
   top: 0;
-  bottom: 0;
   right: 0;
-  width: 100px;
-  background-color: #ef4444;
+  bottom: 0;
+  width: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #ef4444;
   z-index: 1;
 }
 
-.btn-delete-swipe {
-  width: 100%;
-  height: 100%;
+.btn-swipe-delete {
   background: transparent;
   border: none;
   color: #ffffff;
@@ -158,8 +155,8 @@
   transition: transform 0.2s ease-out;
   display: flex;
   flex-direction: column;
+  touch-action: pan-x;
   gap: 12px;
-  touch-action: pan-y;
 }
 
 .inspeccion-card:active {
@@ -346,6 +343,7 @@
   left: 0;
   right: 0;
   padding: 0 16px;
+  padding-bottom: 16px;
   max-width: 440px;
   margin: 0 auto;
   z-index: 40;

@@ -12,8 +12,8 @@
 
 .header-tactile {
   position: sticky;
-  top: 0;
-  z-index: 50;
+  top: 68px;
+  z-index: 100;
   height: 72px;
   background-color: var(--color-surface, #f9f9f9);
   border-bottom: 2px solid var(--color-on-surface, #1a1c1c);

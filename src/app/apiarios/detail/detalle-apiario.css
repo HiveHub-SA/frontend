@@ -29,8 +29,8 @@
   padding-left: var(--space-margin);
   padding-right: var(--space-margin);
   position: sticky;
-  top: 0;
-  z-index: 50;
+  top: 68px;
+  z-index: 100;
   flex-shrink: 0;
 }
 
@@ -286,8 +286,13 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes popIn {
@@ -295,6 +300,7 @@
     opacity: 0;
     transform: scale(0.9) translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -410,8 +416,13 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .fab-container {

@@ -57,7 +57,6 @@ export class ApiarioDetailComponent implements OnInit {
     }
   }
 
-  showForm: boolean = false;
   showActionMenu: boolean = false;
 
   newColmena = {
