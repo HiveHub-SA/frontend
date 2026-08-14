@@ -175,6 +175,11 @@ button {
    COMPONENTES NEUBRUTALISTAS
    ============================================================ */
 
+/* Desenfoque de fondo general para elementos inactivos */
+.blurred-overlay {
+  pointer-events: none;
+}
+
 /* Modales */
 .modal-overlay {
   position: fixed;
@@ -188,7 +193,6 @@ button {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  animation: fadeInOverlay 0.15s ease-out;
 }
 
 .modal-container {

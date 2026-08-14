@@ -1,3 +1,6 @@
+.blurred-overlay {
+  pointer-events: none;
+}
 /* Contenido */
 .content-container {
   padding: 24px 20px;

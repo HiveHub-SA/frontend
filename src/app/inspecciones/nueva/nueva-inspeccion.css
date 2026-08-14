@@ -355,6 +355,7 @@
   left: 0;
   right: 0;
   padding: 0 16px;
+  padding-bottom: 16px;
   max-width: 440px;
   margin: 0 auto;
   z-index: 40;
