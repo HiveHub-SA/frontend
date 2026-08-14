@@ -8,6 +8,9 @@
 *.env
 .vcm_meta
 
+src/environments/environment.ts
+src/environments/environment.prod.ts
+
 
 # 2. Compilación, Dependencias y Artefactos (Node / Angular)
 # ==========================================
@@ -64,7 +67,3 @@ __screenshots__/
 # ==========================================
 .DS_Store
 Thumbs.db
-
-# IA / IDE configs
-.claude/
-.antigravity/

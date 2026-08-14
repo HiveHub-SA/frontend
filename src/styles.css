@@ -112,6 +112,8 @@ body {
   -webkit-tap-highlight-color: transparent;
   background-color: var(--color-background);
   color: var(--color-on-background);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 h1,
@@ -173,12 +175,6 @@ button {
    COMPONENTES NEUBRUTALISTAS
    ============================================================ */
 
-/* Desenfoque de fondo general para elementos inactivos */
-.blurred-overlay {
-  filter: blur(4px);
-  pointer-events: none;
-}
-
 /* Modales */
 .modal-overlay {
   position: fixed;
@@ -186,23 +182,23 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 100;
+  background-color: rgba(15, 17, 17, 0.6); /* Oscurecido suave sin romper Leaflet ni layouts */
+  z-index: 10500;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  backdrop-filter: blur(4px);
+  animation: fadeInOverlay 0.15s ease-out;
 }
 
 .modal-container {
   background-color: var(--color-surface-container-lowest);
   border: var(--border-dark);
-  border-radius: 8px;
+  border-radius: 16px; /* Curva suave (antes estaba en 8px) */
+  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1); /* Sombra ajustada (antes 8px 8px) */
   padding: 20px;
   width: 100%;
   max-width: 380px;
-  box-shadow: 8px 8px 0px 0px rgba(26, 28, 28, 1);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -558,11 +554,12 @@ button {
 @keyframes slideInUp {
   from {
     transform: translateY(20px);
-    opacity: 0;
+    /* opacity: 0; */
   }
+
   to {
     transform: translateY(0);
-    opacity: 1;
+    /* opacity: 1; */
   }
 }
 
@@ -575,25 +572,81 @@ button {
    ============================================================ */
 
 /* --- Layout --- */
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.flex-1 { flex: 1 1 0%; }
-.items-center { align-items: center; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
-.text-center { text-align: center; }
-.overflow-y-auto { overflow-y: auto; }
-.sticky { position: sticky; }
-.top-0 { top: 0; }
-.z-50 { z-index: 50; }
-.shrink-0 { flex-shrink: 0; }
-.cursor-pointer { cursor: pointer; }
-.transition-transform { transition: transform 0.15s ease; }
-.w-full { width: 100%; }
-.w-10 { width: 40px; }
-.h-10 { height: 40px; }
-.h-16 { height: 64px; }
-.h-screen { height: 100vh; }
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.sticky {
+  position: sticky;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+.shrink-0 {
+  flex-shrink: 0;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.transition-transform {
+  transition: transform 0.15s ease;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.w-10 {
+  width: 40px;
+}
+
+.h-10 {
+  height: 40px;
+}
+
+.h-16 {
+  height: 64px;
+}
+
+.h-screen {
+  height: 100vh;
+}
 
 /* --- Tipografía ---
    Igual que en el config original de Tailwind, "font-*" define
@@ -608,12 +661,14 @@ button {
   line-height: 28px;
   font-weight: 700;
 }
+
 .font-headline-md {
   font-family: var(--font-display);
   font-size: 24px;
   line-height: 32px;
   font-weight: 700;
 }
+
 .font-label-lg {
   font-family: var(--font-display);
   font-size: 16px;
@@ -621,71 +676,399 @@ button {
   letter-spacing: 0.5px;
   font-weight: 700;
 }
+
 .font-body-md {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
 }
-.font-bold { font-weight: 700; }
-.uppercase { text-transform: uppercase; }
-.tracking-wide { letter-spacing: 0.025em; }
-.tracking-wider { letter-spacing: 0.05em; }
+
+.font-bold {
+  font-weight: 700;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.tracking-wide {
+  letter-spacing: 0.025em;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
 
 /* --- Bordes y radios --- */
-.rounded-full { border-radius: var(--radius-full); }
-.rounded-lg { border-radius: var(--radius-lg); }
-.border-2 { border-width: 2px; border-style: solid; }
-.border-b-2 { border-bottom-width: 2px; border-bottom-style: solid; }
-.border-dashed { border-style: dashed; }
+.rounded-full {
+  border-radius: var(--radius-full);
+}
+
+.rounded-lg {
+  border-radius: var(--radius-lg);
+}
+
+.border-2 {
+  border-width: 2px;
+  border-style: solid;
+}
+
+.border-b-2 {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+}
+
+.border-dashed {
+  border-style: dashed;
+}
 
 /* --- Color (usa los tokens --color-* de arriba) --- */
-.border-on-surface { border-color: var(--color-on-surface); }
-.border-surface-container { border-color: var(--color-surface-container); }
-.bg-primary-fixed { background-color: var(--color-primary-fixed); }
-.bg-surface-container-lowest { background-color: var(--color-surface-container-lowest); }
-.bg-surface-container { background-color: var(--color-surface-container); }
-.bg-primary-container { background-color: var(--color-primary-container); }
-.text-on-surface { color: var(--color-on-surface); }
-.text-on-surface-variant { color: var(--color-on-surface-variant); }
-.text-primary { color: var(--color-primary); }
+.border-on-surface {
+  border-color: var(--color-on-surface);
+}
+
+.border-surface-container {
+  border-color: var(--color-surface-container);
+}
+
+.bg-primary-fixed {
+  background-color: var(--color-primary-fixed);
+}
+
+.bg-surface-container-lowest {
+  background-color: var(--color-surface-container-lowest);
+}
+
+.bg-surface-container {
+  background-color: var(--color-surface-container);
+}
+
+.bg-primary-container {
+  background-color: var(--color-primary-container);
+}
+
+.text-on-surface {
+  color: var(--color-on-surface);
+}
+
+.text-on-surface-variant {
+  color: var(--color-on-surface-variant);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
 
 /* --- Espaciado (misma escala que usaba Tailwind: 1 unidad = 4px) --- */
-.px-margin { padding-left: var(--space-margin); padding-right: var(--space-margin); }
-.py-md { padding-top: var(--space-md); padding-bottom: var(--space-md); }
-.p-md { padding: var(--space-md); }
-.px-4 { padding-left: var(--space-gutter); padding-right: var(--space-gutter); }
-.py-2 { padding-top: var(--space-base); padding-bottom: var(--space-base); }
-.py-4 { padding-top: var(--space-gutter); padding-bottom: var(--space-gutter); }
-.pb-1 { padding-bottom: var(--space-xs); }
-.pb-2 { padding-bottom: var(--space-base); }
-.pr-14 { padding-right: 56px; } /* ancho del botón volver (40px) + su margen (16px), para centrar el título del header */
-.gap-1 { gap: var(--space-xs); }
-.gap-2 { gap: var(--space-base); }
-.gap-sm { gap: var(--space-sm); }
-.gap-lg { gap: var(--space-lg); }
-.mb-2 { margin-bottom: var(--space-base); }
-.mb-sm { margin-bottom: var(--space-sm); }
-.mr-4 { margin-right: var(--space-gutter); }
+.px-margin {
+  padding-left: var(--space-margin);
+  padding-right: var(--space-margin);
+}
+
+.py-md {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.p-md {
+  padding: var(--space-md);
+}
+
+.px-4 {
+  padding-left: var(--space-gutter);
+  padding-right: var(--space-gutter);
+}
+
+.py-2 {
+  padding-top: var(--space-base);
+  padding-bottom: var(--space-base);
+}
+
+.py-4 {
+  padding-top: var(--space-gutter);
+  padding-bottom: var(--space-gutter);
+}
+
+.pb-1 {
+  padding-bottom: var(--space-xs);
+}
+
+.pb-2 {
+  padding-bottom: var(--space-base);
+}
+
+.pr-14 {
+  padding-right: 56px;
+}
+
+/* ancho del botón volver (40px) + su margen (16px), para centrar el título del header */
+.gap-1 {
+  gap: var(--space-xs);
+}
+
+.gap-2 {
+  gap: var(--space-base);
+}
+
+.gap-sm {
+  gap: var(--space-sm);
+}
+
+.gap-lg {
+  gap: var(--space-lg);
+}
+
+.mb-2 {
+  margin-bottom: var(--space-base);
+}
+
+.mb-sm {
+  margin-bottom: var(--space-sm);
+}
+
+.mr-4 {
+  margin-right: var(--space-gutter);
+}
 
 /* --- Valores puntuales que en Stitch venían como "arbitrary
-   values" de Tailwind (bg-[#...], shadow-[...], texto entre
-   corchetes). Quedan acá para que el HTML funcione tal cual
-   está, sin tener que tocarlo. --- */
-[class~="shadow-[4px_4px_0px_0px_rgba(26,28,28,1)]"] { box-shadow: var(--shadow-md); }
-[class~="shadow-[2px_2px_0px_0px_rgba(26,28,28,1)]"] { box-shadow: var(--shadow-sm); }
-[class~="bg-[#FFB300]"] { background-color: var(--color-primary-container); }
-[class~="text-[12px]"] { font-size: 12px; }
-[class~="text-[16px]"] { font-size: 16px; }
-[class~="pb-[100px]"] { padding-bottom: 100px; }
+   values" de Tailwind --- */
+[class~="shadow-[4px_4px_0px_0px_rgba(26,28,28,1)]"] {
+  box-shadow: var(--shadow-md);
+}
+
+[class~="shadow-[2px_2px_0px_0px_rgba(26,28,28,1)]"] {
+  box-shadow: var(--shadow-sm);
+}
+
+[class~="bg-[#FFB300]"] {
+  background-color: var(--color-primary-container);
+}
+
+[class~="text-[12px]"] {
+  font-size: 12px;
+}
+
+[class~="text-[16px]"] {
+  font-size: 16px;
+}
+
+[class~="pb-[100px]"] {
+  padding-bottom: 100px;
+}
 
 /* --- Efecto "hundido" al presionar (usado en botones y tarjetas
    clickeables) --- */
 .sink-effect {
   transition: transform 0.08s ease, box-shadow 0.08s ease, margin-bottom 0.08s ease;
 }
+
 .sink-effect:active {
   transform: translateY(4px);
   box-shadow: none !important;
   margin-bottom: 4px;
+}
+
+
+/* --- Layout / posicionamiento --- */
+.fixed {
+  position: fixed;
+}
+
+.inset-0 {
+  inset: 0;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.z-\[60\] {
+  z-index: 60;
+}
+
+.max-w-sm {
+  max-width: 384px;
+}
+
+[class~="max-h-[90vh]"] {
+  max-height: 90vh;
+}
+
+[class~="min-w-[64px]"] {
+  min-width: 64px;
+}
+
+.w-16 {
+  width: 64px;
+}
+
+/* --- Colores --- */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.text-on-primary {
+  color: var(--color-on-primary);
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.bg-black\/20 {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.bg-red-100 {
+  background-color: #fee2e2;
+}
+
+.text-red-700 {
+  color: #b91c1c;
+}
+
+.border-red-500 {
+  border-color: #ef4444;
+}
+
+[class~="shadow-[2px_2px_0px_0px_rgba(239,68,68,1)]"] {
+  box-shadow: 2px 2px 0px 0px rgba(239, 68, 68, 1);
+}
+
+/* --- Tipografía --- */
+.text-sm {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.text-xl {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+/* --- Bordes --- */
+.rounded {
+  border-radius: 8px;
+}
+
+/* --- Espaciado --- */
+.gap-4 {
+  gap: var(--space-gutter);
+}
+
+.gap-6 {
+  gap: 24px;
+}
+
+.p-2 {
+  padding: var(--space-base);
+}
+
+.p-4 {
+  padding: var(--space-gutter);
+}
+
+.px-6 {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.py-3 {
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
+}
+
+.pt-16 {
+  padding-top: 64px;
+}
+
+.mb-4 {
+  margin-bottom: var(--space-gutter);
+}
+
+.mt-4 {
+  margin-top: var(--space-gutter);
+}
+
+/* --- Título de sección dentro de modales (el HTML usa "section-title";
+   el CSS del componente sólo tenía "form-title" definida, por eso el
+   <h3> nunca tuvo estilo — nombres de clase que no coinciden) --- */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-on-surface);
+  text-align: center;
+}
+
+/* --- Ocultar visualmente el radio real manteniéndolo accesible (Tailwind sr-only) --- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* --- Transición usada junto con peer-checked --- */
+.transition-colors {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+/* --- Emulación del "peer" de Tailwind: el radio (.peer) está oculto (sr-only)
+   pero cuando está :checked, le pone el fondo al elemento hermano que le
+   sigue inmediatamente y que tiene la clase peer-checked:bg-primary-container --- */
+.peer:checked+[class~="peer-checked:bg-primary-container"] {
+  background-color: var(--color-primary-container);
+}
+
+/* --- Estados disabled --- */
+button:disabled[class~="disabled:opacity-40"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button:disabled[class~="disabled:opacity-50"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Spinner de carga (Tailwind animate-spin) --- */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* CORRECCIÓN DE INVERSIÓN GPU EN WEBKIT / SAFARI (PWA & iOS) */
+.leaflet-container,
+.leaflet-pane,
+.leaflet-map-pane,
+.leaflet-tile-container,
+.leaflet-layer {
+  -webkit-transform-style: flat !important;
+  transform-style: flat !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+}
+
+/* Evita la colisión de capas 3D al abrir overlays fixed */
+.leaflet-tile {
+  -webkit-transform-style: flat !important;
+  transform-style: flat !important;
 }

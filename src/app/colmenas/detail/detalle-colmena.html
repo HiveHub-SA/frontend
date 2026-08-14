@@ -1,57 +1,94 @@
-<div *ngIf="loading()" class="flex h-screen items-center justify-center">
-  <p class="font-headline-md">Cargando detalles de la colmena...</p>
+<div *ngIf="loading()" class="loading-container">
+  <p class="loading-text">Cargando detalles de la colmena...</p>
 </div>
 
 <div *ngIf="!loading() && colmena() as datosColmena">
 
-  <!-- Custom Header -->
-  <header class="header-grid h-16 border-b-2 border-on-surface bg-primary-fixed shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] px-margin sticky top-0 z-50 shrink-0">
-    <button
-      [routerLink]="['/apiarios/', datosColmena.apiarioId]"
-      aria-label="Volver"
-      class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-on-surface bg-surface-container-lowest shadow-[2px_2px_0px_0px_rgba(26,28,28,1)] sink-effect mr-4"
-    >
-      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_back</span>
+  <header class="header-grid colmena-header">
+    <button [routerLink]="['/apiarios/', datosColmena.apiarioId]" aria-label="Volver"
+      class="header-back-btn sink-effect">
+      <span class="material-symbols-outlined icon-fill">arrow_back</span>
     </button>
-    <h1 class="font-headline-sm text-headline-sm text-center uppercase tracking-wide">
+    <h1 class="header-title">
       COLMENA: {{ datosColmena.name }}
     </h1>
-
-    <!-- Botón de eliminar -->
-    <button
-      (click)="openDeleteModal()"
-      aria-label="Eliminar Colmena"
-      class="delete-header-btn sink-effect"
-      >
-      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">delete</span>
+    <button (click)="openDeleteModal()" aria-label="Eliminar Colmena" class="delete-header-btn sink-effect">
+      <span class="material-symbols-outlined icon-fill">delete</span>
     </button>
   </header>
 
-  <!-- Main Content -->
-  <main class="px-margin py-md flex flex-col gap-lg overflow-y-auto">
+  <main class="main-container">
 
-    <!-- Información General -->
-    <section class="bg-surface-container-lowest border-2 border-on-surface rounded-lg p-md shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] flex flex-col gap-2">
-      <h2 class="font-label-lg text-on-surface uppercase tracking-wider border-b-2 border-surface-container pb-1">
+    <section class="info-card">
+      <h2 class="info-title">
         Información General
       </h2>
-      <p class="font-body-md text-on-surface-variant">
+      <p class="info-text">
         <strong>Creada el:</strong> {{ datosColmena.createdAt | date: 'dd/MM/yyyy' }}
       </p>
-      <p class="font-body-md text-on-surface-variant">
+      <p class="info-text">
         <strong>Apiario asociado:</strong> #{{ datosColmena.apiarioId }}
       </p>
+      <p class="info-text">
+        <strong>Material actual:</strong>
+        {{ composicion().camaras }} {{ composicion().camaras === 1 ? 'Cámara' : 'Cámaras' }},
+        {{ composicion().alzas }} {{ composicion().alzas === 1 ? 'Alza' : 'Alzas' }}
+        <span *ngIf="composicion().alzas > 0">({{ alzasTexto() }})</span>,
+        {{ composicion().nucleos }} {{ composicion().nucleos === 1 ? 'Núcleo' : 'Núcleos' }}
+      </p>
     </section>
+
+    <section class="action-section">
+      <button (click)="toggleEditMode()" class="btn-edit sink-effect">
+        <span class="material-symbols-outlined">edit</span> EDITAR COLMENA
+      </button>
+    </section>
+
+    <!-- Edit Overlay -->
+    <div class="modal-overlay" *ngIf="editMode()" (click)="toggleEditMode()">
+      <div class="modal-container modal-scrollable" (click)="$event.stopPropagation()">
+        <div class="form-icon-wrapper">
+          <span class="material-symbols-outlined form-icon icon-fill">edit</span>
+        </div>
+        <h3 class="form-title">Editar Colmena</h3>
+
+        <div *ngIf="saveError()" class="error-banner">
+          {{ saveError() }}
+        </div>
+
+        <div class="form-body">
+          <div class="form-field">
+            <label class="form-label">Identificador / Nombre</label>
+            <input type="text" name="nombre" [(ngModel)]="nombreEdit" required class="form-input" />
+          </div>
+
+          <div class="form-section-divider">
+            <p class="form-label form-section-title">MATERIAL ASIGNADO</p>
+
+            <app-inventario-selector tipo="CAMARA" [max]="2" [seleccionados]="idsCamaras"
+              [preAsignados]="camarasActuales()" (seleccionadosChange)="idsCamaras = $event" />
+
+            <app-inventario-selector tipo="ALZA" [max]="5" [seleccionados]="idsAlzas" [preAsignados]="alzasActuales()"
+              (seleccionadosChange)="idsAlzas = $event" />
+
+            <app-inventario-selector tipo="NUCLEO" [seleccionados]="idsNucleos" [preAsignados]="nucleosActuales()"
+              (seleccionadosChange)="idsNucleos = $event" />
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-cancel sink-effect" (click)="toggleEditMode()">Cancelar</button>
+            <button type="button" class="btn-submit sink-effect" (click)="guardarColmena()" [disabled]="saving() || !nombreEdit">
+              <span *ngIf="saving()" class="material-symbols-outlined icon-spin">sync</span>
+              Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </main>
 </div>
 
-<app-confirm-delete-component
-  [visible]="showDeleteModal()"
-  [itemName]="colmena()?.name ?? ''"
-  entityLabel="colmena"
-  [loading]="deleting()"
-  [errorMessage]="deleteError()"
-  (confirmed)="confirmDelete()"
-  (cancelled)="closeDeleteModal()"
-/>
+<app-confirm-delete-component [visible]="showDeleteModal()" [itemName]="colmena()?.name ?? ''" entityLabel="colmena"
+  [loading]="deleting()" [errorMessage]="deleteError()" (confirmed)="confirmDelete()"
+  (cancelled)="closeDeleteModal()" />

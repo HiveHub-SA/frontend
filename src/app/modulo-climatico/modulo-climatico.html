@@ -1,0 +1,99 @@
+<div *ngIf="visible" class="modal-overlay" (click)="cerrar()">
+  <div 
+    class="modal-content border-2 border-on-surface bg-surface-container-lowest rounded-lg"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div class="flex justify-between items-start header-modal">
+      <div class="modal-header-title">
+        <span class="font-headline-xs text-on-surface-variant uppercase tracking-wide tag-apiario">
+          📍 APIARIO
+        </span>
+        <h3 class="font-headline-sm text-on-surface uppercase tracking-wide modal-title">
+          {{ apiario?.nombre }}
+        </h3>
+      </div>
+      <button class="btn-cerrar-modal sink-effect" (click)="cerrar()" type="button">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Estado de Carga -->
+    <div class="loading-state" *ngIf="cargando">
+      <span class="spinner"></span>
+      <p class="font-body-md text-on-surface">Consultando datos del tiempo...</p>
+    </div>
+
+    <!-- Estado de Error -->
+    <div class="modal-error" *ngIf="!cargando && error">
+      <p class="font-body-md">⚠️ No se pudo cargar el pronóstico del apiario.</p>
+      <button class="btn btn-cancel font-label-lg border-2 border-on-surface sink-effect btn-reintentar" (click)="cargarClima()">
+        Reintentar
+      </button>
+    </div>
+
+    <!-- Contenido Principal -->
+    <ng-container *ngIf="!cargando && !error && climaData">
+      
+      <!-- Banners de Alerta Climáticas -->
+      <div 
+        *ngFor="let alerta of alertasActivas"
+        class="alerta-card"
+        [ngClass]="'alerta-' + alerta.tipo"
+      >
+        <span class="material-symbols-outlined icon-alert">{{ alerta.icono }}</span>
+        <div class="alerta-info">
+          <span class="font-label-lg alerta-titulo">{{ alerta.titulo }}</span>
+          <p class="font-body-sm alerta-mensaje">{{ alerta.mensaje }}</p>
+        </div>
+      </div>
+
+      <!-- Tarjeta Principal con Ícono del Clima -->
+      <div class="clima-summary-card border-2 border-on-surface">
+        <div class="temp-main-box">
+          <div class="temp-header-row">
+            <span class="temp-value">{{ climaData.temp }}°C</span>
+            <span class="material-symbols-outlined clima-icon-main">
+              {{ obtenerIconoClima(climaData.condicion) }}
+            </span>
+          </div>
+          <span class="temp-condicion font-label-lg">{{ climaData.condicion }}</span>
+        </div>
+
+        <!-- Óvalo con borde negro marcado -->
+        <div class="clima-extra-info">
+          <div class="stat-pill border-2 border-on-surface">
+            <span class="material-symbols-outlined text-sm">water_drop</span>
+            <div class="humidity-text">
+              <span class="font-label-md humidity-val">{{ climaData.humedad }}%</span>
+              <span class="font-label-xs humidity-lbl">Humedad</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Sección Pronóstico Próximas Horas -->
+    <div class="horas-container">
+    <h4 class="font-headline-xs text-on-surface-variant uppercase tracking-wide section-subtitle">
+        PRÓXIMAS 5 HORAS
+    </h4>
+    <div class="horas-scroll-grid">
+        <div 
+        class="hora-card border-2 border-on-surface bg-surface-container-lowest"
+        *ngFor="let h of climaData.horas"
+        >
+        <span class="font-label-sm text-on-surface-variant">{{ h.hora }}</span>
+        <span class="material-symbols-outlined hora-icon">
+            {{ obtenerIconoClima(h.iconoCode) }}
+        </span>
+        <span class="font-headline-sm temp-hora">{{ h.temp }}°</span>
+        <span class="prob-lluvia font-label-xs" *ngIf="h.probabilidadLluvia > 0">
+            💧 {{ h.probabilidadLluvia }}%
+        </span>
+        </div>
+    </div>
+    </div>
+
+    </ng-container>
+  </div>
+</div>

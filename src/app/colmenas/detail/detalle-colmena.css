@@ -1,3 +1,53 @@
+/* ============================================================
+   ESTILOS DE CABECERA Y NAVEGACIÓN
+   ============================================================ */
+.colmena-header {
+  height: 64px;
+  border-bottom: 2px solid var(--color-on-surface);
+  background-color: var(--color-primary-fixed);
+  box-shadow: var(--shadow-md);
+  padding-left: var(--space-margin);
+  padding-right: var(--space-margin);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.header-grid {
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items: center;
+}
+
+.header-grid .delete-header-btn {
+  margin-left: 0;
+  justify-self: end;
+}
+
+.header-back-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-on-surface);
+  background-color: var(--color-surface-container-lowest);
+  box-shadow: var(--shadow-sm);
+  margin-right: var(--space-gutter);
+}
+
+.header-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
 .delete-header-btn {
   width: 40px;
   height: 40px;
@@ -22,13 +72,270 @@
   color: var(--color-on-error);
 }
 
-.header-grid {
-  display: grid;
-  grid-template-columns: 56px 1fr 56px;
+/* ============================================================
+   ESTILOS PRINCIPALES Y TARJETAS
+   ============================================================ */
+.loading-container {
+  display: flex;
+  height: 100vh;
   align-items: center;
+  justify-content: center;
 }
 
-.header-grid .delete-header-btn {
-  margin-left: 0;
-  justify-self: end;
+.loading-text {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+}
+
+.main-container {
+  padding: var(--space-md) var(--space-margin) 100px var(--space-margin);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  overflow-y: auto;
+}
+
+.info-card {
+  background-color: var(--color-surface-container-lowest);
+  border: 2px solid var(--color-on-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-base);
+}
+
+.info-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--color-surface-container);
+  padding-bottom: var(--space-xs);
+}
+
+.info-text {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--color-on-surface-variant);
+}
+
+.action-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-edit {
+  width: 100%;
+  max-width: 264px;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: var(--space-gutter) 24px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-on-surface);
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-base);
+  cursor: pointer;
+}
+
+/* ============================================================
+   ESTILOS DE MODAL Y FORMULARIO
+   ============================================================ */
+.modal-scrollable {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.form-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-sm) 0 0;
+}
+
+.form-icon {
+  font-size: 48px;
+  color: var(--color-on-surface);
+}
+
+.form-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-on-surface);
+  text-align: center;
+  margin-bottom: var(--space-gutter);
+}
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-on-surface);
+}
+
+.form-input {
+  width: 100%;
+  border: 2px solid var(--color-on-surface);
+  background: var(--color-surface-container-lowest);
+  padding: var(--space-sm);
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 24px;
+  outline: none;
+  color: var(--color-on-surface);
+}
+
+.form-input:focus {
+  border-color: var(--color-primary-container);
+  border-width: 3px;
+}
+
+.form-section-divider {
+  border-top: 2px solid var(--color-surface-container);
+  padding-top: 12px;
+  margin-top: 8px;
+}
+
+.form-section-title {
+  margin-bottom: 12px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: var(--space-sm);
+  border-top: 2px solid var(--color-surface-container);
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-on-surface);
+  background: var(--color-surface-container);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-submit {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-on-surface);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   UTILIDADES ESPECÍFICAS
+   ============================================================ */
+.error-banner {
+  padding: var(--space-base);
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-radius: 8px;
+  border: 2px solid #ef4444;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: 2px 2px 0px 0px rgba(239, 68, 68, 1);
+  margin-bottom: var(--space-gutter);
+}
+
+.icon-fill {
+  font-variation-settings: 'FILL' 1;
+}
+
+.icon-spin {
+  font-size: 16px;
+  animation: spin 1s linear infinite;
+}
+
+.error-msg {
+  font-size: 12px;
+  color: #b91c1c;
+  font-weight: 500;
+}
+
+/* Radio buttons de marcos (Mantenidos del CSS original) */
+.marcos-grid {
+  display: flex;
+  gap: 8px;
+}
+
+.marco-option {
+  flex: 1;
+  cursor: pointer;
+}
+
+.marco-radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.marco-label {
+  display: block;
+  text-align: center;
+  border: 2px solid var(--color-on-surface);
+  border-radius: var(--radius-full);
+  padding: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  background: var(--color-surface-container-lowest);
+  transition: background-color 0.15s;
+}
+
+.marco-option:has(.marco-radio:checked) .marco-label {
+  background: var(--color-primary-container);
 }

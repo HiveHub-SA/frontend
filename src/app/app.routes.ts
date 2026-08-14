@@ -10,6 +10,8 @@ import { HistorialInspeccionesComponent } from './inspecciones/historial/histori
 import { NuevaInspeccionComponent } from './inspecciones/nueva/nueva-inspeccion';
 import { InspeccionarColmenaComponent } from './inspecciones/colmena/inspeccionar-colmena';
 import { DetalleInspeccionComponent } from './inspecciones/detalle/detalle-inspeccion';
+import { AudioRecorderComponent } from './audio-recorder/audio-recorder';
+import { MaterialesComponent } from './materiales/materiales.component';
 
 export const routes: Routes = [
   { path: '', component: MapaInteractivo },
@@ -23,6 +25,8 @@ export const routes: Routes = [
   { path: 'mapa', component: MapaInteractivo },
   { path: 'inicio', component: Inicio },
   { path: 'extraccion', component: OperacionSalaComponent },
+  { path: 'voz', component: AudioRecorderComponent },
+  { path: 'materiales', component: MaterialesComponent },
 ];
 
 

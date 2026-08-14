@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router} from '@angular/router';
 import { NavbarService } from './navbar.service';
 
 @Component({
@@ -12,4 +12,5 @@ import { NavbarService } from './navbar.service';
 })
 export class NavbarComponent {
   protected readonly navbarService = inject(NavbarService);
+  protected readonly router = inject(Router);
 }

@@ -1,0 +1,43 @@
+<div class="inv-selector">
+
+    <div class="inv-selector__header">
+        <label class="form-label">{{ labelTipo }}</label>
+        <span class="inv-selector__badge" *ngIf="max">
+            {{ seleccionados.length }}/{{ max }}
+        </span>
+        <span class="inv-selector__badge inv-selector__badge--muted" *ngIf="!max">
+            {{ seleccionados.length }} seleccionado{{ seleccionados.length === 1 ? '' : 's' }}
+        </span>
+    </div>
+
+    <p *ngIf="loading" class="form-note">Cargando {{ labelTipo }} disponibles...</p>
+
+    <p *ngIf="!loading && todosVisibles.length === 0" class="form-note">
+        No hay {{ labelTipo }} disponibles. Registrá material nuevo primero.
+    </p>
+
+    <div class="inv-selector__scroll" *ngIf="!loading && todosVisibles.length > 0">
+
+        <ng-container *ngIf="esAlza">
+            <ng-container *ngFor="let grupo of gruposAlzas">
+                <div class="inv-selector__grupo-label">{{ grupo.marcos }}m</div>
+                <button *ngFor="let inv of grupo.items" type="button" class="inv-selector__chip"
+                    [class.inv-selector__chip--selected]="isSelected(inv.id)" [disabled]="!puedeSeleccionar(inv.id)"
+                    (click)="toggle(inv.id)">
+                    #{{ inv.id }}
+                </button>
+                <div class="inv-selector__divider"></div>
+            </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="!esAlza">
+            <button *ngFor="let inv of todosVisibles" type="button" class="inv-selector__chip"
+                [class.inv-selector__chip--selected]="isSelected(inv.id)" [disabled]="!puedeSeleccionar(inv.id)"
+                (click)="toggle(inv.id)">
+                #{{ inv.id }}
+            </button>
+        </ng-container>
+
+    </div>
+
+</div>

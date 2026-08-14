@@ -1,4 +1,5 @@
-<nav class="bottom-nav" [class.blurred-overlay]="navbarService.isDisabled()" [ngClass]="navbarService.isDisabled() ? 'nav-disabled' : 'nav-enabled'">
+<nav class="bottom-nav" [class.blurred-overlay]="navbarService.isDisabled()"
+  [ngClass]="navbarService.isDisabled() ? 'nav-disabled' : 'nav-enabled'">
   <a routerLink="/mapa" routerLinkActive="active-nav-item" class="nav-item">
     <span class="material-symbols-outlined nav-icon">map</span>
     <span class="nav-label">Mapa</span>
@@ -6,6 +7,10 @@
   <a routerLink="/apiarios" routerLinkActive="active-nav-item" class="nav-item">
     <span class="material-symbols-outlined nav-icon">grid_view</span>
     <span class="nav-label">Apiarios</span>
+  </a>
+  <a routerLink="/materiales" routerLinkActive="active-nav-item" class="nav-item">
+    <span class="material-symbols-outlined nav-icon">inventory_2</span>
+    <span class="nav-label">Materiales</span>
   </a>
   <a routerLink="/extraccion" routerLinkActive="active-nav-item" class="nav-item">
     <span class="material-symbols-outlined nav-icon">liquor</span>
