@@ -231,25 +231,21 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
   }
 
   async transcribeAudio(audio: AudioRecord): Promise<void> {
-    if (audio.id === undefined) {
-      return;
-    }
+    if (audio.id === undefined) return;
+
 
     audio.transcriptionStatus = 'transcribing';
     audio.transcriptionError = undefined;
     this.changeDetectorRef.markForCheck();
 
     try {
-      const result = await this.transcriptionService.transcribeAudio(
-        audio.blob,
-        `${audio.label}.wav`,
-      );
+      const safeFilename = `audio_${audio.id}.wav`;
+      const result = await this.transcriptionService.transcribeAudio(audio.blob, safeFilename);
       audio.transcriptionStatus = 'done';
       audio.transcriptionText = result.transcription;
     } catch (error) {
       audio.transcriptionStatus = 'error';
-      audio.transcriptionError =
-        error instanceof Error ? error.message : 'Error desconocido al transcribir.';
+      audio.transcriptionError = error instanceof Error ? error.message : 'Error desconocido al transcribir';
     } finally {
       await this.indexedDbAudio.updateAudio(audio);
       this.changeDetectorRef.markForCheck();
