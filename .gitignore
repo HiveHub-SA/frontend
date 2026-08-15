@@ -67,3 +67,7 @@ __screenshots__/
 # ==========================================
 .DS_Store
 Thumbs.db
+
+# Claude
+.claude
+/.claude/

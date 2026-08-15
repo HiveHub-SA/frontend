@@ -1,0 +1,297 @@
+/* Estilos Vanilla CSS Neo-Brutalist para Detalle de Inspección Registrada (Finalizada) */
+
+.detalle-page-container {
+  min-height: 100vh;
+  background-color: var(--color-surface, #f9f9f9);
+  color: var(--color-on-surface, #1a1c1c);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  font-family: var(--font-body, 'Nunito Sans', sans-serif);
+  padding-top: 68px;
+}
+
+.header-tactile {
+  position: sticky;
+  top: 68px;
+  z-index: 100;
+  height: 72px;
+  background-color: var(--color-surface, #f9f9f9);
+  border-bottom: 2px solid var(--color-on-surface, #1a1c1c);
+  box-shadow: 0 4px 0 0 #1a1c1c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.btn-back {
+  width: 44px;
+  height: 44px;
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 0 0 #1a1c1c;
+  cursor: pointer;
+}
+
+.header-title-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  padding: 0 8px;
+}
+
+.header-subtitle {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-on-surface-variant, #514532);
+}
+
+.header-main-title {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-on-surface, #1a1c1c);
+  margin: 0;
+}
+
+/* Canvas desplazable */
+.detalle-main-canvas {
+  flex: 1;
+  padding: 20px;
+  padding-bottom: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.loading-box {
+  padding: 40px;
+  text-align: center;
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Tarjeta de Resumen (Summary Card) */
+.summary-card-tactile {
+  background-color: #ffb300;
+  border: 2px solid #1a1c1c;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 4px 0 0 #1a1c1c;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.summary-date {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1c1c;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.summary-metric-box {
+  background-color: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(26, 28, 28, 0.2);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.metric-label {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1a1c1c;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-family: var(--font-body, 'Nunito Sans', sans-serif);
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1c1c;
+  margin: 0;
+}
+
+/* Detalle por Colmena */
+.hive-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1c1c;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title-indicator {
+  width: 8px;
+  height: 24px;
+  background-color: #0ea5e9;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+.empty-colmenas-box {
+  background-color: #ffffff;
+  border: 2px dashed #1a1c1c;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #514532;
+}
+
+.hive-card-tactile {
+  background-color: #ffffff;
+  border: 2px solid #1a1c1c;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 0 0 #1a1c1c;
+}
+
+.hive-card-header {
+  background-color: #1a1c1c;
+  color: #ffffff;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hive-name {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.hive-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Fila de insignias */
+.badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge-success,
+.badge-info,
+.badge-warning,
+.badge-error,
+.badge-primary,
+.badge-muted {
+  padding: 6px 12px;
+  border: 2px solid #1a1c1c;
+  border-radius: 9999px;
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 1px 0 0 #1a1c1c;
+}
+
+.badge-success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.badge-info {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-primary {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+.badge-muted {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+/* Caja de observaciones punteada */
+.observation-dashed-box {
+  background-color: #f8fafc;
+  border: 2px dashed #1a1c1c;
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.observation-label {
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.observation-text {
+  font-family: var(--font-body, 'Nunito Sans', sans-serif);
+  font-size: 14px;
+  font-style: italic;
+  color: #1a1c1c;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.pressable:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #1a1c1c !important;
+}

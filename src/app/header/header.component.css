@@ -1,6 +1,8 @@
 .app-header {
+  position: relative;
+  z-index: 1000;
   width: 100%;
-  background-color: var(--color-surface-container-lowest);
+  background-color: var(--color-surface-container-lowest, #ffffff);
   border-bottom: var(--border-dark);
   box-shadow: 0 4px 0px 0px rgba(26, 28, 28, 1);
   display: flex;

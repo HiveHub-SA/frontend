@@ -41,10 +41,6 @@
         <h2 class="hives-section__title">
           COLMENAS EN SITIO ({{ datosApiario.colmenas.length }})
         </h2>
-        <button (click)="toggleForm()" class="add-btn sink-effect">
-          <span class="material-symbols-outlined add-btn__icon">add</span>
-          AÑADIR
-        </button>
       </div>
 
       <div class="form-overlay" *ngIf="showForm" (click)="toggleForm()">
@@ -104,6 +100,37 @@
       </div>
     </section>
   </main>
+  <!-- Floating Action Button Group -->
+  <div class="fab-container">
+    <!-- Secondary FABs -->
+    <div class="fab-menu" [class.open]="showActionMenu">
+      <a 
+        [routerLink]="['/apiarios', datosApiario.id, 'inspecciones']" 
+        (click)="toggleActionMenu()"
+        class="fab-item sink-effect"
+      >
+        <span>Inspecciones</span>
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment</span>
+      </a>
+      <button 
+        (click)="toggleForm(); toggleActionMenu()" 
+        class="fab-item sink-effect"
+      >
+        <span>Añadir Colmena</span>
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">hive</span>
+      </button>
+    </div>
+    <!-- Primary FAB -->
+    <button 
+      (click)="toggleActionMenu()"
+      class="fab-main-btn sink-effect"
+      [class.open]="showActionMenu"
+    >
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">
+        {{ showActionMenu ? 'remove' : 'add' }}
+      </span>
+    </button>
+  </div>
 </div>
 
 <app-confirm-delete-component [visible]="showDeleteModal()" [itemName]="apiario()?.name ?? ''" entityLabel="apiario"

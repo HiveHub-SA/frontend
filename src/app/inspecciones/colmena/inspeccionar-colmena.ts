@@ -1,0 +1,181 @@
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { InspeccionService } from '../inspeccion.service';
+import { ApiarioService } from '../../apiarios/apiario.service';
+import { InspeccionColmenaDTO } from '../inspeccion.model';
+import { NavbarComponent } from '../../navbar/navbar.component';
+
+import { InspeccionDraftService } from '../inspeccion-draft.service';
+
+/**
+ * Componente para la pantalla de Inspección Manual por Colmena (US 32).
+ * Muestra el formulario táctil con los campos de Varroa, Reina, Alimento, Miel,
+ * Observaciones y módulo visual de nota de voz/transcripción.
+ */
+@Component({
+  selector: 'app-inspeccionar-colmena',
+  standalone: true,
+  imports: [CommonModule, RouterLink, FormsModule, NavbarComponent],
+  templateUrl: './inspeccionar-colmena.html',
+  styleUrl: './inspeccionar-colmena.css',
+})
+export class InspeccionarColmenaComponent implements OnInit {
+  apiarioId!: number;
+  inspeccionId!: number;
+  colmenaId!: number;
+
+  nombreApiario = signal<string>('Apiario');
+  nombreColmena = signal<string>('Colmena');
+  loading = signal<boolean>(true);
+
+  // Form Model
+  varroa = signal<'NO_DETECTADA' | 'DETECTADA'>('NO_DETECTADA');
+  estadoReina = signal<'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'>('VISTA_Y_SANA');
+  nivelAlimento = signal<'BAJO' | 'MEDIO' | 'ALTO'>('MEDIO');
+  produjoMiel = signal<boolean>(true);
+  observaciones: string = '';
+
+  // UI state for audio transcription preview
+  mostrarTranscripcion = signal<boolean>(false);
+  isPlayingAudio = signal<boolean>(false);
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private apiarioService: ApiarioService,
+    private inspeccionService: InspeccionService,
+    private draftService: InspeccionDraftService
+  ) {}
+
+  ngOnInit(): void {
+    this.apiarioId = Number(this.route.snapshot.params['apiarioId']);
+    this.inspeccionId = Number(this.route.snapshot.params['inspeccionId']);
+    this.colmenaId = Number(this.route.snapshot.params['colmenaId']);
+
+    if (this.apiarioId) {
+      this.apiarioService.getApiarioById(this.apiarioId).subscribe({
+        next: (data) => {
+          if (data && data.name) this.nombreApiario.set(data.name);
+          const colmenaEncontrada = data.colmenas?.find((c: any) => (c['id'] as number) === this.colmenaId);
+          if (colmenaEncontrada && colmenaEncontrada['name']) {
+            this.nombreColmena.set(colmenaEncontrada['name'] as string);
+          }
+        }
+      });
+    }
+
+    if (this.inspeccionId && this.colmenaId) {
+      this.cargarDetalleColmena();
+    } else {
+      this.loading.set(false);
+    }
+  }
+
+  cargarDetalleColmena(): void {
+    // US 15.1: Primeramente restaurar borrador local en progreso si existe tras crash o recarga
+    const localForm = this.draftService.getColmenaDraftData(this.apiarioId, this.colmenaId);
+    if (localForm) {
+      if (localForm.varroa) this.varroa.set(localForm.varroa);
+      if (localForm.estadoReina) this.estadoReina.set(localForm.estadoReina);
+      if (localForm.nivelAlimento) this.nivelAlimento.set(localForm.nivelAlimento);
+      if (localForm.produjoMiel !== undefined) this.produjoMiel.set(localForm.produjoMiel);
+      if (localForm.observaciones) this.observaciones = localForm.observaciones;
+      if (localForm.colmenaName) this.nombreColmena.set(localForm.colmenaName);
+      this.loading.set(false);
+    }
+
+    // Consultar backend para sincronizar
+    this.inspeccionService.getInspeccionColmena(this.inspeccionId, this.colmenaId).subscribe({
+      next: (dto) => {
+        if (dto && !localForm) {
+          if (dto.varroa) this.varroa.set(dto.varroa);
+          if (dto.estadoReina) this.estadoReina.set(dto.estadoReina);
+          if (dto.nivelAlimento) this.nivelAlimento.set(dto.nivelAlimento);
+          if (dto.produjoMiel !== undefined) this.produjoMiel.set(dto.produjoMiel);
+          if (dto.observaciones) this.observaciones = dto.observaciones;
+          if (dto.colmenaName) this.nombreColmena.set(dto.colmenaName);
+        }
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
+  private autoSaveLocal(): void {
+    // US 15: Guardado continuo paso a paso en localStorage
+    this.draftService.saveColmenaFormProgress(this.apiarioId, this.colmenaId, {
+      inspeccionId: this.inspeccionId,
+      colmenaId: this.colmenaId,
+      colmenaName: this.nombreColmena(),
+      varroa: this.varroa(),
+      estadoReina: this.estadoReina(),
+      nivelAlimento: this.nivelAlimento(),
+      produjoMiel: this.produjoMiel(),
+      observaciones: this.observaciones
+    });
+  }
+
+  setVarroa(val: 'NO_DETECTADA' | 'DETECTADA'): void {
+    this.varroa.set(val);
+    this.autoSaveLocal();
+  }
+
+  setEstadoReina(val: 'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'): void {
+    this.estadoReina.set(val);
+    this.autoSaveLocal();
+  }
+
+  setNivelAlimento(val: 'BAJO' | 'MEDIO' | 'ALTO'): void {
+    this.nivelAlimento.set(val);
+    this.autoSaveLocal();
+  }
+
+  setProdujoMiel(val: boolean): void {
+    this.produjoMiel.set(val);
+    this.autoSaveLocal();
+  }
+
+  onObservacionesChange(): void {
+    this.autoSaveLocal();
+  }
+
+  toggleTranscripcion(): void {
+    this.mostrarTranscripcion.set(!this.mostrarTranscripcion());
+  }
+
+  toggleAudio(): void {
+    this.isPlayingAudio.set(!this.isPlayingAudio());
+  }
+
+  guardarColmena(): void {
+    const payload: InspeccionColmenaDTO = {
+      inspeccionId: this.inspeccionId,
+      colmenaId: this.colmenaId,
+      colmenaName: this.nombreColmena(),
+      varroa: this.varroa(),
+      estadoReina: this.estadoReina(),
+      nivelAlimento: this.nivelAlimento(),
+      produjoMiel: this.produjoMiel(),
+      observaciones: this.observaciones
+    };
+
+    // US 15: Consolidar en borrador local como completada
+    this.draftService.saveColmenaCompletada(this.apiarioId, this.colmenaId, payload);
+
+    this.inspeccionService.saveInspeccionColmena(this.inspeccionId, this.colmenaId, payload).subscribe({
+      next: () => {
+        this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva'], {
+          queryParams: { inspeccionId: this.inspeccionId }
+        });
+      },
+      error: (err) => {
+        console.error('Error al guardar inspección de colmena:', err);
+        this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva'], {
+          queryParams: { inspeccionId: this.inspeccionId }
+        });
+      }
+    });
+  }
+}

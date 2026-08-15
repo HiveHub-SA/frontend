@@ -1,0 +1,374 @@
+/* Contenedor principal de la vista Nueva Inspección */
+.nueva-inspeccion-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #FFF9ED;
+  color: var(--color-on-surface, #1a1c1c);
+  font-family: var(--font-body, 'Quicksand', sans-serif);
+  padding-top: 67px;
+}
+
+/* Header Neo-Brutalista */
+.nueva-inspeccion-header {
+  height: 64px;
+  border-bottom: 2px solid var(--color-on-surface, #1a1c1c);
+  background-color: #FCE8B3;
+  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
+  padding: 0 16px;
+  position: sticky;
+  top: 68px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-back {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  background-color: #ffffff;
+  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
+  cursor: pointer;
+}
+
+.btn-back:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.header-title-wrapper {
+  text-align: center;
+}
+
+.header-subtitle {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #665D4F;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.header-title {
+  font-family: var(--font-display, 'Nunito Sans', sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* Espaciador del header para centrado */
+.header-spacer {
+  width: 40px;
+}
+
+/* Main Content */
+.nueva-inspeccion-main {
+  flex: 1;
+  padding: 16px 16px 128px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  max-width: 440px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.loader-box {
+  padding: 48px 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* CARD 1: FECHA Y FLORACIÓN PREDOMINANTE */
+.card-floracion {
+  background-color: #ffffff;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+.fecha-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.floracion-blue-box {
+  background-color: #D2E7FB;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.floracion-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.floracion-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-on-surface, #1a1c1c);
+}
+
+.badge-id35 {
+  font-size: 11px;
+  font-weight: 800;
+  color: #1D60A2;
+  background-color: #ffffff;
+  border: 1px solid #1D60A2;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.floracion-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.floracion-display-box {
+  padding: 6px 12px;
+  background-color: #ffffff;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  min-width: 90px;
+  text-align: center;
+  box-shadow: 1px 1px 0px 0px rgba(26, 28, 28, 1);
+}
+
+.buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-mantener,
+.btn-cambiar {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  font-weight: 700;
+  font-size: 12px;
+  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.btn-mantener.active-mantener {
+  background-color: #90CAF9;
+}
+
+.btn-cambiar.active-cambiar {
+  background-color: #FFE082;
+}
+
+.btn-mantener:active,
+.btn-cambiar:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+/* Modal Selector de Floraciones */
+.floracion-selector-modal {
+  background-color: #FFF4D4;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 3px 3px 0px 0px rgba(26, 28, 28, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.selector-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #524424;
+  margin: 0;
+}
+
+.grid-floraciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-opcion-floracion {
+  padding: 8px 8px;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  background-color: #ffffff;
+  box-shadow: 1.5px 1.5px 0px 0px rgba(26, 28, 28, 1);
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.btn-opcion-floracion.opcion-selected {
+  background-color: #FFB300;
+}
+
+.btn-opcion-floracion:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+/* CARD 2: DETALLE POR COLMENA */
+.detalle-colmena-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.colmena-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-heading {
+  font-family: var(--font-display, 'Nunito Sans', sans-serif);
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-on-surface, #1a1c1c);
+  margin: 0;
+}
+
+.badge-completadas {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  background-color: #FFE5B4;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
+}
+
+.colmenas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.colmena-card {
+  width: 100%;
+  padding: 16px;
+  background-color: #ffffff;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  border-radius: 16px;
+  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
+  cursor: pointer;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.colmena-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.colmena-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-on-surface, #1a1c1c);
+  margin: 0;
+}
+
+.estado-label-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.estado-text-guardada {
+  color: #2E7D32;
+}
+
+.estado-text-pendiente {
+  color: #D84315;
+}
+
+/* Botón Fijo Inferior Finalizar Inspección */
+.btn-finalizar-container {
+  position: fixed;
+  bottom: 80px;
+  left: 0;
+  right: 0;
+  padding: 0 16px;
+  padding-bottom: 16px;
+  max-width: 440px;
+  margin: 0 auto;
+  z-index: 40;
+  box-sizing: border-box;
+}
+
+.btn-finalizar-inspeccion {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  background-color: #FFB300;
+  font-family: var(--font-display, 'Nunito Sans', sans-serif);
+  font-weight: 900;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-on-surface, #1a1c1c);
+  box-shadow: 4px 4px 0px 0px rgba(26, 28, 28, 1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.btn-finalizar-inspeccion:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}

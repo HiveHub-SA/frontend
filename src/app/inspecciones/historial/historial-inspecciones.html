@@ -1,0 +1,125 @@
+<div class="historial-container">
+
+  <!-- Header Neo-brutalista -->
+  <header class="historial-header">
+    <button
+      [routerLink]="['/apiarios', apiarioId]"
+      aria-label="Volver"
+      class="btn-back sink-effect"
+    >
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+
+    <div class="header-title-wrapper">
+      <p class="header-subtitle">
+        APIARIO {{ apiario()?.name ?? '' }}
+      </p>
+      <h1 class="header-title">
+        HISTORIAL INSPECCIONES
+      </h1>
+    </div>
+
+    <div class="header-spacer"></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="historial-main">
+
+    <!-- Loader -->
+    <div *ngIf="loading()" class="loader-box">
+      <p>Cargando historial de inspecciones...</p>
+    </div>
+
+    <!-- Lista de Registros -->
+    <div *ngIf="!loading()" class="registros-section">
+      <p class="section-title">Registros Realizados</p>
+
+      <div *ngFor="let insp of inspecciones()" class="swipe-item-wrapper">
+        
+        <!-- Capa trasera con el botón de eliminación -->
+        <div class="swipe-delete-bg">
+          <button (click)="pedirConfirmacionEliminar(insp, $event)" class="btn-swipe-delete pressable">
+            <span class="material-symbols-outlined font-bold">delete</span>
+            <span>ELIMINAR</span>
+          </button>
+        </div>
+
+        <!-- Tarjeta frontal de inspección deslizable -->
+        <div
+          (click)="verInspeccion(insp)"
+          (mousedown)="onDragStart($event, insp.id)"
+          (mousemove)="onDragMove($event, insp.id)"
+          (mouseup)="onDragEnd($event, insp.id)"
+          (mouseleave)="onDragEnd($event, insp.id)"
+          (touchstart)="onDragStart($event, insp.id)"
+          (touchmove)="onDragMove($event, insp.id)"
+          (touchend)="onDragEnd($event, insp.id)"
+          [style.transform]="getCardTransform(insp.id)"
+          class="inspeccion-card"
+        >
+          <!-- Fila Fecha & Estado -->
+          <div class="card-header">
+            <div class="card-date-group">
+              <span class="material-symbols-outlined card-date-icon">calendar_today</span>
+              <span class="card-date-text">{{ formatFecha(insp.fecha) }}</span>
+            </div>
+
+            <!-- Badge de Estado -->
+            <span *ngIf="insp.estado === 'EN_BORRADOR'" class="badge-estado badge-borrador">
+              <span class="material-symbols-outlined badge-icon">edit_note</span> EN BORRADOR
+            </span>
+            <span *ngIf="insp.estado === 'SINCRONIZADA'" class="badge-estado badge-sincronizada">
+              <span class="material-symbols-outlined badge-icon">check_circle</span> SINCRONIZADA
+            </span>
+          </div>
+
+          <!-- Fila Floración -->
+          <div class="card-floracion-group">
+            <span>Floración: <strong>{{ insp.floracion }}</strong></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Estado vacío -->
+      <div *ngIf="inspecciones().length === 0" class="empty-state">
+        <p>No hay inspecciones registradas en este apiario.</p>
+      </div>
+    </div>
+
+    <!-- Botón Flotante Nueva Inspección -->
+    <div class="btn-nueva-container">
+      <button (click)="crearNuevaInspeccion()" class="btn-nueva-inspeccion sink-effect">
+        <span class="material-symbols-outlined btn-icon">add</span>
+        NUEVA INSPECCIÓN
+      </button>
+    </div>
+  </main>
+
+  <!-- Modal de Advertencia de Seguridad para Eliminación -->
+  <div *ngIf="inspeccionAEliminar()" class="modal-overlay">
+    <div class="modal-card-tactile">
+      <div class="modal-icon-header">
+        <span class="material-symbols-outlined modal-warn-icon">warning</span>
+      </div>
+      <h2 class="modal-title">¿Eliminar Inspección?</h2>
+      <p class="modal-message">
+        Se eliminará permanentemente el registro del 
+        <strong>{{ formatFecha(inspeccionAEliminar()?.fecha || '') }}</strong> 
+        y todos los detalles sanitarios por colmena asociados. Esta acción no se puede deshacer.
+      </p>
+
+      <div class="modal-actions-row">
+        <button (click)="cancelarEliminacion()" class="btn-modal-cancel pressable">
+          CANCELAR
+        </button>
+        <button (click)="confirmarEliminacion()" class="btn-modal-delete pressable">
+          SÍ, ELIMINAR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar Global Universal -->
+  <app-navbar></app-navbar>
+</div>

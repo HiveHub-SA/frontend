@@ -57,6 +57,13 @@ export class ApiarioDetailComponent implements OnInit {
     }
   }
 
+  showActionMenu: boolean = false;
+
+  newColmena = {
+    name: '',
+    apiarioId: 0,
+  };
+
   private cargarApiario() {
     this.apiarioService.getApiarioById(this.apiarioId!).subscribe({
       next: (data) => { this.apiario.set(data); this.loading.set(false); },
@@ -67,6 +74,14 @@ export class ApiarioDetailComponent implements OnInit {
   toggleForm() {
     this.showForm = !this.showForm;
     if (!this.showForm) this.limpiarForm();
+  }
+
+  toggleActionMenu() {
+    this.showActionMenu = !this.showActionMenu;
+  }
+
+  cleanForm() {
+    this.newColmena = { name: '', apiarioId: 0 };
   }
 
   limpiarForm() {
