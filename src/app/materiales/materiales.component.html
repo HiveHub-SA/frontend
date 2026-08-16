@@ -1,0 +1,54 @@
+<div class="materiales-wrapper">
+
+
+  <!-- Filtros -->
+  <div class="filtros-container">
+    <button class="filtro-btn" [class.filtro-btn--active]="filtroDisponible() === null" (click)="setFiltro(null)">
+      Todos
+    </button>
+    <button class="filtro-btn" [class.filtro-btn--active]="filtroDisponible() === true" (click)="setFiltro(true)">
+      Disponibles
+    </button>
+    <button class="filtro-btn" [class.filtro-btn--active]="filtroDisponible() === false" (click)="setFiltro(false)">
+      Asignados
+    </button>
+  </div>
+
+  <!-- Cuerpo -->
+  <main class="materiales-main">
+
+    <p *ngIf="loading()" class="form-note text-center">Cargando materiales...</p>
+
+    <ng-container *ngFor="let grupo of gruposFiltrados()">
+      <div *ngIf="grupo.items.length > 0" class="grupo-card">
+
+        <div class="grupo-header">
+          <span class="grupo-label">{{ grupo.label }}</span>
+          <span class="grupo-count">{{ grupo.items.length }}</span>
+        </div>
+
+        <div class="chips-grid">
+          <div *ngFor="let inv of grupo.items" class="chip" [class.chip--asignado]="inv.colmenaId !== null">
+            <span class="chip-id">#{{ inv.id }}</span>
+            <span class="chip-detalle" *ngIf="inv.cantidadMarcos">{{ inv.cantidadMarcos }}m</span>
+            <span class="chip-estado">{{ inv.colmenaId !== null ? 'Colmena ' + inv.colmenaId : 'Libre' }}</span>
+          </div>
+        </div>
+
+      </div>
+    </ng-container>
+
+    <p *ngIf="!loading() && gruposFiltrados().every(g => g.items.length === 0)" class="form-note text-center mt-4">
+      No hay materiales registrados aún.
+    </p>
+
+  </main>
+
+  <!-- FAB -->
+  <button class="fab-button" (click)="mostrarFormulario.set(true)">+</button>
+
+  <!-- Modal registrar -->
+  <app-registrar-material *ngIf="mostrarFormulario()" (registrado)="onRegistrado()"
+    (cerrado)="mostrarFormulario.set(false)" />
+
+</div>

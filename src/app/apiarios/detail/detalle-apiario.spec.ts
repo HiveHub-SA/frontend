@@ -1,17 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DetalleApiario } from './detalle-apiario';
+import { ApiarioDetailComponent } from './detalle-apiario';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
-describe('DetalleApiario', () => {
-  let component: DetalleApiario;
-  let fixture: ComponentFixture<DetalleApiario>;
+describe('ApiarioDetailComponent', () => {
+  let component: ApiarioDetailComponent;
+  let fixture: ComponentFixture<ApiarioDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DetalleApiario],
+      imports: [ApiarioDetailComponent],
+      providers: [provideHttpClient(), provideRouter([])]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DetalleApiario);
+    fixture = TestBed.createComponent(ApiarioDetailComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

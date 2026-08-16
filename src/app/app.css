@@ -1,0 +1,21 @@
+.app-top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;       
+  align-items: stretch; 
+}
+
+app-header {
+  display: block;
+  flex: 1;
+  min-width: 0; /* permite que el header se achique en vez de desbordar */
+}
+
+app-notificaciones-clima {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0; /* nunca se achica, siempre visible entera */
+}

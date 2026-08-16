@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 
 export interface AuthResponse {
-  token: string;
+  username?: string;
 }
 
 export interface UserInfo {
@@ -13,7 +13,6 @@ export interface UserInfo {
 }
 
 export interface AuthState {
-  token: string | null;
   user: UserInfo | null;
   isAuthenticated: boolean;
   loading: boolean;
@@ -21,7 +20,6 @@ export interface AuthState {
 }
 
 const INITIAL_STATE: AuthState = {
-  token: null,
   user: null,
   isAuthenticated: false,
   loading: false,
@@ -46,10 +44,6 @@ export class AuthService {
     return this.state$.value.isAuthenticated;
   }
 
-  getToken(): string | null {
-    return this.state$.value.token;
-  }
-
   getCurrentUser(): UserInfo | null {
     return this.state$.value.user;
   }
@@ -59,8 +53,8 @@ export class AuthService {
     return this.http
       .post<AuthResponse>('/api/auth/login', { username, password })
       .pipe(
-        tap((response) => {
-          this.setToken(response.token);
+        tap(() => {
+          this.setSessionFlag();
           this.setState({ loading: false, user: { username, authenticated: true } });
         }),
         map(() => undefined),
@@ -73,7 +67,16 @@ export class AuthService {
   }
 
   logout(): void {
+    const wasAuthenticated = this.isAuthenticated();
     this.clearAuth();
+
+    // Fire-and-forget: invalida la sesión en la BD y expira la cookie.
+    // Si no hay red (offline), la cookie expirará sola por TTL (24h).
+    if (wasAuthenticated) {
+      this.http.post('/api/auth/logout', null).subscribe({
+        error: () => { }
+      });
+    }
   }
 
   refreshUser(): Observable<UserInfo> {
@@ -93,33 +96,34 @@ export class AuthService {
     );
   }
 
-  private setToken(token: string): void {
-    localStorage.setItem('hivehub_token', token);
+  private setSessionFlag(): void {
+    localStorage.setItem('hivehub_session', 'true');
     this.setState({
-      token,
       isAuthenticated: true
     });
   }
 
   private clearAuth(): void {
-    localStorage.clear();
+    localStorage.removeItem('hivehub_session');
+    // Para no romper la experiencia offline que ya guardó este token, lo removemos también
+    localStorage.removeItem('hivehub_token');
     sessionStorage.clear();
     this.setState(INITIAL_STATE);
   }
 
   private hydrateState(): void {
-    const token = localStorage.getItem('hivehub_token');
-    if (token) {
-      this.setState({ token, isAuthenticated: true });
+    // Soporte legacy por si alguien actualiza la app y aún tenía hivehub_token
+    const session = localStorage.getItem('hivehub_session') || localStorage.getItem('hivehub_token');
+    if (session) {
+      this.setState({ isAuthenticated: true });
     }
   }
 
   private getInitialState(): AuthState {
-    const token = localStorage.getItem('hivehub_token');
+    const session = localStorage.getItem('hivehub_session') || localStorage.getItem('hivehub_token');
     return {
       ...INITIAL_STATE,
-      token: token || null,
-      isAuthenticated: !!token
+      isAuthenticated: !!session
     };
   }
 

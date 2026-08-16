@@ -1,6 +1,3 @@
-<!-- TopAppBar -->
-<header class="login-header"></header>
-
 <!-- Main Content Canvas -->
 <main class="login-main" *ngIf="state$ | async as state">
   <!-- Decorative bg elements -->
@@ -13,22 +10,23 @@
   
   <!-- Login Form Card -->
   <div class="login-card-container">
+    <!-- Brand -->
+    <div class="login-brand">
+      <span class="material-symbols-outlined login-brand-icon">hive</span>
+      <span class="login-brand-title">HiveHub</span>
+    </div>
+
     <div class="login-card">
-      <!-- Beehive Icon -->
-      <div class="beehive-icon-wrapper">
-        <img alt="Beehive comic icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9xmfFB8UAXPRtXGxY4YComPljzUQ2Uww13r-_-D5iW_aVwFxXkxu60yBz0wOdXUvk_4dmR-kjY_V3BlBsWdHfdnxeylHRDRKlUy92WBCnaVnFBXLl-DwyaVBvGCPvMrn3aWZiHxhBEO1yYt0V-JNCm9cve20tHTTpqJpb1gF1YurapQuAyMVX-DMu8Dh1NT0vrWCNHaW6rjThxhv7aGBRiVvrw7367pIPGYPAyPls9JO_vn2wjU1C2Ajs4zCb0fqGjQDCWE7_vw">
-      </div>
-      
       <div class="welcome-text">
         <h2 class="font-headline-sm">Bienvenido</h2>
         <p class="font-body-md">Ingresa tus datos para continuar</p>
       </div>
 
       <form class="login-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        <!-- Email Input -->
+        <!-- Username Input -->
         <div class="input-group">
           <label class="font-label-lg" for="username">USUARIO</label>
-          <div class="input-wrapper input-focus-ring" [class.error]="username.invalid && username.touched">
+          <div class="input-wrapper" [class.error]="username.invalid && username.touched">
             <div class="input-icon-left">
               <span class="material-symbols-outlined">person</span>
             </div>
@@ -37,9 +35,10 @@
               id="username" 
               type="text"
               formControlName="username"
-              placeholder="Tu nombre de usuario">
+              placeholder="Tu nombre de usuario"
+              autocomplete="username">
           </div>
-          <p class="error-text font-label-sm" *ngIf="username.invalid && username.touched">
+          <p class="error-text" *ngIf="username.invalid && username.touched">
             El usuario es obligatorio.
           </p>
         </div>
@@ -47,7 +46,7 @@
         <!-- Password Input -->
         <div class="input-group">
           <label class="font-label-lg" for="password">CONTRASEÑA</label>
-          <div class="input-wrapper input-focus-ring" [class.error]="password.invalid && password.touched">
+          <div class="input-wrapper" [class.error]="password.invalid && password.touched">
             <div class="input-icon-left">
               <span class="material-symbols-outlined">lock</span>
             </div>
@@ -56,34 +55,33 @@
               id="password" 
               [type]="showPassword ? 'text' : 'password'"
               formControlName="password"
-              placeholder="••••••••">
-            <div 
+              placeholder="••••••••"
+              autocomplete="current-password">
+            <button 
+              type="button"
               class="input-icon-right"
-              (click)="togglePasswordVisibility()">
+              (click)="togglePasswordVisibility()"
+              aria-label="Mostrar/ocultar contraseña">
               <span class="material-symbols-outlined">{{ showPassword ? 'visibility' : 'visibility_off' }}</span>
-            </div>
+            </button>
           </div>
-          <p class="error-text font-label-sm" *ngIf="password.invalid && password.touched">
+          <p class="error-text" *ngIf="password.invalid && password.touched">
             La contraseña es obligatoria.
           </p>
         </div>
 
-        <p class="error-text-center font-body-md" *ngIf="state.error">{{ state.error }}</p>
+        <p class="error-text-center" *ngIf="state.error">{{ state.error }}</p>
 
         <!-- Submit Button -->
         <button 
           class="login-btn sink-effect" 
           type="submit"
           [disabled]="state.loading || form.invalid">
-          <span class="btn-text">{{ state.loading ? 'INGRESANDO...' : 'INGRESAR AL SISTEMA' }}</span>
-          <span class="material-symbols-outlined btn-icon" *ngIf="!state.loading">arrow_forward</span>
+          <span class="btn-text">{{ state.loading ? 'INGRESANDO...' : 'INGRESAR' }}</span>
+          <span class="material-symbols-outlined btn-icon" *ngIf="!state.loading">login</span>
           <span class="material-symbols-outlined btn-icon spin-anim" *ngIf="state.loading">sync</span>
         </button>
       </form>
-    </div>
-    
-    <div class="forgot-password-container">
-      <a class="forgot-password-link font-label-lg" href="#">¿Olvidaste tu contraseña?</a>
     </div>
   </div>
 </main>

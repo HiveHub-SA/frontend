@@ -1,17 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MockRegistrarApiario } from './registrar-apiario';
+import { RegistrarApiarioComponent } from './registrar-apiario';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
-describe('MockRegistrarApiario', () => {
-  let component: MockRegistrarApiario;
-  let fixture: ComponentFixture<MockRegistrarApiario>;
+describe('RegistrarApiarioComponent', () => {
+  let component: RegistrarApiarioComponent;
+  let fixture: ComponentFixture<RegistrarApiarioComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MockRegistrarApiario],
+      imports: [RegistrarApiarioComponent],
+      providers: [provideHttpClient(), provideRouter([])]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MockRegistrarApiario);
+    fixture = TestBed.createComponent(RegistrarApiarioComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

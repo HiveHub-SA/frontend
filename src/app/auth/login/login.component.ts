@@ -10,8 +10,9 @@ import { AuthService, AuthState } from '../auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
   host: {
-    class: 'flex flex-col flex-1'
+    class: 'login-host'
   }
 })
 export class LoginComponent implements OnInit {
@@ -19,7 +20,7 @@ export class LoginComponent implements OnInit {
   state$: Observable<AuthState>;
 
   showPassword = false;
-  private returnUrl = '/dashboard';
+  private returnUrl = '/';
 
   constructor(
     private readonly fb: FormBuilder,
@@ -35,7 +36,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     if (this.authService.isAuthenticated()) {
       this.router.navigateByUrl(this.returnUrl);
     }

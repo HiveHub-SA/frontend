@@ -1,0 +1,126 @@
+.app-header {
+  width: 100%;
+  background-color: var(--color-surface-container-lowest);
+  border-bottom: var(--border-dark);
+  box-shadow: 0 4px 0px 0px rgba(26, 28, 28, 1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  transition: all 0.3s ease;
+}
+
+.blurred-overlay {
+  pointer-events: none;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.brand-icon {
+  color: var(--color-primary);
+  font-size: 24px;
+}
+
+.brand-title {
+  font-family: var(--font-headline);
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 110px;
+  height: 36px;
+  padding: 0 12px;
+  border: var(--border-dark);
+  border-radius: 999px;
+  box-shadow: var(--shadow-hard-small);
+  transition: all .25s ease;
+}
+
+.status-badge.online {
+  background: #4CAF50;
+  color: white;
+}
+
+.status-badge.offline {
+  background: #9E9E9E;
+  color: white;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.status-text {
+  font-family: var(--font-headline);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 2px;
+
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.status-icon {
+
+  font-size: 20px;
+
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: var(--border-dark);
+  border-radius: 999px;
+  background-color: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-small);
+  transition: all 0.1s ease;
+}
+
+.header-logout-btn:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.header-logout-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+
+
