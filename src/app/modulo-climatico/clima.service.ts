@@ -36,7 +36,7 @@ export class ClimaService {
       return of(cached ? JSON.parse(cached) : null);
     }
 
-    const url = `${this.baseUrl}?key=${this.apiKey}&q=${lat},${lng}&days=1&aqi=no&alerts=no&lang=es`;
+    const url = `${this.baseUrl}?key=${this.apiKey}&q=${lat},${lng}&days=2&aqi=no&alerts=no&lang=es`;
 
     return this.http.get<any>(url).pipe(
       // 1. Transformamos la respuesta de WeatherAPI a la interfaz WeatherData
@@ -58,7 +58,7 @@ export class ClimaService {
 
   private procesarRespuestaWeatherApi(res: any): WeatherData {
     const current = res.current;
-    const hourList: any[] = res.forecast?.forecastday[0]?.hour || [];
+    const hourList: any[] = (res.forecast?.forecastday || []).flatMap((d: any) => d.hour || []);
     const currentEpoch = current?.last_updated_epoch || Math.floor(Date.now() / 1000);
 
     // Filtrar las 5 horas siguientes a partir del momento actual

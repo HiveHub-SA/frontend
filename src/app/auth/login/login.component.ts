@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
   state$: Observable<AuthState>;
 
   showPassword = false;
-  private returnUrl = '/';
+  private returnUrl = '/mapa';
 
   constructor(
     private readonly fb: FormBuilder,
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/mapa';
     if (this.authService.isAuthenticated()) {
       this.router.navigateByUrl(this.returnUrl);
     }

@@ -1,0 +1,100 @@
+<div class="detalle-page-container">
+
+  <!-- Header Neo-Brutalista táctil -->
+  <header class="header-tactile">
+    <button 
+      [routerLink]="['/apiarios', apiarioId, 'inspecciones']"
+      aria-label="Atrás" 
+      class="btn-back pressable"
+    >
+      <span class="material-symbols-outlined font-bold">arrow_back</span>
+    </button>
+    
+    <div class="header-title-box">
+      <span class="header-subtitle">Apiario {{ nombreApiario() }}</span>
+      <h1 class="header-main-title">Inspección Registrada</h1>
+    </div>
+  </header>
+
+  <!-- Canvas desplazable -->
+  <main class="detalle-main-canvas">
+
+    <!-- Indicador de Carga -->
+    <div *ngIf="loading()" class="loading-box">
+      <p>Cargando detalle de inspección...</p>
+    </div>
+
+    <ng-container *ngIf="!loading()">
+
+      <!-- Tarjeta de Resumen (Summary Card) -->
+      <section class="summary-card-tactile">
+        <div class="summary-header">
+          <h2 class="summary-date">{{ formatFecha(inspeccion()?.fecha) }}</h2>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-metric-box">
+            <span class="metric-label">Floración</span>
+            <p class="metric-value">{{ inspeccion()?.floracion || 'N/I' }}</p>
+          </div>
+          <div class="summary-metric-box">
+            <span class="metric-label">Revisadas</span>
+            <p class="metric-value">{{ colmenasDetalle().length }} / {{ totalColmenasApiario() || colmenasDetalle().length }} Colmenas</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Detalle por Colmena (Hive Details Section) -->
+      <section class="hive-section-wrapper">
+        <h3 class="section-title">
+          <span class="title-indicator"></span>
+          Detalle por Colmena
+        </h3>
+
+        <!-- Mensaje si no hay colmenas registradas -->
+        <div *ngIf="colmenasDetalle().length === 0" class="empty-colmenas-box">
+          <p>No se registraron detalles por colmena en esta inspección.</p>
+        </div>
+
+        <!-- Tarjeta de Colmena individual -->
+        <div *ngFor="let colmena of colmenasDetalle()" class="hive-card-tactile">
+          <div class="hive-card-header">
+            <h4 class="hive-name">{{ colmena.colmenaName || ('Colmena #' + colmena.colmenaId) }}</h4>
+          </div>
+
+          <div class="hive-card-body">
+
+            <!-- Fila de insignias sanitarias y operativas -->
+            <div class="badges-row">
+              <span [class]="getLabelVarroa(colmena.varroa).class">
+                {{ getLabelVarroa(colmena.varroa).text }}
+              </span>
+              <span [class]="getLabelReina(colmena.estadoReina).class">
+                {{ getLabelReina(colmena.estadoReina).text }}
+              </span>
+              <span [class]="getLabelAlimento(colmena.nivelAlimento).class">
+                {{ getLabelAlimento(colmena.nivelAlimento).text }}
+              </span>
+              <span [class]="getLabelMiel(colmena.produjoMiel).class">
+                {{ getLabelMiel(colmena.produjoMiel).text }}
+              </span>
+            </div>
+
+            <!-- Caja de Observaciones Punteada -->
+            <div *ngIf="colmena.observaciones && colmena.observaciones.trim() !== ''" class="observation-dashed-box">
+              <span class="observation-label">Observaciones</span>
+              <p class="observation-text">"{{ colmena.observaciones }}"</p>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+    </ng-container>
+
+  </main>
+
+  <app-navbar></app-navbar>
+
+</div>

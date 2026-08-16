@@ -171,25 +171,36 @@ button {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-/* ============================================================
-   COMPONENTES NEUBRUTALISTAS
-   ============================================================ */
+/* Barra Superior Fija (Header Global) */
+app-header {
+  display: block;
+  position: relative;
+  z-index: 1000;
+}
 
-/* Modales */
-.modal-overlay {
+.app-top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 99999 !important;
+  width: 100%;
+  background-color: var(--color-surface-container-lowest, #ffffff);
+}
+
+/* Modales y Formularios Popup */
+.modal-overlay,
+.form-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(15, 17, 17, 0.6);
-  /* Oscurecido suave sin romper Leaflet ni layouts */
-  z-index: 10500;
+  /* Oscurecido suave que cubre la pantalla entera incluyendo headers */
+  z-index: 200000 !important;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  animation: fadeInOverlay 0.15s ease-out;
 }
 
 .modal-container {
