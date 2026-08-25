@@ -21,18 +21,18 @@ describe('InspeccionDraftService (Pruebas APB / Edge Cases)', () => {
     expect(service).toBeTruthy();
   });
 
-  it('debe guardar y retornar un borrador local general (US 15)', () => {
-    service.saveDraft(APIARIO_ID, { floracion: 'Girasol', inspeccionId: 100 });
+  it('debe guardar y retornar un borrador local general con varroa (US 15 / US 43)', () => {
+    service.saveDraft(APIARIO_ID, { floracion: 'Girasol', varroa: 'DETECTADA', inspeccionId: 100 });
 
     const draft = service.getDraft(APIARIO_ID);
     expect(draft).not.toBeNull();
     expect(draft?.floracion).toBe('Girasol');
+    expect(draft?.varroa).toBe('DETECTADA');
     expect(draft?.inspeccionId).toBe(100);
   });
 
   it('debe guardar continuamente el borrador en progreso por colmena (US 15)', () => {
     const progressForm: Partial<InspeccionColmenaDTO> = {
-      varroa: 'DETECTADA',
       estadoReina: 'VISTA_Y_SANA',
       nivelAlimento: 'ALTO',
       produjoMiel: true,
@@ -43,7 +43,7 @@ describe('InspeccionDraftService (Pruebas APB / Edge Cases)', () => {
 
     const savedProgress = service.getColmenaDraftData(APIARIO_ID, 1);
     expect(savedProgress).not.toBeNull();
-    expect(savedProgress?.varroa).toBe('DETECTADA');
+    expect(savedProgress?.estadoReina).toBe('VISTA_Y_SANA');
     expect(savedProgress?.observaciones).toBe('Probando auto-guardado en tiempo real');
   });
 
