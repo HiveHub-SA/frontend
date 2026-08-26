@@ -11,6 +11,7 @@ import { InspeccionarColmenaComponent } from './inspecciones/colmena/inspecciona
 import { DetalleInspeccionComponent } from './inspecciones/detalle/detalle-inspeccion';
 import { AudioRecorderComponent } from './audio-recorder/audio-recorder';
 import { MaterialesComponent } from './materiales/materiales.component';
+import { ReporteCierreTemporadaComponent } from './reportes/cierre-temporada/reporte-cierre-temporada';
 
 export const routes: Routes = [
   { path: '', component: MapaInteractivo },
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'mapa', component: MapaInteractivo },
   { path: 'inicio', component: Inicio },
   { path: 'extraccion', component: OperacionSalaComponent },
+  { path: 'reportes/cierre-temporada', component: ReporteCierreTemporadaComponent },
   { path: 'voz', component: AudioRecorderComponent },
   { path: 'materiales', component: MaterialesComponent },
 ];
