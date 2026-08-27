@@ -13,7 +13,7 @@ import { AudioRecorderComponent } from './audio-recorder/audio-recorder';
 import { MaterialesComponent } from './materiales/materiales.component';
 
 export const routes: Routes = [
-  { path: '', component: MapaInteractivo },
+  { path: '', redirectTo: 'mapa', pathMatch: 'full' },
   { path: 'apiarios', component: ApiarioListComponent },
   { path: 'apiarios/:id', component: ApiarioDetailComponent },
   { path: 'apiarios/:id/inspecciones', component: HistorialInspeccionesComponent },

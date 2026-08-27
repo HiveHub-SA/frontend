@@ -76,12 +76,12 @@
           <app-selector-ubicacion (coordenadaSeleccionada)="onUbicacionSeleccionada($event)"></app-selector-ubicacion>
         </div>
         <div class="modal-footer">
-          <p *ngIf="latitude !== null" class="font-body-md text-on-surface-variant">
-            Ubicación fijada: {{ latitude?.toFixed(4) }}, {{ longitude?.toFixed(4) }}
+          <p *ngIf="latitude !== null && longitude !== null" class="font-body-md text-on-surface-variant">
+            Ubicación fijada: {{ latitude.toFixed(4) }}, {{ longitude.toFixed(4) }}
           </p>
           <button
             class="btn-confirmar font-label-lg sink-effect"
-            [disabled]="!latitude"
+            [disabled]="!latitude || !longitude"
             (click)="cerrarMapa()"
           >
             Confirmar Ubicación

@@ -3,6 +3,34 @@
   width: 100%;
 }
 
+#mapa-seleccion {
+  height: 450px;
+  width: 100%;
+  background-color: #e6e6e6 !important;
+  border-style: solid;
+}
+
+::ng-deep .leaflet-container {
+  background-color: #e6e6e6 !important;
+}
+
+::ng-deep .leaflet-tile-container {
+  will-change: transform;
+}
+
+.modal-titulo, 
+.titulo-header h2 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;            
+  font-weight: 800;
+  color: #1a1c1c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+  padding: 4px 0;
+  text-align: center;
+}
+
 /* CONTROLES LATERALES FLOTANTES */
 .controles-laterales {
   position: absolute;
@@ -11,52 +39,70 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  z-index: 1000; /* Asegura que esté por encima de Leaflet */
+  z-index: 1000;
 }
 
 .btn-control {
   background-color: #ffffff;
   border: 2px solid #1a1c1c;
-  border-radius: 12px; /* Super-elipse suave */
+  border-radius: 12px;
   width: 48px;
   height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0px 4px 0px 0px #1a1c1c; /* Sombra sólida / Extrusión */
+  box-shadow: 0px 4px 0px 0px #1a1c1c;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
   color: #1a1c1c;
 }
 
-/* Botón especial de ubicación usando el color "Hive Orange" */
 .btn-control.btn-ubicacion {
   background-color: #ff8f06; 
-  margin-top: 8px; /* Un poco más separado de los controles de zoom */
+  margin-top: 8px;
 }
+
 .btn-control.btn-ubicacion .text-icon-ubicacion {
-  color: #623300; /* Texto oscuro cálido */
+  color: #623300;
 }
 
-
-/* 
-   MODIFICADORES PARA EL MARCADOR DE NUEVA UBICACIÓN  
-*/
-
+/* MARCADOR DE NUEVA UBICACIÓN */
 ::ng-deep .hive-icon-bg.is-proposal {
   background-color: #2196f3; 
   box-shadow: 0px 4px 0px 0px #0d47a1; 
   border-color: #1a1c1c;
 }
 
-/*flecha interna para que contraste con el azul */
 ::ng-deep .hive-icon-bg.is-proposal .icono-panal.is-arrow {
   color: #ffffff; 
 }
 
-/*etiqueta inferior */
 ::ng-deep .hive-label.is-proposal-label {
   background: #2196f3;
   color: #ffffff;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
 }
+
+
+@media (max-width: 600px) {
+  #mapa-seleccion {
+    height: 55vh !important;
+    max-height: 420px;
+  }
+  .controles-laterales {
+    top: 16px;
+    right: 12px;
+    gap: 8px;
+  }
+  .btn-control {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.modal-footer {
+    padding-top: 8px;
+    border-top: 2px dashed #e5e5e500;
+}
+
+

@@ -13,6 +13,9 @@ export class NotificacionesClima {
   public alertasService = inject(AlertasClimaService);
   mostrarDropdown = false;
 
+  // constructor(public alertasService: AlertasClimaService){}
+
+
   @ViewChild('dropdownBody') dropdownBody?: ElementRef<HTMLDivElement>;
 
   //variables que me permiten arrastrar las notificaciones
@@ -36,10 +39,13 @@ export class NotificacionesClima {
     }
   }
 
-  seleccionarAlerta(alerta: AlertaExtrema): void {
+    //Metodo para la funcionalidad de redirigir al apiario
+  seleccionarAlerta(alerta: AlertaExtrema) {
     this.mostrarDropdown = false;
+    this.alertasService.seleccionarAlertaYRedirigir(alerta);
   }
 
+  //Funcionalidades para desplazar dentro de las notificaciones
   startDragging(e: MouseEvent): void {
     if (!this.dropdownBody) return;
     this.isDragging = true;
@@ -60,5 +66,8 @@ export class NotificacionesClima {
     const walk = (y - this.startY) * 1.5; // Velocidad del desplazamiento
     el.scrollTop = this.scrollTop - walk;
   }
+
+
+
 
 }
