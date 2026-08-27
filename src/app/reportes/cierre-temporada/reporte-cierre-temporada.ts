@@ -1,20 +1,21 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../navbar/navbar.component';
 import { ReporteService } from '../reporte.service';
 import {
   ReporteCierreTemporadaDTO,
   RendimientoApiarioDTO,
   RendimientoFloracionDTO,
-  EficienciaBiologicaDTO
+  EficienciaBiologicaDTO,
+  PrioridadApiarioDTO,
+  ComparativaInteranualDTO
 } from '../reporte.model';
 
 @Component({
   selector: 'app-reporte-cierre-temporada',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent],
   templateUrl: './reporte-cierre-temporada.html',
   styleUrl: './reporte-cierre-temporada.css'
 })
@@ -27,29 +28,38 @@ export class ReporteCierreTemporadaComponent implements OnInit {
   // Temporadas detectadas en backend
   temporadas = signal<string[]>([]);
   temporadaSeleccionada = signal<string>('');
+  mostrarFiltroFechas = signal<boolean>(false);
+  mostrarAyudaPrioridad = signal<boolean>(false);
+  mostrarAyudaRendimiento = signal<boolean>(false);
 
   // Datos consolidados
   reporte = signal<ReporteCierreTemporadaDTO | null>(null);
   loading = signal<boolean>(false);
   errorMessage = signal<string>('');
 
-  // Controles de visualización y botones rápidos 1-clic
-  pestanaActiva = signal<'APIARIOS' | 'FLORACION' | 'BIOLOGIA'>('APIARIOS');
-  
-  // Gráfico de Apiarios - Botones 1-clic
-  modoOrdenamiento = signal<'RANKING' | 'ALFABETICO'>('RANKING');
+  // Pestaña activa
+  pestanaActiva = signal<'DETALLE' | 'FLORACION' | 'BIOLOGIA'>('DETALLE');
+
+  // Métrica del gráfico de barras
   metricaGraficoApiarios = signal<'KILOS' | 'ALZAS' | 'RINDE_COLMENA'>('KILOS');
 
-  // Gráfico de Floración - Botones 1-clic
-  metricaFloracion = signal<'KILOS' | 'PORCENTAJE'>('KILOS');
-
-  // Filtro de búsqueda en tabla
-  busquedaApiario = signal<string>('');
+  // Paleta fija Neo-Brutalista identitaria por Apiario (Mejora #5)
+  private readonly PALETA_APIARIOS: string[] = [
+    '#ffb300', // Ámbar dorado HiveHub
+    '#42a5f5', // Azul cielo
+    '#66bb6a', // Verde fresco
+    '#ff7043', // Naranja coral
+    '#ab47bc', // Púrpura
+    '#26a69a', // Verde azulado
+    '#ffa726', // Naranja cálido
+    '#8d6e63', // Café tierra
+    '#5c6bc0', // Índigo
+    '#ec407a'  // Rosa vibrante
+  ];
 
   constructor(private reporteService: ReporteService) {}
 
   ngOnInit(): void {
-    // Calcular temporada actual por defecto (Noviembre a Octubre)
     const now = new Date();
     const currentYear = now.getMonth() >= 10 ? now.getFullYear() : now.getFullYear() - 1;
     this.fechaInicio.set(`${currentYear}-11-01`);
@@ -77,11 +87,9 @@ export class ReporteCierreTemporadaComponent implements OnInit {
     });
   }
 
-  /**
-   * Atajo 1-clic: Selecciona una temporada predefinida y actualiza las fechas automáticamente.
-   */
   seleccionarAtajoTemporada(tempStr: string): void {
     this.temporadaSeleccionada.set(tempStr);
+    this.mostrarFiltroFechas.set(false);
     const parts = tempStr.split('/');
     if (parts.length === 2) {
       const yearStart = parseInt(parts[0], 10);
@@ -94,20 +102,16 @@ export class ReporteCierreTemporadaComponent implements OnInit {
     }
   }
 
-  /**
-   * Atajo 1-clic: Últimos 6 meses desde hoy.
-   */
-  seleccionarUltimos6Meses(): void {
-    const now = new Date();
-    const endStr = now.toISOString().split('T')[0];
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(now.getMonth() - 6);
-    const startStr = sixMonthsAgo.toISOString().split('T')[0];
+  toggleFiltroFechas(): void {
+    this.mostrarFiltroFechas.update(v => !v);
+  }
 
-    this.fechaInicio.set(startStr);
-    this.fechaFin.set(endStr);
-    this.temporadaSeleccionada.set('Últimos 6 meses');
-    this.consultarReporte();
+  toggleAyudaPrioridad(): void {
+    this.mostrarAyudaPrioridad.update(v => !v);
+  }
+
+  toggleAyudaRendimiento(): void {
+    this.mostrarAyudaRendimiento.update(v => !v);
   }
 
   consultarReporte(): void {
@@ -121,47 +125,35 @@ export class ReporteCierreTemporadaComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al obtener reporte de cierre:', err);
-        this.errorMessage.set('Ocurrió un error al cargar los datos del reporte. Verifique la conexión.');
+        this.errorMessage.set('Ocurrió un error al cargar los datos del reporte.');
         this.loading.set(false);
       }
     });
   }
 
-  // Lista calculada de apiarios filtrada y ordenada
-  apiariosProcesados = computed(() => {
+  getColorApiario(apiarioId: number): string {
+    const idx = Math.abs(apiarioId) % this.PALETA_APIARIOS.length;
+    return this.PALETA_APIARIOS[idx];
+  }
+
+  apiariosOrdenados = computed(() => {
     const rep = this.reporte();
     if (!rep || !rep.rendimientoApiarios) return [];
-
-    let lista = [...rep.rendimientoApiarios];
-
-    // Filtro por texto si existe
-    const q = this.busquedaApiario().trim().toLowerCase();
-    if (q) {
-      lista = lista.filter((a) => a.apiarioNombre.toLowerCase().includes(q));
-    }
-
-    // Ordenamiento según botón 1-clic
-    if (this.modoOrdenamiento() === 'RANKING') {
-      const metrica = this.metricaGraficoApiarios();
-      if (metrica === 'KILOS') {
-        lista.sort((a, b) => b.kilosMiel - a.kilosMiel);
-      } else if (metrica === 'ALZAS') {
-        lista.sort((a, b) => b.alzasProcesadas - a.alzasProcesadas);
-      } else {
-        lista.sort((a, b) => b.kilosPorColmena - a.kilosPorColmena);
-      }
+    const lista = [...rep.rendimientoApiarios];
+    const metrica = this.metricaGraficoApiarios();
+    if (metrica === 'KILOS') {
+      lista.sort((a, b) => b.kilosMiel - a.kilosMiel);
+    } else if (metrica === 'ALZAS') {
+      lista.sort((a, b) => b.alzasProcesadas - a.alzasProcesadas);
     } else {
-      lista.sort((a, b) => a.apiarioNombre.localeCompare(b.apiarioNombre));
+      lista.sort((a, b) => b.kilosPorColmena - a.kilosPorColmena);
     }
-
     return lista;
   });
 
-  // Valor máximo para calcular el porcentaje de barra en gráfico
   maxValorGrafico = computed(() => {
-    const lista = this.apiariosProcesados();
+    const lista = this.apiariosOrdenados();
     if (!lista || lista.length === 0) return 1;
-
     const metrica = this.metricaGraficoApiarios();
     if (metrica === 'KILOS') {
       return Math.max(...lista.map((a) => a.kilosMiel), 1);
@@ -180,23 +172,14 @@ export class ReporteCierreTemporadaComponent implements OnInit {
     else if (metrica === 'ALZAS') val = apiario.alzasProcesadas;
     else val = apiario.kilosPorColmena;
 
-    return Math.max(8, Math.min(100, (val / max) * 100));
-  }
-
-  // Métodos de cambio con botones 1-clic
-  cambiarModoOrden(modo: 'RANKING' | 'ALFABETICO'): void {
-    this.modoOrdenamiento.set(modo);
+    return Math.max(6, Math.min(100, (val / max) * 100));
   }
 
   cambiarMetricaApiarios(metrica: 'KILOS' | 'ALZAS' | 'RINDE_COLMENA'): void {
     this.metricaGraficoApiarios.set(metrica);
   }
 
-  cambiarMetricaFloracion(metrica: 'KILOS' | 'PORCENTAJE'): void {
-    this.metricaFloracion.set(metrica);
-  }
-
-  cambiarPestana(pestana: 'APIARIOS' | 'FLORACION' | 'BIOLOGIA'): void {
+  cambiarPestana(pestana: 'DETALLE' | 'FLORACION' | 'BIOLOGIA'): void {
     this.pestanaActiva.set(pestana);
   }
 }

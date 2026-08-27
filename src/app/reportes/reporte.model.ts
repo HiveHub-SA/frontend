@@ -1,3 +1,20 @@
+export interface PrioridadApiarioDTO {
+  apiarioId: number;
+  apiarioNombre: string;
+  scorePrioridad: number;
+  nivelPrioridad: 'ALTA' | 'MEDIA' | 'BAJA';
+  motivoExplicativo: string;
+}
+
+export interface ComparativaInteranualDTO {
+  deltaKilosMielPct?: number;
+  deltaKilosPorAlzaPct?: number;
+  deltaKilosPorColmenaPct?: number;
+  kilosMielTemporadaPrevia?: number;
+  temporadaPreviaLabel: string;
+  sinDatosPrevios: boolean;
+}
+
 export interface RendimientoApiarioDTO {
   apiarioId: number;
   apiarioNombre: string;
@@ -7,6 +24,9 @@ export interface RendimientoApiarioDTO {
   totalColmenas: number;
   kilosPorColmena: number;
   porcentajeCosechaTotal: number;
+  estadoValidacion: 'OK' | 'REVISAR' | 'INCOMPLETO';
+  motivoValidacion: string;
+  tipoAlzaPredominante?: string;
 }
 
 export interface RendimientoFloracionDTO {
@@ -14,6 +34,8 @@ export interface RendimientoFloracionDTO {
   totalKilosEstimados: number;
   cantidadApiarios: number;
   porcentajeTotal: number;
+  porcentajeReinasSanas: number;
+  semaforoSaludReinas: 'VERDE' | 'AMARILLO' | 'ROJO';
 }
 
 export interface EficienciaBiologicaApiarioDTO {
@@ -43,12 +65,17 @@ export interface ReporteCierreTemporadaDTO {
   totalAlzasProcesadas: number;
   totalAlzasIngresadas: number;
   totalAlzasEnEspera: number;
+  totalAlzasEnEsperaCriticas: number;
+  umbralDiasCriticos: number;
   promedioKilosPorAlza: number;
   promedioKilosPorColmena: number;
   apiarioMasProductivo: string;
   kilosApiarioMasProductivo: number;
+  estadoValidacionTopApiario: string;
+  indicePrioridades: PrioridadApiarioDTO[];
   rendimientoApiarios: RendimientoApiarioDTO[];
   rendimientoFloraciones: RendimientoFloracionDTO[];
   eficienciaBiologica: EficienciaBiologicaDTO;
+  comparativaInteranual?: ComparativaInteranualDTO;
   tieneDatos: boolean;
 }

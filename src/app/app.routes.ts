@@ -25,7 +25,7 @@ export const routes: Routes = [
   { path: 'mapa', component: MapaInteractivo },
   { path: 'inicio', component: Inicio },
   { path: 'extraccion', component: OperacionSalaComponent },
-  { path: 'reportes/cierre-temporada', component: ReporteCierreTemporadaComponent },
+  { path: 'reportes', component: ReporteCierreTemporadaComponent },
   { path: 'voz', component: AudioRecorderComponent },
   { path: 'materiales', component: MaterialesComponent },
 ];

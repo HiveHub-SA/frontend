@@ -22,7 +22,7 @@ export class ReporteService {
     if (fechaFin) {
       params = params.set('fechaFin', fechaFin);
     }
-    return this.http.get<ReporteCierreTemporadaDTO>(`${this.baseUrl}/cierre-temporada`, { params });
+    return this.http.get<ReporteCierreTemporadaDTO>(this.baseUrl, { params });
   }
 
   /**

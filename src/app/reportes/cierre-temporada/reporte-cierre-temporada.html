@@ -1,438 +1,408 @@
-<div class="reporte-container">
+<app-navbar></app-navbar>
 
-  <!-- Header Neo-Brutalista -->
-  <header class="reporte-header">
-    <button routerLink="/extraccion" aria-label="Volver" class="btn-back sink-effect">
-      <span class="material-symbols-outlined">arrow_back</span>
-    </button>
-    <div class="header-title-wrapper">
-      <p class="header-subtitle">Analítica y Rendimiento</p>
-      <h1 class="header-title">Cierre de Temporada</h1>
+<div class="content-container">
+
+  <!-- 1. ENCABEZADO Y FILTRO DE TEMPORADA -->
+  <section class="header-section">
+    <div class="section-title-row">
+      <h2 class="page-title">📊 CIERRE DE TEMPORADA</h2>
     </div>
-    <div class="header-spacer"></div>
-  </header>
 
-  <main class="reporte-main">
+    <!-- SELECTOR DE TEMPORADAS LIMPIO -->
+    <div class="season-selector-bar">
+      <button
+        *ngFor="let temp of temporadas()"
+        type="button"
+        class="season-btn"
+        [class.active]="temporadaSeleccionada() === temp && !mostrarFiltroFechas()"
+        (click)="seleccionarAtajoTemporada(temp)"
+      >
+        {{ temp }}
+      </button>
+      <button
+        type="button"
+        class="season-btn btn-custom-dates"
+        [class.active]="mostrarFiltroFechas()"
+        (click)="toggleFiltroFechas()"
+      >
+        📅 Fechas ▾
+      </button>
+    </div>
 
-    <!-- CARD FILTROS Y ATAJOS DE TEMPORADA -->
-    <section class="card-filtro-temporada">
-      <div class="filtro-title-row">
-        <span class="filtro-title">📅 Periodo de Temporada</span>
+    <!-- PANEL DESPLEGABLE DE FECHAS PERSONALIZADAS -->
+    <div *ngIf="mostrarFiltroFechas()" class="custom-dates-drawer">
+      <div class="date-field">
+        <label for="fechaInicio">Desde:</label>
+        <input
+          id="fechaInicio"
+          type="date"
+          class="date-input"
+          [ngModel]="fechaInicio()"
+          (ngModelChange)="fechaInicio.set($event)"
+        />
       </div>
-
-      <!-- Inputs de Fechas Desde / Hasta -->
-      <div class="fechas-inputs-row">
-        <div class="input-group">
-          <label for="fechaInicio">Desde:</label>
-          <input
-            id="fechaInicio"
-            type="date"
-            [ngModel]="fechaInicio()"
-            (ngModelChange)="fechaInicio.set($event)"
-            class="input-date"
-          />
-        </div>
-        <div class="input-group">
-          <label for="fechaFin">Hasta:</label>
-          <input
-            id="fechaFin"
-            type="date"
-            [ngModel]="fechaFin()"
-            (ngModelChange)="fechaFin.set($event)"
-            class="input-date"
-          />
-        </div>
-        <button (click)="consultarReporte()" class="btn-consultar sink-effect">
-          <span class="material-symbols-outlined">search</span> Consultar
-        </button>
+      <div class="date-field">
+        <label for="fechaFin">Hasta:</label>
+        <input
+          id="fechaFin"
+          type="date"
+          class="date-input"
+          [ngModel]="fechaFin()"
+          (ngModelChange)="fechaFin.set($event)"
+        />
       </div>
+      <button type="button" class="btn-apply-dates" (click)="consultarReporte()" [disabled]="loading()">
+        🔍 Aplicar
+      </button>
+    </div>
+  </section>
 
-      <!-- Botones Rápidos 1-Clic de Temporadas -->
-      <div class="atajos-temporada-box">
-        <span class="atajos-label">Atajos rápidos:</span>
-        <div class="atajos-buttons-wrap">
-          <button
-            *ngFor="let temp of temporadas()"
-            (click)="seleccionarAtajoTemporada(temp)"
-            [class.active-atajo]="temporadaSeleccionada() === temp"
-            class="btn-atajo sink-effect"
-          >
-            {{ temp }}
-          </button>
-          <button
-            (click)="seleccionarUltimos6Meses()"
-            [class.active-atajo]="temporadaSeleccionada() === 'Últimos 6 meses'"
-            class="btn-atajo sink-effect"
-          >
-            Últimos 6 meses
-          </button>
+  <!-- MENSAJES DE ERROR O CARGA -->
+  <div *ngIf="errorMessage()" class="status-banner error-banner">
+    ⚠️ {{ errorMessage() }}
+  </div>
+
+  <div *ngIf="loading()" class="status-banner loading-banner">
+    <div class="mini-spinner"></div>
+    <span>Calculando estadísticas del colmenar...</span>
+  </div>
+
+  <!-- CUERPO DEL REPORTE -->
+  <main *ngIf="!loading() && reporte() as rep" class="report-flow">
+
+    <!-- AVISO SIN DATOS -->
+    <div *ngIf="!rep.tieneDatos" class="status-banner empty-banner">
+      <strong>⚠️ Sin extracciones registradas en este período.</strong>
+    </div>
+
+    <!-- 2. RESUMEN GLOBAL (CARD UNIFICADA HIVEHUB) -->
+    <section class="summary-section">
+      <h3 class="section-title">RESUMEN GENERAL</h3>
+
+      <div class="summary-card">
+        <div class="summary-card-header">
+          <div class="miel-main-info">
+            <span class="miel-emoji">🍯</span>
+            <div>
+              <p class="miel-label">Total Miel Extraída</p>
+              <p class="miel-value">{{ rep.totalKilosMiel | number:'1.0-1' }} <span class="miel-unit">kg</span></p>
+            </div>
+          </div>
+
+          <!-- Delta Interanual -->
+          <div class="interannual-tag" *ngIf="rep.comparativaInteranual as comp">
+            <span *ngIf="!comp.sinDatosPrevios && comp.deltaKilosMielPct !== undefined"
+                  [class.text-up]="comp.deltaKilosMielPct >= 0"
+                  [class.text-down]="comp.deltaKilosMielPct < 0">
+              {{ comp.deltaKilosMielPct >= 0 ? '↑ +' : '↓ ' }}{{ comp.deltaKilosMielPct }}% vs {{ comp.temporadaPreviaLabel }}
+            </span>
+            <span *ngIf="comp.sinDatosPrevios" class="text-neutral">
+              1ª temporada
+            </span>
+          </div>
+        </div>
+
+        <div class="summary-card-stats">
+          <!-- Stat 1: Alzas -->
+          <div class="summary-stat-cell">
+            <span class="stat-cell-label">📦 Alzas Extraídas</span>
+            <span class="stat-cell-num">{{ rep.totalAlzasProcesadas }}</span>
+            <span class="stat-cell-sub">
+              {{ rep.totalAlzasEnEspera > 0 ? (rep.totalAlzasEnEspera + ' en espera') : 'Sin demora' }}
+              <strong *ngIf="rep.totalAlzasEnEsperaCriticas > 0" class="sub-alert-red"> (⚠️ {{ rep.totalAlzasEnEsperaCriticas }} +7d)</strong>
+            </span>
+          </div>
+
+          <!-- Stat 2: Kg/Alza -->
+          <div class="summary-stat-cell border-both">
+            <span class="stat-cell-label">📈 Rinde / Alza</span>
+            <span class="stat-cell-num">{{ rep.promedioKilosPorAlza | number:'1.1-2' }} <small>kg</small></span>
+            <span class="stat-cell-sub">Normal: 20-25 kg</span>
+          </div>
+
+          <!-- Stat 3: Kg/Colmena -->
+          <div class="summary-stat-cell">
+            <span class="stat-cell-label">🐝 Rinde / Colmena</span>
+            <span class="stat-cell-num">{{ rep.promedioKilosPorColmena | number:'1.1-2' }} <small>kg</small></span>
+            <span class="stat-cell-sub">⭐ Top: {{ rep.apiarioMasProductivo }}</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SPINNER / LOADER -->
-    <div *ngIf="loading()" class="loader-box">
-      <div class="spinner"></div>
-      <p>Calculando estadísticas consolidadas...</p>
-    </div>
+    <!-- 3. PRIORIDAD DE ATENCIÓN EN CAMPO (MEJORA #2) -->
+    <section class="priority-section">
+      <div class="section-title-with-help">
+        <h3 class="section-title">📍 APIARIOS QUE REQUIEREN ATENCIÓN</h3>
+        <button
+          type="button"
+          class="btn-help-info"
+          (click)="toggleAyudaPrioridad()"
+          title="¿De qué trata este reporte?"
+        >
+          ?
+        </button>
 
-    <!-- ERROR MESSAGE -->
-    <div *ngIf="errorMessage()" class="alert-error-box">
-      <span class="material-symbols-outlined">error</span>
-      <p>{{ errorMessage() }}</p>
-    </div>
-
-    <!-- CONTENIDO DEL REPORTE -->
-    <div *ngIf="!loading() && reporte()" class="reporte-content">
-
-      <!-- ESTADO VACÍO CUANDO NO HAY DATOS -->
-      <div *ngIf="!reporte()?.tieneDatos" class="empty-reporte-box">
-        <span class="material-symbols-outlined empty-icon">info</span>
-        <h2 class="empty-title">Sin registros en este periodo</h2>
-        <p class="empty-desc">
-          No se encontraron operaciones de extracción de miel registradas entre el 
-          <strong>{{ fechaInicio() }}</strong> y el <strong>{{ fechaFin() }}</strong>.
-        </p>
-        <p class="empty-hint">
-          Pruebe seleccionando otro rango de fechas o una temporada con cosechas concluidas.
-        </p>
+        <!-- PANEL EXPLICATIVO FLOTANTE -->
+        <div *ngIf="mostrarAyudaPrioridad()" class="help-info-card">
+          <p>
+            💡 <strong>¿Para qué sirve y cómo se calcula?</strong><br>
+            Este reporte analiza y ordena tus apiarios automáticamente cruzando 3 factores: <strong>bajo rendimiento</strong>, <strong>presencia de colmenas huérfanas o con celdas reales</strong>, y <strong>alzas que llevan más de 7 días esperando extracción en sala</strong>. Te ayuda a decidir rápidamente qué apiario atender primero para recambio de reinas o cosecha antes del invierno.
+          </p>
+        </div>
       </div>
 
-      <ng-container *ngIf="reporte()?.tieneDatos">
+      <!-- LISTA DE APIARIOS PRIORITARIOS -->
+      <div *ngIf="rep.indicePrioridades && rep.indicePrioridades.length > 0" class="priority-list">
+        <article
+          *ngFor="let item of rep.indicePrioridades"
+          class="priority-card"
+          [style.borderLeftColor]="getColorApiario(item.apiarioId)"
+        >
+          <div class="priority-card-top">
+            <div class="priority-name-box">
+              <span class="dot-indicator" *ngIf="item.nivelPrioridad === 'ALTA'">🔴</span>
+              <span class="dot-indicator" *ngIf="item.nivelPrioridad === 'MEDIA'">🟡</span>
+              <span class="dot-indicator" *ngIf="item.nivelPrioridad === 'BAJA'">🟢</span>
+              <strong class="priority-apiary-title">{{ item.apiarioNombre }}</strong>
+            </div>
 
-        <!-- 1. TARJETAS HERO (KPIs GLOBALES) -->
-        <section class="kpis-grid">
-          <!-- KPI 1: Kilos Totales -->
-          <div class="kpi-card kpi-yellow">
-            <div class="kpi-icon-wrap">
-              <span class="material-symbols-outlined">liquor</span>
-            </div>
-            <div class="kpi-data">
-              <span class="kpi-label">Volumen Total</span>
-              <p class="kpi-value">{{ reporte()?.totalKilosMiel | number:'1.0-2' }} <span class="kpi-unit">kg</span></p>
-            </div>
+            <!-- Nivel claro en lugar de score confuso -->
+            <span class="priority-level-badge" [ngClass]="'level-' + item.nivelPrioridad.toLowerCase()">
+              <ng-container *ngIf="item.nivelPrioridad === 'ALTA'">Atención Urgente</ng-container>
+              <ng-container *ngIf="item.nivelPrioridad === 'MEDIA'">Revisión Recomendada</ng-container>
+              <ng-container *ngIf="item.nivelPrioridad === 'BAJA'">Plantel Estable</ng-container>
+            </span>
           </div>
+          <p class="priority-desc">{{ item.motivoExplicativo }}</p>
+        </article>
+      </div>
 
-          <!-- KPI 2: Alzas Procesadas -->
-          <div class="kpi-card kpi-blue">
-            <div class="kpi-icon-wrap">
-              <span class="material-symbols-outlined">inventory_2</span>
-            </div>
-            <div class="kpi-data">
-              <span class="kpi-label">Alzas Procesadas</span>
-              <p class="kpi-value">{{ reporte()?.totalAlzasProcesadas }} <span class="kpi-unit">alzas</span></p>
-              <span *ngIf="reporte()?.totalAlzasEnEspera" class="kpi-subtext">
-                {{ reporte()?.totalAlzasEnEspera }} en espera
-              </span>
-            </div>
-          </div>
+      <!-- ESTADO DE ÉXITO (SIN PRIORIDADES) -->
+      <div *ngIf="!rep.indicePrioridades || rep.indicePrioridades.length === 0" class="status-banner" style="background-color: #e8f5e9; color: #2e7d32; border-color: #a5d6a7;">
+        <strong>🎉 ¡Excelente trabajo!</strong> Ningún apiario requiere atención inmediata. Todos tus planteles se encuentran estables y productivos.
+      </div>
+    </section>
 
-          <!-- KPI 3: Rendimiento por Alza -->
-          <div class="kpi-card kpi-green">
-            <div class="kpi-icon-wrap">
-              <span class="material-symbols-outlined">speed</span>
-            </div>
-            <div class="kpi-data">
-              <span class="kpi-label">Rinde / Alza</span>
-              <p class="kpi-value">{{ reporte()?.promedioKilosPorAlza | number:'1.1-2' }} <span class="kpi-unit">kg/alza</span></p>
-            </div>
-          </div>
+    <!-- 4. RENDIMIENTO POR APIARIO (RANKING) -->
+    <section class="chart-section">
+      <div class="chart-section-header">
+        <div class="section-title-with-help">
+          <h3 class="section-title">📊 RENDIMIENTO POR APIARIO</h3>
+          <button
+            type="button"
+            class="btn-help-info"
+            (click)="toggleAyudaRendimiento()"
+            title="¿De qué trata este reporte?"
+          >
+            ?
+          </button>
 
-          <!-- KPI 4: Rendimiento por Colmena -->
-          <div class="kpi-card kpi-orange">
-            <div class="kpi-icon-wrap">
-              <span class="material-symbols-outlined">hive</span>
-            </div>
-            <div class="kpi-data">
-              <span class="kpi-label">Rinde / Colmena</span>
-              <p class="kpi-value">{{ reporte()?.promedioKilosPorColmena | number:'1.1-2' }} <span class="kpi-unit">kg/colmena</span></p>
-            </div>
-          </div>
-        </section>
-
-        <!-- 2. GRÁFICO RANKING COMPARATIVO DE APIARIOS -->
-        <section class="card-grafico-apiarios">
-          <div class="grafico-header">
-            <div class="grafico-title-box">
-              <h2 class="section-title">📊 Rendimiento por Apiario</h2>
-              <span class="section-badge-top">
-                🏆 Top: {{ reporte()?.apiarioMasProductivo }} ({{ reporte()?.kilosApiarioMasProductivo }} kg)
-              </span>
-            </div>
-
-            <!-- Botones Rápidos 1-Clic para el Gráfico -->
-            <div class="grafico-actions-toolbar">
-              <div class="btn-group-toggle">
-                <span class="toolbar-label">Métrica:</span>
-                <button
-                  (click)="cambiarMetricaApiarios('KILOS')"
-                  [class.active-toggle]="metricaGraficoApiarios() === 'KILOS'"
-                  class="btn-toggle sink-effect"
-                >
-                  🍯 Kilos
-                </button>
-                <button
-                  (click)="cambiarMetricaApiarios('ALZAS')"
-                  [class.active-toggle]="metricaGraficoApiarios() === 'ALZAS'"
-                  class="btn-toggle sink-effect"
-                >
-                  📦 Alzas
-                </button>
-                <button
-                  (click)="cambiarMetricaApiarios('RINDE_COLMENA')"
-                  [class.active-toggle]="metricaGraficoApiarios() === 'RINDE_COLMENA'"
-                  class="btn-toggle sink-effect"
-                >
-                  🐝 Kg/Colm
-                </button>
-              </div>
-
-              <div class="btn-group-toggle">
-                <span class="toolbar-label">Orden:</span>
-                <button
-                  (click)="cambiarModoOrden('RANKING')"
-                  [class.active-toggle]="modoOrdenamiento() === 'RANKING'"
-                  class="btn-toggle sink-effect"
-                >
-                  🏆 Ranking
-                </button>
-                <button
-                  (click)="cambiarModoOrden('ALFABETICO')"
-                  [class.active-toggle]="modoOrdenamiento() === 'ALFABETICO'"
-                  class="btn-toggle sink-effect"
-                >
-                  🔤 A-Z
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Barras Nativas Neo-Brutalistas -->
-          <div class="grafico-barras-list">
-            <div *ngFor="let ap of apiariosProcesados(); let i = index" class="barra-item">
-              <div class="barra-info-row">
-                <span class="barra-nombre">
-                  <strong>#{{ i + 1 }}</strong> {{ ap.apiarioNombre }}
-                </span>
-                <div class="barra-valores-badge">
-                  <span *ngIf="metricaGraficoApiarios() === 'KILOS'" class="badge-metric-val">
-                    {{ ap.kilosMiel | number:'1.0-2' }} kg ({{ ap.porcentajeCosechaTotal }}%)
-                  </span>
-                  <span *ngIf="metricaGraficoApiarios() === 'ALZAS'" class="badge-metric-val">
-                    {{ ap.alzasProcesadas }} alzas
-                  </span>
-                  <span *ngIf="metricaGraficoApiarios() === 'RINDE_COLMENA'" class="badge-metric-val">
-                    {{ ap.kilosPorColmena | number:'1.1-2' }} kg/colm
-                  </span>
-                </div>
-              </div>
-
-              <!-- Track de Barra -->
-              <div class="barra-track">
-                <div
-                  class="barra-fill sink-effect"
-                  [style.width.%]="getPorcentajeBarra(ap)"
-                  [class.barra-gold]="i === 0 && modoOrdenamiento() === 'RANKING'"
-                  [class.barra-silver]="i === 1 && modoOrdenamiento() === 'RANKING'"
-                  [class.barra-bronze]="i === 2 && modoOrdenamiento() === 'RANKING'"
-                ></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- 3. PANELES DE PROFUNDIDAD (PESTAÑAS TÁCTILES) -->
-        <section class="card-tabs-section">
-          <!-- Header de Pestañas con botones 1-clic -->
-          <div class="tabs-nav">
-            <button
-              (click)="cambiarPestana('APIARIOS')"
-              [class.active-tab]="pestanaActiva() === 'APIARIOS'"
-              class="tab-btn sink-effect"
-            >
-              📋 Detalle por Apiario
-            </button>
-            <button
-              (click)="cambiarPestana('FLORACION')"
-              [class.active-tab]="pestanaActiva() === 'FLORACION'"
-              class="tab-btn sink-effect"
-            >
-              🌸 Floración
-            </button>
-            <button
-              (click)="cambiarPestana('BIOLOGIA')"
-              [class.active-tab]="pestanaActiva() === 'BIOLOGIA'"
-              class="tab-btn sink-effect"
-            >
-              👑 Eficiencia Biológica
-            </button>
-          </div>
-
-          <!-- CONTENIDO PESTAÑA 1: TABLA DETALLE APIARIOS -->
-          <div *ngIf="pestanaActiva() === 'APIARIOS'" class="tab-pane">
-            <div class="search-bar-wrap">
-              <span class="material-symbols-outlined">filter_alt</span>
-              <input
-                type="text"
-                placeholder="Filtrar por apiario..."
-                [ngModel]="busquedaApiario()"
-                (ngModelChange)="busquedaApiario.set($event)"
-                class="input-search"
-              />
-            </div>
-
-            <div class="table-responsive">
-              <table class="reporte-table">
-                <thead>
-                  <tr>
-                    <th>Apiario</th>
-                    <th>Colmenas</th>
-                    <th>Alzas</th>
-                    <th>Kg Miel</th>
-                    <th>Kg/Alza</th>
-                    <th>Kg/Colm</th>
-                    <th>% Cosecha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let ap of apiariosProcesados()">
-                    <td class="cell-name"><strong>{{ ap.apiarioNombre }}</strong></td>
-                    <td>{{ ap.totalColmenas }}</td>
-                    <td>{{ ap.alzasProcesadas }}</td>
-                    <td class="cell-highlight">{{ ap.kilosMiel | number:'1.0-2' }} kg</td>
-                    <td>{{ ap.kilosPorAlza | number:'1.1-2' }}</td>
-                    <td>{{ ap.kilosPorColmena | number:'1.1-2' }}</td>
-                    <td>
-                      <span class="badge-pct">{{ ap.porcentajeCosechaTotal }}%</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- CONTENIDO PESTAÑA 2: FLORACIÓN PREDOMINANTE -->
-          <div *ngIf="pestanaActiva() === 'FLORACION'" class="tab-pane">
-            <div class="floracion-header-actions">
-              <p class="tab-description">
-                Distribución del volumen de cosecha según la variedad floral activa en los apiarios.
-              </p>
-              <div class="btn-group-toggle">
-                <button
-                  (click)="cambiarMetricaFloracion('KILOS')"
-                  [class.active-toggle]="metricaFloracion() === 'KILOS'"
-                  class="btn-toggle sink-effect"
-                >
-                  🍯 Ver Kilos
-                </button>
-                <button
-                  (click)="cambiarMetricaFloracion('PORCENTAJE')"
-                  [class.active-toggle]="metricaFloracion() === 'PORCENTAJE'"
-                  class="btn-toggle sink-effect"
-                >
-                  📊 Ver %
-                </button>
-              </div>
-            </div>
-
-            <div class="floraciones-grid">
-              <div *ngFor="let fl of reporte()?.rendimientoFloraciones" class="floracion-card">
-                <div class="floracion-top">
-                  <span class="floracion-badge-name">🌸 {{ fl.floracion }}</span>
-                  <span class="floracion-apiarios-count">{{ fl.cantidadApiarios }} apiario(s)</span>
-                </div>
-                <div class="floracion-val-row">
-                  <p *ngIf="metricaFloracion() === 'KILOS'" class="floracion-metric">
-                    {{ fl.totalKilosEstimados | number:'1.0-2' }} <span class="kpi-unit">kg</span>
-                  </p>
-                  <p *ngIf="metricaFloracion() === 'PORCENTAJE'" class="floracion-metric">
-                    {{ fl.porcentajeTotal }} <span class="kpi-unit">%</span>
-                  </p>
-                  <span class="floracion-pct-badge">{{ fl.porcentajeTotal }}% del total</span>
-                </div>
-                <div class="barra-track">
-                  <div class="barra-fill barra-floral" [style.width.%]="fl.porcentajeTotal"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- CONTENIDO PESTAÑA 3: EFICIENCIA BIOLÓGICA -->
-          <div *ngIf="pestanaActiva() === 'BIOLOGIA'" class="tab-pane">
-            <p class="tab-description">
-              Salud y productividad del plantel biológico evaluado en las inspecciones de la temporada.
+          <!-- PANEL EXPLICATIVO FLOTANTE -->
+          <div *ngIf="mostrarAyudaRendimiento()" class="help-info-card">
+            <p>
+              💡 <strong>¿Para qué sirve y cómo se calcula?</strong><br>
+              Este gráfico clasifica tus apiarios según la miel extraída (Kilos), cantidad de alzas, o rendimiento unitario (Kg/Colmena). Las advertencias de <strong>"Revisar"</strong> o <strong>"Sin censo"</strong> aparecen si los datos de la sala de extracción superan la cantidad teórica o si no hay colmenas registradas en el apiario, afectando el cálculo de promedios.
             </p>
+          </div>
+        </div>
 
-            <!-- Totales Globales -->
-            <div class="biologia-grid">
-              <div class="bio-metric-box bio-box-green">
-                <span class="material-symbols-outlined bio-icon">check_circle</span>
-                <div class="bio-data">
-                  <span class="bio-label">Colmenas Productivas</span>
-                  <p class="bio-val">
-                    {{ reporte()?.eficienciaBiologica?.totalColmenasProductivas }} / {{ reporte()?.eficienciaBiologica?.totalColmenasRevisadas }}
-                  </p>
-                  <span class="bio-rate">{{ reporte()?.eficienciaBiologica?.porcentajeColmenasProductivas }}% global</span>
-                </div>
-              </div>
+        <!-- Métrica 1-clic -->
+        <div class="metric-toggle-pills">
+          <button
+            type="button"
+            class="metric-pill"
+            [class.active]="metricaGraficoApiarios() === 'KILOS'"
+            (click)="cambiarMetricaApiarios('KILOS')"
+          >
+            🍯 Kilos
+          </button>
+          <button
+            type="button"
+            class="metric-pill"
+            [class.active]="metricaGraficoApiarios() === 'ALZAS'"
+            (click)="cambiarMetricaApiarios('ALZAS')"
+          >
+            📦 Alzas
+          </button>
+          <button
+            type="button"
+            class="metric-pill"
+            [class.active]="metricaGraficoApiarios() === 'RINDE_COLMENA'"
+            (click)="cambiarMetricaApiarios('RINDE_COLMENA')"
+          >
+            🐝 Kg/Colm
+          </button>
+        </div>
+      </div>
 
-              <div class="bio-metric-box bio-box-blue">
-                <span class="material-symbols-outlined bio-icon">crown</span>
-                <div class="bio-data">
-                  <span class="bio-label">Reinas Vistas y Sanas</span>
-                  <p class="bio-val">{{ reporte()?.eficienciaBiologica?.totalColmenasConReinaSana }} colmenas</p>
-                  <span class="bio-rate">Plantel fuerte</span>
-                </div>
-              </div>
-
-              <div class="bio-metric-box bio-box-orange">
-                <span class="material-symbols-outlined bio-icon">warning</span>
-                <div class="bio-data">
-                  <span class="bio-label">Celdas Reales / Huérfanas</span>
-                  <p class="bio-val">{{ reporte()?.eficienciaBiologica?.totalColmenasHuerfanasOCeldaReal }} colmenas</p>
-                  <span class="bio-rate">Requieren recambio</span>
-                </div>
-              </div>
+      <div class="bars-card">
+        <div *ngFor="let ap of apiariosOrdenados(); let i = index" class="bar-row">
+          <div class="bar-row-info">
+            <div class="bar-row-title-box">
+              <span class="bar-num" [style.backgroundColor]="getColorApiario(ap.apiarioId)">#{{ i + 1 }}</span>
+              <span class="bar-apiary-name">{{ ap.apiarioNombre }}</span>
             </div>
 
-            <!-- Desglose por Apiario -->
-            <div class="bio-desglose-section">
-              <h3 class="bio-desglose-title">🔍 Estado Biológico por Apiario</h3>
-
-              <div class="bio-apiarios-list">
-                <div *ngFor="let bioAp of reporte()?.eficienciaBiologica?.desgloseApiarios" class="bio-apiario-card">
-                  <div class="bio-apiario-top">
-                    <span class="bio-apiario-nombre">🐝 {{ bioAp.apiarioNombre }}</span>
-                    <span class="bio-apiario-revisadas">{{ bioAp.totalColmenasRevisadas }} colmenas inspeccionadas</span>
-                  </div>
-
-                  <div class="bio-apiario-stats-row">
-                    <div class="bio-chip chip-green">
-                      <span>🍯 {{ bioAp.colmenasProductivas }} productivas ({{ bioAp.porcentajeProductivas }}%)</span>
-                    </div>
-                    <div class="bio-chip chip-blue">
-                      <span>👑 {{ bioAp.reinasSanas }} reina sana</span>
-                    </div>
-                    <div *ngIf="bioAp.huerfanasOCeldaReal > 0" class="bio-chip chip-red">
-                      <span>⚠️ {{ bioAp.huerfanasOCeldaReal }} huérfana/celda</span>
-                    </div>
-                  </div>
-
-                  <div class="barra-track">
-                    <div class="barra-fill barra-gold" [style.width.%]="bioAp.porcentajeProductivas"></div>
-                  </div>
-                </div>
-              </div>
+            <div class="bar-row-value">
+              <span *ngIf="metricaGraficoApiarios() === 'KILOS'"><strong>{{ ap.kilosMiel | number:'1.0-1' }} kg</strong></span>
+              <span *ngIf="metricaGraficoApiarios() === 'ALZAS'"><strong>{{ ap.alzasProcesadas }} alzas</strong></span>
+              <span *ngIf="metricaGraficoApiarios() === 'RINDE_COLMENA'">
+                <strong *ngIf="ap.estadoValidacion !== 'INCOMPLETO'">{{ ap.kilosPorColmena | number:'1.1-2' }} kg/c</strong>
+                <strong *ngIf="ap.estadoValidacion === 'INCOMPLETO'" class="text-danger">N/D</strong>
+              </span>
+              <small class="bar-pct">({{ ap.porcentajeCosechaTotal }}%)</small>
             </div>
           </div>
 
-        </section>
+          <div class="bar-track">
+            <div
+              class="bar-fill"
+              [style.width.%]="getPorcentajeBarra(ap)"
+              [style.backgroundColor]="getColorApiario(ap.apiarioId)"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      </ng-container>
-    </div>
+    <!-- 5. DETALLE EN PROFUNDIDAD (PESTAÑAS SEGMENTADAS) -->
+    <section class="details-section">
+      <div class="details-nav-toggle">
+        <button
+          type="button"
+          class="details-tab-btn"
+          [class.active]="pestanaActiva() === 'DETALLE'"
+          (click)="cambiarPestana('DETALLE')"
+        >
+          📋 Detalle Apiarios
+        </button>
+        <button
+          type="button"
+          class="details-tab-btn"
+          [class.active]="pestanaActiva() === 'FLORACION'"
+          (click)="cambiarPestana('FLORACION')"
+        >
+          🌸 Floración & Salud
+        </button>
+        <button
+          type="button"
+          class="details-tab-btn"
+          [class.active]="pestanaActiva() === 'BIOLOGIA'"
+          (click)="cambiarPestana('BIOLOGIA')"
+        >
+          👑 Eficiencia Biológica
+        </button>
+      </div>
+
+      <!-- PESTAÑA 1: TARJETAS DE DETALLE POR APIARIO -->
+      <div *ngIf="pestanaActiva() === 'DETALLE'" class="tab-pane">
+        <div class="apiary-cards-grid">
+          <article
+            *ngFor="let ap of apiariosOrdenados()"
+            class="apiary-detail-card"
+            [style.borderLeftColor]="getColorApiario(ap.apiarioId)"
+          >
+            <div class="detail-card-head">
+              <div class="detail-name-row">
+                <span class="color-dot" [style.backgroundColor]="getColorApiario(ap.apiarioId)"></span>
+                <strong class="detail-apiary-name">{{ ap.apiarioNombre }}</strong>
+              </div>
+              <span *ngIf="ap.estadoValidacion === 'OK'" class="badge-status-ok">✓ Confiable</span>
+              <span *ngIf="ap.estadoValidacion === 'REVISAR'" class="badge-status-rev" [title]="ap.motivoValidacion">⚠️ Revisar</span>
+              <span *ngIf="ap.estadoValidacion === 'INCOMPLETO'" class="badge-status-inc" [title]="ap.motivoValidacion">⚠️ Incompleto</span>
+            </div>
+
+            <div class="detail-stats-grid">
+              <div class="stat-mini-box">
+                <span class="stat-mini-lbl">Colmenas</span>
+                <span class="stat-mini-val" *ngIf="ap.totalColmenas > 0">{{ ap.totalColmenas }}</span>
+                <span class="stat-mini-val text-danger" *ngIf="ap.totalColmenas === 0">0 (s/censo)</span>
+              </div>
+              <div class="stat-mini-box">
+                <span class="stat-mini-lbl">Alzas</span>
+                <span class="stat-mini-val">{{ ap.alzasProcesadas }}</span>
+              </div>
+              <div class="stat-mini-box">
+                <span class="stat-mini-lbl">Miel</span>
+                <span class="stat-mini-val"><strong>{{ ap.kilosMiel | number:'1.0-1' }} kg</strong></span>
+              </div>
+              <div class="stat-mini-box">
+                <span class="stat-mini-lbl">Kg/Colm</span>
+                <span class="stat-mini-val" *ngIf="ap.estadoValidacion !== 'INCOMPLETO'">{{ ap.kilosPorColmena | number:'1.1-2' }}</span>
+                <span class="stat-mini-val text-danger" *ngIf="ap.estadoValidacion === 'INCOMPLETO'">N/D</span>
+              </div>
+            </div>
+
+            <div *ngIf="ap.estadoValidacion === 'REVISAR'" class="alert-note-warning">
+              💡 {{ ap.motivoValidacion }}
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 2: FLORACIÓN CON CRUCE DE SALUD DE REINAS -->
+      <div *ngIf="pestanaActiva() === 'FLORACION'" class="tab-pane">
+        <div class="flora-cards-list">
+          <article *ngFor="let flora of rep.rendimientoFloraciones" class="flora-card">
+            <div class="flora-head-row">
+              <span class="flora-name">{{ flora.floracion }}</span>
+              <span class="flora-kilos">{{ flora.totalKilosEstimados | number:'1.0-1' }} kg ({{ flora.porcentajeTotal }}%)</span>
+            </div>
+
+            <div class="flora-track">
+              <div class="flora-fill" [style.width.%]="flora.porcentajeTotal"></div>
+            </div>
+
+            <div class="flora-health-row">
+              <span class="health-title">Salud del plantel en esta flora:</span>
+              <span class="health-chip" [ngClass]="'chip-' + flora.semaforoSaludReinas.toLowerCase()">
+                {{ flora.porcentajeReinasSanas }}% reinas sanas
+              </span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 3: EFICIENCIA BIOLÓGICA -->
+      <div *ngIf="pestanaActiva() === 'BIOLOGIA'" class="tab-pane">
+        <div class="bio-tiles-row" *ngIf="rep.eficienciaBiologica as bio">
+          <div class="bio-tile">
+            <span class="bio-num">{{ bio.porcentajeColmenasProductivas }}%</span>
+            <span class="bio-lbl">Productivas ({{ bio.totalColmenasProductivas }}/{{ bio.totalColmenasRevisadas }})</span>
+          </div>
+          <div class="bio-tile">
+            <span class="bio-num text-success">{{ bio.totalColmenasConReinaSana }}</span>
+            <span class="bio-lbl">Reinas Sanas</span>
+          </div>
+          <div class="bio-tile">
+            <span class="bio-num text-danger">{{ bio.totalColmenasHuerfanasOCeldaReal }}</span>
+            <span class="bio-lbl">Huérfanas / Celda</span>
+          </div>
+        </div>
+
+        <div class="bio-apiaries-list" *ngIf="rep.eficienciaBiologica.desgloseApiarios as desglose">
+          <article
+            *ngFor="let apBio of desglose"
+            class="bio-apiary-item"
+            [style.borderLeftColor]="getColorApiario(apBio.apiarioId)"
+          >
+            <div class="bio-item-head">
+              <span class="bio-item-title">{{ apBio.apiarioNombre }}</span>
+              <span class="bio-item-pct">{{ apBio.porcentajeProductivas }}% Productivas</span>
+            </div>
+            <div class="bio-item-details">
+              <span>Revisadas: <strong>{{ apBio.totalColmenasRevisadas }}</strong></span>
+              <span>Productivas: <strong>{{ apBio.colmenasProductivas }}</strong></span>
+              <span>Reinas Sanas: <strong>{{ apBio.reinasSanas }}</strong></span>
+            </div>
+            <div *ngIf="apBio.huerfanasOCeldaReal > 0" class="bio-orphan-warning">
+              ⚠️ {{ apBio.huerfanasOCeldaReal }} colmenas huérfanas / celda real
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
 
   </main>
-
-  <app-navbar></app-navbar>
-
 </div>
