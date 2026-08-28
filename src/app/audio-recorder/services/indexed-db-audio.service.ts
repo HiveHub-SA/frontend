@@ -119,4 +119,9 @@ export class IndexedDbAudioService {
     }
     return null;
   }
+
+  async deleteAudiosByIds(ids: number[]): Promise<void> {
+    await Promise.all(ids.map(id => this.deleteAudio(id)));
+  }
+
 }
