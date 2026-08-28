@@ -31,7 +31,6 @@ export class InspeccionarColmenaComponent implements OnInit {
   loading = signal<boolean>(true);
 
   // Form Model
-  varroa = signal<'NO_DETECTADA' | 'DETECTADA'>('NO_DETECTADA');
   estadoReina = signal<'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'>('VISTA_Y_SANA');
   nivelAlimento = signal<'BAJO' | 'MEDIO' | 'ALTO'>('MEDIO');
   produjoMiel = signal<boolean>(true);
@@ -77,7 +76,6 @@ export class InspeccionarColmenaComponent implements OnInit {
     // US 15.1: Primeramente restaurar borrador local en progreso si existe tras crash o recarga
     const localForm = this.draftService.getColmenaDraftData(this.apiarioId, this.colmenaId);
     if (localForm) {
-      if (localForm.varroa) this.varroa.set(localForm.varroa);
       if (localForm.estadoReina) this.estadoReina.set(localForm.estadoReina);
       if (localForm.nivelAlimento) this.nivelAlimento.set(localForm.nivelAlimento);
       if (localForm.produjoMiel !== undefined) this.produjoMiel.set(localForm.produjoMiel);
@@ -90,7 +88,6 @@ export class InspeccionarColmenaComponent implements OnInit {
     this.inspeccionService.getInspeccionColmena(this.inspeccionId, this.colmenaId).subscribe({
       next: (dto) => {
         if (dto && !localForm) {
-          if (dto.varroa) this.varroa.set(dto.varroa);
           if (dto.estadoReina) this.estadoReina.set(dto.estadoReina);
           if (dto.nivelAlimento) this.nivelAlimento.set(dto.nivelAlimento);
           if (dto.produjoMiel !== undefined) this.produjoMiel.set(dto.produjoMiel);
@@ -109,17 +106,11 @@ export class InspeccionarColmenaComponent implements OnInit {
       inspeccionId: this.inspeccionId,
       colmenaId: this.colmenaId,
       colmenaName: this.nombreColmena(),
-      varroa: this.varroa(),
       estadoReina: this.estadoReina(),
       nivelAlimento: this.nivelAlimento(),
       produjoMiel: this.produjoMiel(),
       observaciones: this.observaciones
     });
-  }
-
-  setVarroa(val: 'NO_DETECTADA' | 'DETECTADA'): void {
-    this.varroa.set(val);
-    this.autoSaveLocal();
   }
 
   setEstadoReina(val: 'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'): void {
@@ -154,7 +145,6 @@ export class InspeccionarColmenaComponent implements OnInit {
       inspeccionId: this.inspeccionId,
       colmenaId: this.colmenaId,
       colmenaName: this.nombreColmena(),
-      varroa: this.varroa(),
       estadoReina: this.estadoReina(),
       nivelAlimento: this.nivelAlimento(),
       produjoMiel: this.produjoMiel(),

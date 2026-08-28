@@ -6,6 +6,7 @@ export interface InspectionDraftData {
   inspeccionId?: number | null;
   fecha?: string;
   floracion?: string;
+  varroa?: 'NO_DETECTADA' | 'DETECTADA';
   colmenasGuardadas?: { [colmenaId: number]: InspeccionColmenaDTO };
   colmenaFormulariosEnProgreso?: { [colmenaId: number]: Partial<InspeccionColmenaDTO> };
   lastUpdated?: string;

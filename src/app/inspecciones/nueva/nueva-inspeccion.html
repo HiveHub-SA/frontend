@@ -81,6 +81,34 @@
             </button>
           </div>
         </div>
+
+        <!-- Bloque Presencia de Varroa en Apiario (US 43) -->
+        <div class="varroa-box">
+          <div class="varroa-title-row">
+            <span class="varroa-title">Presencia de Varroa en Apiario</span>
+          </div>
+
+          <div class="varroa-buttons-row">
+            <button
+              type="button"
+              (click)="seleccionarVarroa('NO_DETECTADA')"
+              [class.active-varroa-ok]="varroaActual() === 'NO_DETECTADA'"
+              [class.inactive-varroa]="varroaActual() !== 'NO_DETECTADA'"
+              class="btn-varroa sink-effect"
+            >
+              No Detectada
+            </button>
+            <button
+              type="button"
+              (click)="seleccionarVarroa('DETECTADA')"
+              [class.active-varroa-err]="varroaActual() === 'DETECTADA'"
+              [class.inactive-varroa]="varroaActual() !== 'DETECTADA'"
+              class="btn-varroa sink-effect"
+            >
+              ⚠️ Detectada
+            </button>
+          </div>
+        </div>
       </section>
 
       <!-- CARD 2: DETALLE POR COLMENA -->

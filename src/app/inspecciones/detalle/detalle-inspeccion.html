@@ -38,6 +38,14 @@
             <p class="metric-value">{{ inspeccion()?.floracion || 'N/I' }}</p>
           </div>
           <div class="summary-metric-box">
+            <span class="metric-label">Varroa (Apiario)</span>
+            <p class="metric-value">
+              <span [class]="getLabelVarroa(inspeccion()?.varroa).class">
+                {{ getLabelVarroa(inspeccion()?.varroa).text }}
+              </span>
+            </p>
+          </div>
+          <div class="summary-metric-box">
             <span class="metric-label">Revisadas</span>
             <p class="metric-value">{{ colmenasDetalle().length }} / {{ totalColmenasApiario() || colmenasDetalle().length }} Colmenas</p>
           </div>
@@ -66,9 +74,6 @@
 
             <!-- Fila de insignias sanitarias y operativas -->
             <div class="badges-row">
-              <span [class]="getLabelVarroa(colmena.varroa).class">
-                {{ getLabelVarroa(colmena.varroa).text }}
-              </span>
               <span [class]="getLabelReina(colmena.estadoReina).class">
                 {{ getLabelReina(colmena.estadoReina).text }}
               </span>
