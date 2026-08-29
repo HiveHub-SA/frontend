@@ -59,6 +59,17 @@ export class InspeccionService {
   }
 
   /**
+   * Actualiza la presencia/nivel de varroa en una inspección de apiario (US 43).
+   * 
+   * @param id ID de la inspección
+   * @param varroa Estado de varroa ('NO_DETECTADA' | 'DETECTADA')
+   * @returns Observable con la inspección actualizada
+   */
+  updateVarroa(id: number, varroa: string): Observable<InspeccionDTO> {
+    return this.http.put<InspeccionDTO>(`${this.apiUrl}/inspecciones/${id}/varroa`, { varroa });
+  }
+
+  /**
    * Finaliza una inspección cambiando su estado a "SINCRONIZADA".
    *
    * @param id ID de la inspección

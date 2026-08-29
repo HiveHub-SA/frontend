@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +16,8 @@ type RecorderState = 'idle' | 'requesting-permission' | 'recording' | 'preview';
 
 /**
  * Componente para la pantalla de Inspección Manual por Colmena (US 32).
- * Integra grabador de audio offline (un audio por colmena) + formulario táctil.
+ * Muestra el formulario táctil con los campos de Varroa, Reina, Alimento, Miel,
+ * Observaciones y módulo visual de nota de voz/transcripción.
  */
 @Component({
   selector: 'app-inspeccionar-colmena',
@@ -34,8 +35,7 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
   nombreColmena = signal<string>('Colmena');
   loading = signal<boolean>(true);
 
-  // ── Formulario ──────────────────────────────────────────────────────────────
-  varroa = signal<'NO_DETECTADA' | 'DETECTADA'>('NO_DETECTADA');
+  // Form Model
   estadoReina = signal<'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'>('VISTA_Y_SANA');
   nivelAlimento = signal<'BAJO' | 'MEDIO' | 'ALTO'>('MEDIO');
   produjoMiel = signal<boolean>(true);
@@ -113,7 +113,6 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
   cargarDetalleColmena(): void {
     const localForm = this.draftService.getColmenaDraftData(this.apiarioId, this.colmenaId);
     if (localForm) {
-      if (localForm.varroa) this.varroa.set(localForm.varroa);
       if (localForm.estadoReina) this.estadoReina.set(localForm.estadoReina);
       if (localForm.nivelAlimento) this.nivelAlimento.set(localForm.nivelAlimento);
       if (localForm.produjoMiel !== undefined) this.produjoMiel.set(localForm.produjoMiel);
@@ -125,7 +124,6 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
     this.inspeccionService.getInspeccionColmena(this.inspeccionId, this.colmenaId).subscribe({
       next: (dto) => {
         if (dto && !localForm) {
-          if (dto.varroa) this.varroa.set(dto.varroa);
           if (dto.estadoReina) this.estadoReina.set(dto.estadoReina);
           if (dto.nivelAlimento) this.nivelAlimento.set(dto.nivelAlimento);
           if (dto.produjoMiel !== undefined) this.produjoMiel.set(dto.produjoMiel);
@@ -143,17 +141,11 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
       inspeccionId: this.inspeccionId,
       colmenaId: this.colmenaId,
       colmenaName: this.nombreColmena(),
-      varroa: this.varroa(),
       estadoReina: this.estadoReina(),
       nivelAlimento: this.nivelAlimento(),
       produjoMiel: this.produjoMiel(),
       observaciones: this.observaciones,
     });
-  }
-
-  setVarroa(val: 'NO_DETECTADA' | 'DETECTADA'): void {
-    this.varroa.set(val);
-    this.autoSaveLocal();
   }
 
   setEstadoReina(val: 'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'): void {
@@ -180,7 +172,6 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
       inspeccionId: this.inspeccionId,
       colmenaId: this.colmenaId,
       colmenaName: this.nombreColmena(),
-      varroa: this.varroa(),
       estadoReina: this.estadoReina(),
       nivelAlimento: this.nivelAlimento(),
       produjoMiel: this.produjoMiel(),

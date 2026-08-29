@@ -213,37 +213,10 @@
 
     </section>
 
-    <!-- ══════════════════════════════════════════════════════════════════════
-         Formulario de Inspección Táctil por Colmena (US 32)
-         ══════════════════════════════════════════════════════════════════════ -->
+    <!-- Formulario de Inspección Táctil por Colmena (US 32) -->
     <section class="form-sections-wrapper">
 
-      <!-- Sección 1: Varroa -->
-      <div class="form-card-tactile">
-        <h3 class="form-card-title">Presencia de Varroa</h3>
-        <div class="grid-2-cols">
-          <button
-            type="button"
-            (click)="setVarroa('NO_DETECTADA')"
-            [class.active-opt]="varroa() === 'NO_DETECTADA'"
-            [class.inactive-opt]="varroa() !== 'NO_DETECTADA'"
-            class="btn-option pressable"
-          >
-            No Detectada
-          </button>
-          <button
-            type="button"
-            (click)="setVarroa('DETECTADA')"
-            [class.active-opt-error]="varroa() === 'DETECTADA'"
-            [class.inactive-opt]="varroa() !== 'DETECTADA'"
-            class="btn-option pressable"
-          >
-            ⚠️ Detectada
-          </button>
-        </div>
-      </div>
-
-      <!-- Sección 2: Reina -->
+      <!-- Sección 1: Reina -->
       <div class="form-card-tactile">
         <h3 class="form-card-title">Estado de la Reina</h3>
         <div class="grid-2-cols">
@@ -356,7 +329,7 @@
         ></textarea>
       </div>
 
-      <!-- Botón guardar -->
+      <!-- Botón para guardar al final del formulario -->
       <button (click)="guardarColmena()" class="btn-save-colmena pressable">
         GUARDAR COLMENA
       </button>
