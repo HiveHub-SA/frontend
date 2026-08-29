@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.spec.json",
+  "include": ["src/**/*.d.ts", "src/tests/US-38-GrabacionInspecciones/**/*.spec.ts"]
+}
