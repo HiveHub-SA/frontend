@@ -1,17 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { List } from './list-apiarios';
+import { ApiarioListComponent } from './list-apiarios';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
-describe('List', () => {
-  let component: List;
-  let fixture: ComponentFixture<List>;
+describe('ApiarioListComponent', () => {
+  let component: ApiarioListComponent;
+  let fixture: ComponentFixture<ApiarioListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [List],
+      imports: [ApiarioListComponent],
+      providers: [provideHttpClient(), provideRouter([])]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(List);
+    fixture = TestBed.createComponent(ApiarioListComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

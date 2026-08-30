@@ -93,3 +93,33 @@
   font-size: 20px;
 
 }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: var(--border-dark);
+  border-radius: 999px;
+  background-color: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-small);
+  transition: all 0.1s ease;
+}
+
+.header-logout-btn:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.header-logout-btn .material-symbols-outlined {
+  font-size: 18px;
+}

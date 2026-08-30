@@ -1,17 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SelectorUbicacion } from './selector-ubicacion';
+import { SelectorUbicacionComponent } from './selector-ubicacion';
+import { provideHttpClient } from '@angular/common/http';
 
-describe('SelectorUbicacion', () => {
-  let component: SelectorUbicacion;
-  let fixture: ComponentFixture<SelectorUbicacion>;
+describe('SelectorUbicacionComponent', () => {
+  let component: SelectorUbicacionComponent;
+  let fixture: ComponentFixture<SelectorUbicacionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SelectorUbicacion],
+      imports: [SelectorUbicacionComponent],
+      providers: [provideHttpClient()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SelectorUbicacion);
+    fixture = TestBed.createComponent(SelectorUbicacionComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

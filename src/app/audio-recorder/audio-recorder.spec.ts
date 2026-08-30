@@ -1,17 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AudioRecorder } from './audio-recorder';
+import { AudioRecorderComponent } from './audio-recorder';
+import { provideHttpClient } from '@angular/common/http';
 
-describe('AudioRecorder', () => {
-  let component: AudioRecorder;
-  let fixture: ComponentFixture<AudioRecorder>;
+describe('AudioRecorderComponent', () => {
+  let component: AudioRecorderComponent;
+  let fixture: ComponentFixture<AudioRecorderComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AudioRecorder],
+      imports: [AudioRecorderComponent],
+      providers: [provideHttpClient()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AudioRecorder);
+    fixture = TestBed.createComponent(AudioRecorderComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

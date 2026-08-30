@@ -1,0 +1,87 @@
+<!-- Main Content Canvas -->
+<main class="login-main" *ngIf="state$ | async as state">
+  <!-- Decorative bg elements -->
+  <div class="bg-decor top">
+    <span class="material-symbols-outlined">hive</span>
+  </div>
+  <div class="bg-decor bottom">
+    <span class="material-symbols-outlined">hexagon</span>
+  </div>
+  
+  <!-- Login Form Card -->
+  <div class="login-card-container">
+    <!-- Brand -->
+    <div class="login-brand">
+      <span class="material-symbols-outlined login-brand-icon">hive</span>
+      <span class="login-brand-title">HiveHub</span>
+    </div>
+
+    <div class="login-card">
+      <div class="welcome-text">
+        <h2 class="font-headline-sm">Bienvenido</h2>
+        <p class="font-body-md">Ingresa tus datos para continuar</p>
+      </div>
+
+      <form class="login-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Username Input -->
+        <div class="input-group">
+          <label class="font-label-lg" for="username">USUARIO</label>
+          <div class="input-wrapper" [class.error]="username.invalid && username.touched">
+            <div class="input-icon-left">
+              <span class="material-symbols-outlined">person</span>
+            </div>
+            <input 
+              class="login-input" 
+              id="username" 
+              type="text"
+              formControlName="username"
+              placeholder="Tu nombre de usuario"
+              autocomplete="username">
+          </div>
+          <p class="error-text" *ngIf="username.invalid && username.touched">
+            El usuario es obligatorio.
+          </p>
+        </div>
+
+        <!-- Password Input -->
+        <div class="input-group">
+          <label class="font-label-lg" for="password">CONTRASEÑA</label>
+          <div class="input-wrapper" [class.error]="password.invalid && password.touched">
+            <div class="input-icon-left">
+              <span class="material-symbols-outlined">lock</span>
+            </div>
+            <input 
+              class="login-input has-right-icon" 
+              id="password" 
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password">
+            <button 
+              type="button"
+              class="input-icon-right"
+              (click)="togglePasswordVisibility()"
+              aria-label="Mostrar/ocultar contraseña">
+              <span class="material-symbols-outlined">{{ showPassword ? 'visibility' : 'visibility_off' }}</span>
+            </button>
+          </div>
+          <p class="error-text" *ngIf="password.invalid && password.touched">
+            La contraseña es obligatoria.
+          </p>
+        </div>
+
+        <p class="error-text-center" *ngIf="state.error">{{ state.error }}</p>
+
+        <!-- Submit Button -->
+        <button 
+          class="login-btn sink-effect" 
+          type="submit"
+          [disabled]="state.loading || form.invalid">
+          <span class="btn-text">{{ state.loading ? 'INGRESANDO...' : 'INGRESAR' }}</span>
+          <span class="material-symbols-outlined btn-icon" *ngIf="!state.loading">login</span>
+          <span class="material-symbols-outlined btn-icon spin-anim" *ngIf="state.loading">sync</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</main>

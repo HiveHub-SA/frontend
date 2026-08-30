@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { NotificacionesClima } from '../app/notificaciones-clima/notificaciones-clima';
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -11,4 +12,10 @@ import { NotificacionesClima } from '../app/notificaciones-clima/notificaciones-
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App { }
+export class App {
+  private readonly authService = inject(AuthService);
+
+  get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
+}

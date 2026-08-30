@@ -4,14 +4,20 @@
     <span class="brand-title">HiveHub</span>
   </div>
   
-  
-  <!-- Indicador Online / Offline -->
-  <div class="status-badge" [class.online]="networkStatus.online()" [class.offline]="!networkStatus.online()">
-    <span class="status-text">
-      {{ networkStatus.online() ? 'ONLINE' : 'OFFLINE' }}
-    </span>
-    <span class="material-symbols-outlined status-icon">
-      {{ networkStatus.online() ? 'wifi' : 'wifi_off' }}
-    </span>
+  <div class="header-actions">
+    <!-- Indicador Online / Offline -->
+    <div class="status-badge" [class.online]="networkStatus.online()" [class.offline]="!networkStatus.online()">
+      <span class="status-text">
+        {{ networkStatus.online() ? 'ONLINE' : 'OFFLINE' }}
+      </span>
+      <span class="material-symbols-outlined status-icon">
+        {{ networkStatus.online() ? 'wifi' : 'wifi_off' }}
+      </span>
+    </div>
+
+    <!-- Botón Logout (oculto temporalmente — el logout se hace via /api/auth/logouttest) -->
+    <!-- <button class="header-logout-btn" (click)="logout()" aria-label="Cerrar sesión">
+      <span class="material-symbols-outlined">logout</span>
+    </button> -->
   </div>
 </header>

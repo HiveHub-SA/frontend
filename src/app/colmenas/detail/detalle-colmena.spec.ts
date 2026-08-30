@@ -1,17 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DetalleColmena } from './detalle-colmena';
+import { ColmenaDetailComponent } from './detalle-colmena';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
-describe('DetalleColmena', () => {
-  let component: DetalleColmena;
-  let fixture: ComponentFixture<DetalleColmena>;
+describe('ColmenaDetailComponent', () => {
+  let component: ColmenaDetailComponent;
+  let fixture: ComponentFixture<ColmenaDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DetalleColmena],
+      imports: [ColmenaDetailComponent],
+      providers: [provideHttpClient(), provideRouter([])]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DetalleColmena);
+    fixture = TestBed.createComponent(ColmenaDetailComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -698,6 +698,14 @@ app-header {
   font-weight: 400;
 }
 
+.font-label-sm {
+  font-family: var(--font-display);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -882,7 +890,6 @@ app-header {
   box-shadow: none !important;
   margin-bottom: 4px;
 }
-
 
 /* --- Layout / posicionamiento --- */
 .fixed {

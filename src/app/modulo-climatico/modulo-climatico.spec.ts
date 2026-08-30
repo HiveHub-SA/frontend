@@ -1,17 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModuloClimatico } from './modulo-climatico';
+import { ModuloClimaticoComponent } from './modulo-climatico';
+import { provideHttpClient } from '@angular/common/http';
 
-describe('ModuloClimatico', () => {
-  let component: ModuloClimatico;
-  let fixture: ComponentFixture<ModuloClimatico>;
+describe('ModuloClimaticoComponent', () => {
+  let component: ModuloClimaticoComponent;
+  let fixture: ComponentFixture<ModuloClimaticoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModuloClimatico],
+      imports: [ModuloClimaticoComponent],
+      providers: [provideHttpClient()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ModuloClimatico);
+    fixture = TestBed.createComponent(ModuloClimaticoComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

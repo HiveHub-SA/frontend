@@ -1,6 +1,10 @@
-<div class="app-top-bar">
-  <app-header></app-header>
-  <app-notificaciones-clima></app-notificaciones-clima>
-</div>
+@if (isAuthenticated) {
+  <div class="app-top-bar">
+    <app-header></app-header>
+    <app-notificaciones-clima></app-notificaciones-clima>
+  </div>
+}
 <router-outlet></router-outlet>
-<app-navbar></app-navbar>
+@if (isAuthenticated) {
+  <app-navbar></app-navbar>
+}

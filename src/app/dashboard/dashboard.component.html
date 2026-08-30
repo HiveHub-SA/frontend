@@ -1,0 +1,25 @@
+<div class="dashboard-container">
+  <!-- Decorative bg elements -->
+  <div class="bg-decor">
+    <span class="material-symbols-outlined">hive</span>
+  </div>
+
+  <header class="dashboard-header">
+    <div class="brand-logo">
+      <span>🐝</span>
+      <h1 class="font-headline-sm">HiveHub</h1>
+    </div>
+    <button 
+      class="logout-btn font-label-sm sink-effect"
+      (click)="logout()">
+      Cerrar sesión
+    </button>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="welcome-card">
+      <h2 class="font-headline-md">Bienvenido{{ user ? ', ' + user.username : '' }} 👋</h2>
+      <p class="font-body-lg">Tu apiario digital está en construcción. Acá vas a ver el resumen de tus colmenas.</p>
+    </div>
+  </main>
+</div>
