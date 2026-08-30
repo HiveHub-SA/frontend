@@ -119,4 +119,28 @@ export class IndexedDbAudioService {
     }
     return null;
   }
+
+  async deleteAudiosByIds(ids: number[]): Promise<void> {
+    await Promise.all(ids.map((id) => this.deleteAudio(id)));
+  }
+
+  /**
+   * Elimina todos los audios en IndexedDB asociados a una inspección
+   * (todas sus colmenas). Se llama al finalizar o eliminar la inspección
+   * general, ya que los audios son temporales hasta ese momento.
+   *
+   * Depende del formato de `label` generado en InspeccionarColmenaComponent:
+   * `inspeccion-{inspeccionId}-colmena-{colmenaId}`.
+   */
+  async deleteAudiosByInspeccion(inspeccionId: number): Promise<void> {
+    const todos = await this.getAllAudios();
+    const prefix = `inspeccion-${inspeccionId}-colmena-`;
+
+    const idsAEliminar = todos
+      .filter((audio) => audio.label?.startsWith(prefix))
+      .map((audio) => audio.id)
+      .filter((id): id is number => id !== undefined);
+
+    await this.deleteAudiosByIds(idsAEliminar);
+  }
 }

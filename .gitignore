@@ -71,3 +71,4 @@ Thumbs.db
 # Claude
 .claude
 /.claude/
+/src/tests/US-38-GrabacionInspecciones/test.env

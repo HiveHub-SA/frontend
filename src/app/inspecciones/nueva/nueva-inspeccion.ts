@@ -8,6 +8,7 @@ import { ColmenaEstadoInspeccion, OPCIONES_FLORACION, TipoFloracion } from '../i
 import { NavbarComponent } from '../../navbar/navbar.component';
 
 import { InspeccionDraftService } from '../inspeccion-draft.service';
+import { IndexedDbAudioService } from '../../audio-recorder/services/indexed-db-audio.service';
 
 /**
  * Componente para la pantalla de Nueva Inspección.
@@ -64,7 +65,8 @@ export class NuevaInspeccionComponent implements OnInit {
     private router: Router,
     private apiarioService: ApiarioService,
     private inspeccionService: InspeccionService,
-    private draftService: InspeccionDraftService
+    private draftService: InspeccionDraftService,
+    private indexedDbAudio: IndexedDbAudioService
   ) { }
 
   ngOnInit(): void {
@@ -322,12 +324,14 @@ export class NuevaInspeccionComponent implements OnInit {
    * Finaliza la inspección cambiando el estado del borrador a "SINCRONIZADA".
    */
   finalizarInspeccion(): void {
-    const onFinalizedSuccess = () => {
+    const onFinalizedSuccess = async () => {
+      if (this.inspeccionId) {
+        await this.indexedDbAudio.deleteAudiosByInspeccion(this.inspeccionId);
+      }
       // US 15 / 15.1: Purga limpia del borrador local
       this.draftService.clearDraft(this.apiarioId);
       this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones']);
     };
-
     if (this.inspeccionId) {
       this.inspeccionService.finalizarInspeccion(this.inspeccionId).subscribe({
         next: onFinalizedSuccess,
