@@ -8,6 +8,7 @@ import { ColmenaEstadoInspeccion, OPCIONES_FLORACION, TipoFloracion } from '../i
 import { NavbarComponent } from '../../navbar/navbar.component';
 
 import { InspeccionDraftService } from '../inspeccion-draft.service';
+import { IndexedDbAudioService } from '../../audio-recorder/services/indexed-db-audio.service';
 
 /**
  * Componente para la pantalla de Nueva Inspección.
@@ -41,6 +42,9 @@ export class NuevaInspeccionComponent implements OnInit {
   /** Valor original de la floración precargada */
   floracionOriginal: string = 'Girasol';
 
+  /** Presencia/Nivel de Varroa del apiario (US 43) */
+  varroaActual = signal<'NO_DETECTADA' | 'DETECTADA'>('NO_DETECTADA');
+
   /** Controla la visibilidad del modal/desplegable para cambiar el tipo de floración */
   mostrarSelectorFloracion = signal<boolean>(false);
 
@@ -61,7 +65,8 @@ export class NuevaInspeccionComponent implements OnInit {
     private router: Router,
     private apiarioService: ApiarioService,
     private inspeccionService: InspeccionService,
-    private draftService: InspeccionDraftService
+    private draftService: InspeccionDraftService,
+    private indexedDbAudio: IndexedDbAudioService
   ) { }
 
   ngOnInit(): void {
@@ -89,6 +94,9 @@ export class NuevaInspeccionComponent implements OnInit {
           this.floracionActual.set(localDraft.floracion);
           this.floracionOriginal = localDraft.floracion;
         }
+        if (localDraft.varroa) {
+          this.varroaActual.set(localDraft.varroa);
+        }
       }
       this.cargarDatosApiario();
     }
@@ -115,10 +123,19 @@ export class NuevaInspeccionComponent implements OnInit {
     if (this.inspeccionId) {
       this.inspeccionService.getInspeccionById(this.inspeccionId).subscribe({
         next: (insp) => {
-          if (insp && insp.floracion) {
-            this.floracionActual.set(insp.floracion);
-            this.floracionOriginal = insp.floracion;
-            this.draftService.saveDraft(this.apiarioId, { inspeccionId: insp.id, floracion: insp.floracion });
+          if (insp) {
+            if (insp.floracion) {
+              this.floracionActual.set(insp.floracion);
+              this.floracionOriginal = insp.floracion;
+            }
+            if (insp.varroa) {
+              this.varroaActual.set(insp.varroa as 'NO_DETECTADA' | 'DETECTADA');
+            }
+            this.draftService.saveDraft(this.apiarioId, {
+              inspeccionId: insp.id,
+              floracion: insp.floracion,
+              varroa: insp.varroa as 'NO_DETECTADA' | 'DETECTADA'
+            });
           }
         }
       });
@@ -133,8 +150,15 @@ export class NuevaInspeccionComponent implements OnInit {
             if (borrador.floracion) {
               this.floracionActual.set(borrador.floracion);
               this.floracionOriginal = borrador.floracion;
-              this.draftService.saveDraft(this.apiarioId, { inspeccionId: borrador.id, floracion: borrador.floracion });
             }
+            if (borrador.varroa) {
+              this.varroaActual.set(borrador.varroa as 'NO_DETECTADA' | 'DETECTADA');
+            }
+            this.draftService.saveDraft(this.apiarioId, {
+              inspeccionId: borrador.id,
+              floracion: borrador.floracion,
+              varroa: borrador.varroa as 'NO_DETECTADA' | 'DETECTADA'
+            });
           } else {
             const ultima = list[0];
             if (ultima && ultima.floracion) {
@@ -240,6 +264,23 @@ export class NuevaInspeccionComponent implements OnInit {
   }
 
   /**
+   * Selecciona el nivel de infestación de Varroa a nivel de apiario (US 43).
+   */
+  seleccionarVarroa(opcion: 'NO_DETECTADA' | 'DETECTADA'): void {
+    this.varroaActual.set(opcion);
+
+    // US 15 / 43: Guardado continuo local
+    this.draftService.saveDraft(this.apiarioId, { varroa: opcion });
+
+    if (this.inspeccionId) {
+      this.inspeccionService.updateVarroa(this.inspeccionId, opcion).subscribe({
+        next: () => console.log('Varroa actualizada en el borrador:', opcion),
+        error: (err) => console.error('Error al actualizar varroa:', err)
+      });
+    }
+  }
+
+  /**
    * Manejador al seleccionar una tarjeta de colmena para inspeccionarla (US 32).
    */
   seleccionarColmena(colmena: ColmenaEstadoInspeccion): void {
@@ -254,13 +295,18 @@ export class NuevaInspeccionComponent implements OnInit {
         .createInspeccion(this.apiarioId, {
           fecha: new Date().toISOString(),
           floracion: this.floracionActual(),
+          varroa: this.varroaActual(),
           estado: 'EN_BORRADOR',
           apiarioId: this.apiarioId
         })
         .subscribe({
           next: (borrador) => {
             this.inspeccionId = borrador.id || null;
-            this.draftService.saveDraft(this.apiarioId, { inspeccionId: borrador.id, floracion: this.floracionActual() });
+            this.draftService.saveDraft(this.apiarioId, {
+              inspeccionId: borrador.id,
+              floracion: this.floracionActual(),
+              varroa: this.varroaActual()
+            });
             this.router.navigate([
               '/apiarios', this.apiarioId,
               'inspecciones', borrador.id,
@@ -278,12 +324,14 @@ export class NuevaInspeccionComponent implements OnInit {
    * Finaliza la inspección cambiando el estado del borrador a "SINCRONIZADA".
    */
   finalizarInspeccion(): void {
-    const onFinalizedSuccess = () => {
+    const onFinalizedSuccess = async () => {
+      if (this.inspeccionId) {
+        await this.indexedDbAudio.deleteAudiosByInspeccion(this.inspeccionId);
+      }
       // US 15 / 15.1: Purga limpia del borrador local
       this.draftService.clearDraft(this.apiarioId);
       this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones']);
     };
-
     if (this.inspeccionId) {
       this.inspeccionService.finalizarInspeccion(this.inspeccionId).subscribe({
         next: onFinalizedSuccess,
@@ -297,6 +345,7 @@ export class NuevaInspeccionComponent implements OnInit {
         .createInspeccion(this.apiarioId, {
           fecha: new Date().toISOString(),
           floracion: this.floracionActual(),
+          varroa: this.varroaActual(),
           estado: 'SINCRONIZADA',
           apiarioId: this.apiarioId
         })

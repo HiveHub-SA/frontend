@@ -6,6 +6,7 @@ import { InspeccionService } from '../inspeccion.service';
 import { ApiarioService } from '../../apiarios/apiario.service';
 import { ApiarioDTO } from '../../apiarios/apiario.model';
 import { NavbarComponent } from '../../navbar/navbar.component';
+import { IndexedDbAudioService } from '../../audio-recorder/services/indexed-db-audio.service';
 
 /**
  * Componente que gestiona la pantalla del Historial de Inspecciones del Apiario.
@@ -53,7 +54,8 @@ export class HistorialInspeccionesComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private apiarioService: ApiarioService,
-    private inspeccionService: InspeccionService
+    private inspeccionService: InspeccionService,
+    private indexedDbAudio: IndexedDbAudioService
   ) {}
 
   ngOnInit(): void {
@@ -244,7 +246,8 @@ export class HistorialInspeccionesComponent implements OnInit {
     if (!target || !target.id) return;
 
     this.inspeccionService.deleteInspeccion(target.id).subscribe({
-      next: () => {
+      next: async () => {
+        await this.indexedDbAudio.deleteAudiosByInspeccion(target.id!);
         this.inspecciones.set(this.inspecciones().filter((i) => i.id !== target.id));
         this.inspeccionAEliminar.set(null);
         this.swipedCardId.set(null);

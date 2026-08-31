@@ -2,15 +2,15 @@
 
   <!-- Header Neo-Brutalista táctil -->
   <header class="header-tactile">
-    <button 
+    <button
       [routerLink]="['/apiarios', apiarioId, 'inspecciones', 'nueva']"
       [queryParams]="{ inspeccionId: inspeccionId }"
-      aria-label="Atrás" 
+      aria-label="Atrás"
       class="btn-back pressable"
     >
       <span class="material-symbols-outlined font-bold">arrow_back</span>
     </button>
-    
+
     <div class="header-title-box">
       <span class="header-subtitle">Apiario {{ nombreApiario() }}</span>
       <h1 class="header-main-title">{{ nombreColmena() }}</h1>
@@ -20,71 +20,207 @@
   <!-- Canvas desplazable -->
   <main class="colmena-main-canvas">
 
-    <!-- Seccion 0: Nota de Voz en Campo (Modulo Visual Demo US 03 / US 18) -->
+    <!-- ══════════════════════════════════════════════════════════════════════
+         Sección 0: Nota de Voz en Campo (Grabador real integrado)
+         ══════════════════════════════════════════════════════════════════════ -->
     <section class="card-audio-container">
+
       <div class="audio-header">
         <h2 class="audio-title">🎙️ Nota de Voz en Campo</h2>
+
+        <!-- Badge de estado -->
+        <span class="audio-badge" *ngIf="recorderState === 'idle' && !savedAudio">
+          Sin audio
+        </span>
+        <span class="audio-badge audio-badge-recording" *ngIf="recorderState === 'recording'">
+          <span class="badge-pulse-dot"></span>
+          {{ formatDuration(recordingSeconds) }}
+        </span>
+        <span class="audio-badge audio-badge-preview" *ngIf="recorderState === 'preview'">
+          Vista previa
+        </span>
+        <span class="audio-badge audio-badge-saved" *ngIf="recorderState === 'idle' && savedAudio">
+          ✓ Guardado
+        </span>
       </div>
 
-      <!-- Reproductor táctil -->
-      <div class="audio-player-box">
-        <button (click)="toggleAudio()" class="btn-play pressable">
-          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">
-            {{ isPlayingAudio() ? 'pause' : 'play_arrow' }}
-          </span>
+      <!-- ── Estado: idle sin audio guardado → botón grabar ── -->
+      <div *ngIf="recorderState === 'idle' && !savedAudio" class="recorder-idle-box">
+        <button type="button" class="btn-start-record pressable" (click)="startRecording()">
+          <span class="material-symbols-outlined">mic</span>
+          Iniciar grabación
         </button>
-        <div class="audio-track-bar">
-          <div class="audio-track-progress" [style.width]="isPlayingAudio() ? '85%' : '40%'"></div>
+        <p class="audio-hint">Grabá una nota de voz para esta colmena. Se guarda en este dispositivo.</p>
+      </div>
+
+      <!-- ── Estado: pidiendo permiso ── -->
+      <div *ngIf="recorderState === 'requesting-permission'" class="recorder-status-box">
+        <span class="spinner-audio" aria-hidden="true"></span>
+        Solicitando acceso al micrófono…
+      </div>
+
+      <!-- ── Estado: grabando ── -->
+      <div *ngIf="recorderState === 'recording'" class="recorder-recording-box">
+        <div class="recording-pulse-ring" aria-hidden="true"></div>
+        <button type="button" class="btn-stop-record pressable" (click)="stopRecording()">
+          <span class="material-symbols-outlined">stop</span>
+          Detener grabación
+        </button>
+      </div>
+
+      <!-- ── Estado: vista previa del audio recién grabado ── -->
+      <div *ngIf="recorderState === 'preview'" class="recorder-preview-box">
+        <div class="audio-player-box">
+          <button
+            type="button"
+            class="btn-play pressable"
+            (click)="togglePlay(previewPlayer)"
+          >
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">
+              {{ previewPlayer.paused ? 'play_arrow' : 'pause' }}
+            </span>
+          </button>
+          <div
+            class="audio-track-bar"
+            #previewTrack
+            (click)="seekTo($event, previewTrack, previewPlayer)"
+          >
+            <div class="audio-track-progress" [style.width.%]="getProgressPercent(previewPlayer)"></div>
+          </div>
+          <span class="audio-timer">{{ getPlayerTimeLabel(previewPlayer) }}</span>
+          <audio
+            #previewPlayer
+            [src]="previewUrl"
+            (timeupdate)="onPlayerTick()"
+            (play)="onPlayerTick()"
+            (pause)="onPlayerTick()"
+            (ended)="onPlayerTick()"
+            class="hidden-audio"
+          ></audio>
         </div>
-        <span class="audio-timer">00:14</span>
+
+        <div class="preview-actions-row">
+          <button
+            type="button"
+            class="btn-save-audio pressable"
+            (click)="savePreview()"
+            [disabled]="isSavingPreview"
+          >
+            <span class="spinner-audio spinner-sm" *ngIf="isSavingPreview" aria-hidden="true"></span>
+            <span class="material-symbols-outlined" *ngIf="!isSavingPreview">check</span>
+            {{ isSavingPreview ? 'Guardando…' : 'Guardar audio' }}
+          </button>
+          <button
+            type="button"
+            class="btn-discard-audio pressable"
+            (click)="discardPreview()"
+            [disabled]="isSavingPreview"
+          >
+            <span class="material-symbols-outlined">delete</span>
+            Descartar
+          </button>
+        </div>
       </div>
 
-      <!-- Botón Transcripción -->
-      <button (click)="toggleTranscripcion()" class="btn-transcripcion pressable">
-        📄 Transcripción en Alto Contraste
-      </button>
+      <!-- ── Audio ya guardado: reproductor + transcripción + eliminar ── -->
+      <div *ngIf="recorderState === 'idle' && savedAudio" class="saved-audio-box">
 
-      <!-- Panel Transcripción desplegable -->
-      <div *ngIf="mostrarTranscripcion()" class="transcripcion-box">
-        <p class="transcripcion-text">
-          "Población muy fuerte y saludable. Se observa postura buena de 1 día y reina activa. Nivel medio de alimento acumulado."
+        <!-- Reproductor -->
+        <div class="audio-player-box">
+          <button
+            type="button"
+            class="btn-play pressable"
+            (click)="togglePlay(savedPlayer)"
+          >
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">
+              {{ savedPlayer.paused ? 'play_arrow' : 'pause' }}
+            </span>
+          </button>
+          <div
+            class="audio-track-bar"
+            #savedTrack
+            (click)="seekTo($event, savedTrack, savedPlayer)"
+          >
+            <div class="audio-track-progress" [style.width.%]="getProgressPercent(savedPlayer)"></div>
+          </div>
+          <span class="audio-timer">{{ getPlayerTimeLabel(savedPlayer) }}</span>
+          <audio
+            #savedPlayer
+            [src]="savedAudioUrl"
+            (timeupdate)="onPlayerTick()"
+            (play)="onPlayerTick()"
+            (pause)="onPlayerTick()"
+            (ended)="onPlayerTick()"
+            class="hidden-audio"
+          ></audio>
+        </div>
+
+        <!-- Meta del audio -->
+        <p class="audio-meta">
+          {{ formatDuration(savedAudio.durationSeconds) }} · {{ formatSize(savedAudio.sizeBytes) }} · WAV 16kHz
         </p>
+
+        <!-- Botón Transcribir -->
+        <button
+          type="button"
+          class="btn-transcripcion pressable"
+          (click)="transcribeAudio()"
+          [disabled]="savedAudio.transcriptionStatus === 'transcribing'"
+        >
+          <span class="spinner-audio spinner-sm" *ngIf="savedAudio.transcriptionStatus === 'transcribing'" aria-hidden="true"></span>
+          <span class="material-symbols-outlined" *ngIf="savedAudio.transcriptionStatus !== 'transcribing'">description</span>
+          <ng-container [ngSwitch]="savedAudio.transcriptionStatus">
+            <ng-container *ngSwitchCase="'transcribing'">Transcribiendo…</ng-container>
+            <ng-container *ngSwitchCase="'done'">Transcribir de nuevo</ng-container>
+            <ng-container *ngSwitchCase="'error'">Reintentar transcripción</ng-container>
+            <ng-container *ngSwitchDefault>📄 Transcripción en Alto Contraste</ng-container>
+          </ng-container>
+        </button>
+
+        <!-- Resultado de transcripción -->
+        <div
+          *ngIf="savedAudio.transcriptionStatus === 'done' && savedAudio.transcriptionText"
+          class="transcripcion-box"
+        >
+          <p class="transcripcion-text">"{{ savedAudio.transcriptionText }}"</p>
+        </div>
+        <p
+          *ngIf="savedAudio.transcriptionStatus === 'error' && savedAudio.transcriptionError"
+          class="transcripcion-error"
+          role="alert"
+        >
+          {{ savedAudio.transcriptionError }}
+        </p>
+
+        <!-- Fila inferior: aviso de límite + eliminar -->
+        <div class="saved-audio-footer">
+          <span class="audio-limit-hint">Solo se permite un audio por colmena</span>
+          <button
+            type="button"
+            class="btn-delete-audio pressable"
+            (click)="deleteAudio()"
+          >
+            <span class="material-symbols-outlined">delete</span>
+            Eliminar
+          </button>
+        </div>
       </div>
+
+      <!-- Mensaje de error del grabador -->
+      <p class="recorder-error-msg" *ngIf="recorderErrorMessage" role="alert">
+        ⚠️ {{ recorderErrorMessage }}
+      </p>
+
     </section>
 
     <!-- Formulario de Inspección Táctil por Colmena (US 32) -->
     <section class="form-sections-wrapper">
 
-      <!-- Sección 1: Varroa -->
-      <div class="form-card-tactile">
-        <h3 class="form-card-title">Presencia de Varroa</h3>
-        <div class="grid-2-cols">
-          <button 
-            type="button"
-            (click)="setVarroa('NO_DETECTADA')"
-            [class.active-opt]="varroa() === 'NO_DETECTADA'"
-            [class.inactive-opt]="varroa() !== 'NO_DETECTADA'"
-            class="btn-option pressable"
-          >
-            No Detectada
-          </button>
-          <button 
-            type="button"
-            (click)="setVarroa('DETECTADA')"
-            [class.active-opt-error]="varroa() === 'DETECTADA'"
-            [class.inactive-opt]="varroa() !== 'DETECTADA'"
-            class="btn-option pressable"
-          >
-            ⚠️ Detectada
-          </button>
-        </div>
-      </div>
-
-      <!-- Sección 2: Reina -->
+      <!-- Sección 1: Reina -->
       <div class="form-card-tactile">
         <h3 class="form-card-title">Estado de la Reina</h3>
         <div class="grid-2-cols">
-          <button 
+          <button
             type="button"
             (click)="setEstadoReina('VISTA_Y_SANA')"
             [class.active-opt-primary]="estadoReina() === 'VISTA_Y_SANA'"
@@ -93,7 +229,7 @@
           >
             👑 Vista y Sana
           </button>
-          <button 
+          <button
             type="button"
             (click)="setEstadoReina('NO_VISTA')"
             [class.active-opt-primary]="estadoReina() === 'NO_VISTA'"
@@ -102,7 +238,7 @@
           >
             🔍 No Vista
           </button>
-          <button 
+          <button
             type="button"
             (click)="setEstadoReina('CELDA_REAL')"
             [class.active-opt-primary]="estadoReina() === 'CELDA_REAL'"
@@ -111,7 +247,7 @@
           >
             🥚 Celda Real
           </button>
-          <button 
+          <button
             type="button"
             (click)="setEstadoReina('AUSENTE')"
             [class.active-opt-primary]="estadoReina() === 'AUSENTE'"
@@ -127,7 +263,7 @@
       <div class="form-card-tactile">
         <h3 class="form-card-title">Nivel de Alimento</h3>
         <div class="grid-3-cols">
-          <button 
+          <button
             type="button"
             (click)="setNivelAlimento('BAJO')"
             [class.active-opt-primary]="nivelAlimento() === 'BAJO'"
@@ -136,7 +272,7 @@
           >
             Bajo
           </button>
-          <button 
+          <button
             type="button"
             (click)="setNivelAlimento('MEDIO')"
             [class.active-opt-primary]="nivelAlimento() === 'MEDIO'"
@@ -145,7 +281,7 @@
           >
             Medio
           </button>
-          <button 
+          <button
             type="button"
             (click)="setNivelAlimento('ALTO')"
             [class.active-opt-primary]="nivelAlimento() === 'ALTO'"
@@ -161,7 +297,7 @@
       <div class="form-card-tactile">
         <h3 class="form-card-title">¿Produjo Miel?</h3>
         <div class="grid-2-cols">
-          <button 
+          <button
             type="button"
             (click)="setProdujoMiel(true)"
             [class.active-opt-primary]="produjoMiel() === true"
@@ -170,7 +306,7 @@
           >
             🍯 Sí produjo
           </button>
-          <button 
+          <button
             type="button"
             (click)="setProdujoMiel(false)"
             [class.active-opt-primary]="produjoMiel() === false"
@@ -185,10 +321,10 @@
       <!-- Sección 5: Notas -->
       <div class="form-card-tactile">
         <h3 class="form-card-title">Observaciones Adicionales</h3>
-        <textarea 
+        <textarea
           [(ngModel)]="observaciones"
           (ngModelChange)="onObservacionesChange()"
-          class="notes-textarea" 
+          class="notes-textarea"
           placeholder="Escribe notas aquí..."
         ></textarea>
       </div>

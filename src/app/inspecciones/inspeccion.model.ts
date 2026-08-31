@@ -5,6 +5,7 @@ export interface InspeccionDTO {
   id?: number;
   fecha: string;
   floracion: string;
+  varroa?: 'NO_DETECTADA' | 'DETECTADA';
   estado: 'EN_BORRADOR' | 'SINCRONIZADA';
   apiarioId: number;
 }
@@ -17,7 +18,6 @@ export interface InspeccionColmenaDTO {
   inspeccionId: number;
   colmenaId: number;
   colmenaName?: string;
-  varroa: 'NO_DETECTADA' | 'DETECTADA';
   estadoReina: 'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE';
   nivelAlimento: 'BAJO' | 'MEDIO' | 'ALTO';
   produjoMiel: boolean;

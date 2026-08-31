@@ -293,3 +293,355 @@
   transform: translateY(2px);
   box-shadow: 0 2px 0 0 #1a1c1c !important;
 }
+
+/* ============================================================
+   Sección Grabador de Voz (Basado en la estructura del HTML)
+   ============================================================ */
+
+.card-audio-container {
+  background-color: var(--color-secondary-fixed);
+  border: var(--border-dark);
+  border-radius: 18px;
+  padding: var(--space-gutter);
+  box-shadow: var(--shadow-md);
+}
+
+.audio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-gutter);
+}
+
+.audio-title {
+  font-family: var(--font-headline);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-base);
+}
+
+/* Badges Neo-Brutalistas de estado */
+.audio-badge {
+  background-color: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: var(--border-dark);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-hard-small);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.audio-badge-recording {
+  background-color: var(--color-error-container);
+  color: var(--color-error);
+}
+
+.audio-badge-preview {
+  background-color: var(--color-tertiary-fixed);
+  color: var(--color-on-tertiary-fixed);
+}
+
+.audio-badge-saved {
+  background-color: var(--color-primary-fixed);
+  color: var(--color-on-primary-fixed-variant);
+}
+
+.badge-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-error);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* Cajas contenedoras de estado */
+.recorder-idle-box,
+.recorder-preview-box,
+.saved-audio-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-gutter);
+}
+
+.recorder-status-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-base);
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  font-weight: 600;
+  padding: var(--space-lg) 0;
+}
+
+.recorder-recording-box {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-base) 0;
+}
+
+.audio-hint {
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+  margin: 0;
+  text-align: center;
+}
+
+/* Botones principales de Grabación */
+.btn-start-record,
+.btn-stop-record {
+  width: 100%;
+  height: 56px;
+  border: var(--border-dark);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-base);
+  font-family: var(--font-headline);
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.btn-start-record {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.btn-stop-record {
+  background-color: var(--color-error-container);
+  color: var(--color-error);
+}
+
+/* Reproductor de audio custom (play, track, timer) */
+.audio-player-box {
+  background-color: var(--color-surface-container-lowest);
+  border: var(--border-dark);
+  border-radius: var(--radius-default);
+  padding: var(--space-base);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  box-shadow: var(--shadow-hard-small);
+}
+
+.hidden-audio {
+  display: none;
+}
+
+.btn-play {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  background-color: var(--color-secondary-container);
+  border: var(--border-dark);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-secondary);
+  cursor: pointer;
+}
+
+.btn-play .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.audio-track-bar {
+  flex: 1;
+  height: 12px;
+  background-color: var(--color-secondary-fixed);
+  border: var(--border-dark);
+  border-radius: var(--radius-full);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.audio-track-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--color-secondary-container);
+  border-right: var(--border-dark);
+  transition: width 0.1s linear;
+}
+
+.audio-timer {
+  font-family: var(--font-headline);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  min-width: 38px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Botones de acción (Guardar / Descartar) */
+.preview-actions-row {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.btn-save-audio,
+.btn-discard-audio {
+  flex: 1;
+  border: var(--border-dark);
+  border-radius: var(--radius-default);
+  padding: var(--space-sm) var(--space-gutter);
+  font-family: var(--font-headline);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-base);
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-small);
+}
+
+.btn-save-audio {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.btn-discard-audio {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface);
+  opacity: 0.85;
+}
+
+.btn-save-audio:disabled,
+.btn-discard-audio:disabled,
+.btn-transcripcion:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Metadatos y transcripción del audio guardado */
+.audio-meta {
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+  font-weight: 600;
+  margin: 0;
+}
+
+.btn-transcripcion {
+  width: 100%;
+  border: var(--border-dark);
+  border-radius: var(--radius-default);
+  padding: var(--space-sm) var(--space-gutter);
+  font-family: var(--font-headline);
+  font-size: 14px;
+  font-weight: 700;
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  box-shadow: var(--shadow-hard-small);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-base);
+  cursor: pointer;
+  margin-top: var(--space-sm);
+}
+
+.transcripcion-box {
+  background-color: var(--color-surface-container);
+  border-radius: 8px;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-outline-variant);
+}
+
+.transcripcion-text {
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.transcripcion-error,
+.recorder-error-msg {
+  color: var(--color-error);
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Pie de tarjeta con el audio guardado */
+.saved-audio-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 2px dashed var(--color-surface-container-high);
+  padding-top: var(--space-base);
+}
+
+.audio-limit-hint {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-on-surface-variant);
+}
+
+.btn-delete-audio {
+  background: none;
+  border: none;
+  color: var(--color-error);
+  font-family: var(--font-headline);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+/* Spinners */
+.spinner-audio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--color-surface-container-high);
+  border-top-color: var(--color-primary);
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+.spinner-sm {
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-pulse-dot,
+  .spinner-audio {
+    animation: none;
+  }
+}
