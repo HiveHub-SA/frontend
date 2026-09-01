@@ -35,6 +35,14 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
   nombreColmena = signal<string>('Colmena');
   loading = signal<boolean>(true);
 
+  // Para Autocompletado del formulario
+  isOnline = signal<boolean>(navigator.onLine);
+  isCompletandoFormulario = signal<boolean>(false);
+  formularioIAError: string | null = null;
+  private onlineListener = () => this.isOnline.set(true);
+  private offlineListener = () => this.isOnline.set(false);
+
+
   // Form Model
   estadoReina = signal<'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'>('VISTA_Y_SANA');
   nivelAlimento = signal<'BAJO' | 'MEDIO' | 'ALTO'>('MEDIO');
@@ -74,6 +82,10 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
   // ── Lifecycle ────────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
+    //Listener para saber el estado de la conexion al momento de autocompletar el formulario
+    window.addEventListener('online', this.onlineListener);
+    window.addEventListener('offline', this.offlineListener);
+
     this.apiarioId = Number(this.route.snapshot.params['apiarioId']);
     this.inspeccionId = Number(this.route.snapshot.params['inspeccionId']);
     this.colmenaId = Number(this.route.snapshot.params['colmenaId']);
@@ -102,6 +114,9 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    window.removeEventListener('online', this.onlineListener);
+    window.removeEventListener('offline', this.offlineListener);
+
     this.stopMediaTracks();
     this.clearRecordingTimer();
     this.revokePreviewUrl();
@@ -458,4 +473,44 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
       this.previewUrl = null;
     }
   }
+
+  // ── Autocompletado del formulario ───────────────────────────────────────────────────────────────
+
+    //Cada campo se aplica solo si vino con un valor (la IA devuelve nulo para lo que no pudo identificar en el audio) 
+    //Se reutilizan los setters existentes para que tambien dispare el autoguardado local (autoSaveLocal()) como si lo hubiera tocado el usuario.
+
+async completarFormularioConIA(): Promise<void> {
+  //Se exige que exista un audio grabado no que ya este transcripto.
+  if (!this.savedAudio || !this.isOnline()) return;
+
+  this.isCompletandoFormulario.set(true);
+  this.formularioIAError = undefined as any;
+
+  try {
+    //Si no hay transcripcion lista se dispara aca mismo
+    if (this.savedAudio.transcriptionStatus !== 'done' || !this.savedAudio.transcriptionText) {
+      await this.transcribeAudio();
+
+      // Si la transcripcion falla no tiene sentido seguir: se corta aca y se muestra el motivo
+      if (this.savedAudio.transcriptionStatus !== 'done' || !this.savedAudio.transcriptionText) {
+        this.formularioIAError = this.savedAudio.transcriptionError ?? 'No se pudo transcribir el audio';
+        return;
+      }
+    }
+    const r = await this.transcriptionService.completarFormulario(this.savedAudio.transcriptionText);
+    if (r.estadoReina) this.setEstadoReina(r.estadoReina);
+    if (r.nivelAlimento) this.setNivelAlimento(r.nivelAlimento);
+    if (r.produjoMiel !== null && r.produjoMiel !== undefined) this.setProdujoMiel(r.produjoMiel);
+    if (r.observaciones) {
+      this.observaciones = r.observaciones;
+      this.onObservacionesChange();
+    }
+  } catch (error) {
+    this.formularioIAError = error instanceof Error ? error.message : 'Error al completar el formulario';
+  } finally {
+    this.isCompletandoFormulario.set(false);
+    this.cdr.markForCheck();
+  }
+}
+
 }

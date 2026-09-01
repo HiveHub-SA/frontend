@@ -191,6 +191,22 @@
         >
           {{ savedAudio.transcriptionError }}
         </p>
+        
+
+        <!-- Boton para realizar el autocompletado -->
+        <button
+          type="button"
+          class="btn-transcripcion pressable"
+          [disabled]="!isOnline() || isCompletandoFormulario() || !savedAudio"
+          (click)="completarFormularioConIA()"
+        >
+          <span class="spinner-audio spinner-sm" *ngIf="isCompletandoFormulario()" aria-hidden="true"></span>
+          <ng-container *ngIf="!isCompletandoFormulario()">✨ Completar formulario con IA</ng-container>
+          <ng-container *ngIf="isCompletandoFormulario()">Completando…</ng-container>
+        </button>
+        <p class="transcripcion-error" role="alert" *ngIf="formularioIAError">{{ formularioIAError }}</p>
+        <p class="hint-offline" *ngIf="!isOnline()">Conectate a internet para autocompletar el formulario con IA.</p>
+        <p class="hint-offline" *ngIf="isOnline() && !savedAudio">Grabá un audio de la inspección para poder completar el formulario.</p>
 
         <!-- Fila inferior: aviso de límite + eliminar -->
         <div class="saved-audio-footer">

@@ -4,6 +4,14 @@ export interface TranscriptionResponse {
   transcription: string;
 }
 
+//Interfaz para el autocompletado
+export interface FormularioIA{
+  estadoReina?: 'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE' | null;
+  nivelAlimento?: 'BAJO' | 'MEDIO' | 'ALTO' | null;
+  produjoMiel?: boolean | null;
+  observaciones?: string | null;
+}
+
 /**
  * Contrato HTTP propuesto para el endpoint de transcripcion. Se documenta aca
  * para que el frontend no necesite refactor cuando el backend exista:
@@ -43,4 +51,19 @@ export class TranscriptionService {
     return response.json();
 
     }
-}
+
+  //Metodo para completar json que ayudara a rellenar el formulario
+  async completarFormulario(texto: string): Promise<FormularioIA> {
+    const response = await fetch(`${this.API_URL}/complete-form`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texto }),
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      throw new Error(body?.error ?? `Error al completar formulario (HTTP ${response.status})`);
+    }
+    return response.json();
+  }
+
+  }
