@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InspeccionDTO } from '../inspeccion.model';
@@ -7,11 +7,15 @@ import { ApiarioService } from '../../apiarios/apiario.service';
 import { ApiarioDTO } from '../../apiarios/apiario.model';
 import { NavbarComponent } from '../../navbar/navbar.component';
 import { IndexedDbAudioService } from '../../audio-recorder/services/indexed-db-audio.service';
+import { InspeccionDraftService } from '../inspeccion-draft.service';
+import { OfflineCacheService } from '../../shared/services/offline-cache.service';
+import { InspeccionSyncService } from '../services/inspeccion-sync.service';
+import { NetworkStatusService } from '../../shared/services/network-status.service';
 
 /**
  * Componente que gestiona la pantalla del Historial de Inspecciones del Apiario.
  * Muestra el listado de inspecciones previas (en borrador o sincronizadas),
- * la floración registrada y el botón para iniciar o retomar una inspección.
+ * la floración registrada y el botón para iniciar o retomar una inspección con soporte offline (US 05).
  */
 @Component({
   selector: 'app-historial-inspecciones',
@@ -55,8 +59,21 @@ export class HistorialInspeccionesComponent implements OnInit {
     private router: Router,
     private apiarioService: ApiarioService,
     private inspeccionService: InspeccionService,
-    private indexedDbAudio: IndexedDbAudioService
-  ) {}
+    private indexedDbAudio: IndexedDbAudioService,
+    private draftService: InspeccionDraftService,
+    private offlineCache: OfflineCacheService,
+    public syncService: InspeccionSyncService,
+    public networkStatus: NetworkStatusService
+  ) {
+    effect(() => {
+      // Reaccionar automáticamente a cambios de conectividad y cola offline
+      const _ = this.syncService.pendingCount();
+      const __ = this.networkStatus.online();
+      if (this.apiarioId) {
+        this.cargarDatos();
+      }
+    });
+  }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.params['id'];
@@ -68,32 +85,88 @@ export class HistorialInspeccionesComponent implements OnInit {
   }
 
   /**
-   * Carga los datos del apiario y su historial de inspecciones desde los servicios.
+   * Carga los datos del apiario y su historial de inspecciones desde los servicios o caché local.
    */
   cargarDatos(): void {
     this.loading.set(true);
-    this.apiarioService.getApiarioById(this.apiarioId).subscribe({
-      next: (data) => this.apiario.set(data),
-      error: (err) => console.error('Error al obtener apiario:', err),
-    });
 
-    this.inspeccionService.getInspeccionesByApiario(this.apiarioId).subscribe({
-      next: (list) => {
-        this.inspecciones.set(list);
-        this.loading.set(false);
+    // Cargar datos del Apiario (con fallback offline)
+    this.apiarioService.getApiarioById(this.apiarioId).subscribe({
+      next: (data) => {
+        if (data) {
+          this.apiario.set(data);
+        } else {
+          const cached = this.offlineCache.getCachedApiarioById(this.apiarioId);
+          if (cached) this.apiario.set(cached);
+        }
       },
       error: (err) => {
-        console.error('Error al obtener historial de inspecciones:', err);
-        this.loading.set(false);
-      },
+        console.warn('Recuperando apiario desde caché offline:', err);
+        const cached = this.offlineCache.getCachedApiarioById(this.apiarioId);
+        if (cached) this.apiario.set(cached);
+      }
     });
+
+    // Construir lista local (borrador activo + cola offline)
+    const localDraftList = this.obtenerBorradoresLocales();
+    const queuedList = this.obtenerInspeccionesEncoladas();
+
+    if (this.networkStatus.online()) {
+      this.inspeccionService.getInspeccionesByApiario(this.apiarioId).subscribe({
+        next: (serverList) => {
+          // Si el servidor ya tiene un borrador, no duplicar con el local
+          const hasServerDraft = serverList.some(i => i.estado === 'EN_BORRADOR');
+          const draftsToAdd = hasServerDraft ? [] : localDraftList;
+
+          const combined = [...draftsToAdd, ...queuedList, ...serverList];
+          this.inspecciones.set(combined);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          console.warn('Conexión no disponible para historial, mostrando registros locales:', err);
+          this.inspecciones.set([...localDraftList, ...queuedList]);
+          this.loading.set(false);
+        }
+      });
+    } else {
+      // Modo Offline directo
+      this.inspecciones.set([...localDraftList, ...queuedList]);
+      this.loading.set(false);
+    }
+  }
+
+  private obtenerBorradoresLocales(): InspeccionDTO[] {
+    const localDraft = this.draftService.getDraft(this.apiarioId);
+    if (!localDraft) return [];
+
+    return [{
+      id: localDraft.inspeccionId || -1,
+      apiarioId: this.apiarioId,
+      fecha: localDraft.fecha || localDraft.lastUpdated || new Date().toISOString(),
+      floracion: localDraft.floracion || 'Girasol',
+      varroa: localDraft.varroa || 'NO_DETECTADA',
+      estado: 'EN_BORRADOR'
+    }];
+  }
+
+  private obtenerInspeccionesEncoladas(): InspeccionDTO[] {
+    return this.syncService.getPendingQueue()
+      .filter(q => q.apiarioId === this.apiarioId)
+      .map((q, idx) => ({
+        id: -(idx + 100),
+        uuidLocal: q.uuid,
+        apiarioId: q.apiarioId,
+        fecha: q.fecha,
+        floracion: q.floracion,
+        varroa: q.varroa,
+        estado: 'PENDIENTE_SINCRONIZACION' as const
+      }));
   }
 
   /**
    * Manejador al hacer clic en una tarjeta de inspección.
    */
   verInspeccion(inspeccion: InspeccionDTO): void {
-    // Si se realizó un arrastre o la tarjeta está deslizada, cerrar swipe en lugar de navegar
     if (this.hasDragged) {
       this.hasDragged = false;
       return;
@@ -104,26 +177,38 @@ export class HistorialInspeccionesComponent implements OnInit {
       return;
     }
 
-    if (inspeccion.estado === 'EN_BORRADOR' && inspeccion.id) {
+    if (inspeccion.estado === 'EN_BORRADOR') {
+      const qParams = inspeccion.id && inspeccion.id > 0 ? { inspeccionId: inspeccion.id } : undefined;
       this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva'], {
-        queryParams: { inspeccionId: inspeccion.id }
+        queryParams: qParams
       });
-    } else if (inspeccion.id) {
+    } else if (inspeccion.id && inspeccion.id > 0) {
       this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', inspeccion.id]);
     }
   }
 
   /**
-   * Redirige a la pantalla de Nueva Inspección.
+   * Redirige a la pantalla de Nueva Inspección o retoma el borrador existente.
    */
   crearNuevaInspeccion(): void {
+    const borradorLocal = this.draftService.getDraft(this.apiarioId);
     const borradorExistente = this.inspecciones().find((i) => i.estado === 'EN_BORRADOR');
 
-    if (borradorExistente && borradorExistente.id) {
+    if (borradorExistente) {
+      const qParams = borradorExistente.id && borradorExistente.id > 0
+        ? { inspeccionId: borradorExistente.id }
+        : undefined;
       this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva'], {
-        queryParams: { inspeccionId: borradorExistente.id }
+        queryParams: qParams
       });
-    } else {
+    } else if (borradorLocal) {
+      const qParams = borradorLocal.inspeccionId && borradorLocal.inspeccionId > 0
+        ? { inspeccionId: borradorLocal.inspeccionId }
+        : undefined;
+      this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva'], {
+        queryParams: qParams
+      });
+    } else if (this.networkStatus.online()) {
       const inspeccionesExistentes = this.inspecciones();
       const ultimaFloracion = inspeccionesExistentes.length > 0 && inspeccionesExistentes[0].floracion
         ? inspeccionesExistentes[0].floracion
@@ -143,10 +228,22 @@ export class HistorialInspeccionesComponent implements OnInit {
             });
           },
           error: (err) => {
-            console.error('Error al crear nuevo borrador de inspección:', err);
+            console.warn('No se pudo crear en servidor, abriendo modo offline:', err);
             this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva']);
           }
         });
+    } else {
+      // Modo Offline directo
+      this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva']);
+    }
+  }
+
+  /**
+   * Fuerza el envío de todas las inspecciones offline pendientes si hay conexión (US 05).
+   */
+  forzarSincronizacion(): void {
+    if (this.networkStatus.online() && this.syncService.pendingCount() > 0) {
+      this.syncService.syncAllPending();
     }
   }
 

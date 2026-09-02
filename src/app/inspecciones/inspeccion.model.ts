@@ -6,8 +6,10 @@ export interface InspeccionDTO {
   fecha: string;
   floracion: string;
   varroa?: 'NO_DETECTADA' | 'DETECTADA';
-  estado: 'EN_BORRADOR' | 'SINCRONIZADA';
+  estado: 'EN_BORRADOR' | 'PENDIENTE_SINCRONIZACION' | 'SINCRONIZADA';
+  uuidLocal?: string;
   apiarioId: number;
+  colmenas?: InspeccionColmenaDTO[];
 }
 
 /**

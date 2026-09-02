@@ -68,6 +68,68 @@
   width: 40px;
 }
 
+.header-right-action {
+  min-width: 40px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-sync-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  background-color: #ffffff;
+  color: #1a1c1c;
+  border: 2px solid var(--color-on-surface, #1a1c1c);
+  border-radius: 9999px;
+  box-shadow: 2px 2px 0px 0px rgba(26, 28, 28, 1);
+  cursor: pointer;
+  font-family: var(--font-display, 'Quicksand', sans-serif);
+  font-weight: 800;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.btn-sync-header:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.btn-sync-header.has-pending {
+  background-color: #ffb300;
+  color: #1a1c1c;
+}
+
+.btn-sync-header.syncing {
+  background-color: #42a5f5;
+  color: #ffffff;
+}
+
+.sync-icon {
+  font-size: 18px;
+}
+
+.sync-count {
+  line-height: 1;
+}
+
+.spin {
+  animation: spin-anim 1s linear infinite;
+}
+
+@keyframes spin-anim {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Main Content */
 .historial-main {
   flex: 1;
@@ -206,6 +268,11 @@
 .badge-borrador {
   background-color: #EFE6D5;
   color: #5C5346;
+}
+
+.badge-pendiente {
+  background-color: #FEF3C7;
+  color: #92400E;
 }
 
 .badge-sincronizada {

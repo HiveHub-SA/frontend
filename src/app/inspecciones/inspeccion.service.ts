@@ -112,6 +112,16 @@ export class InspeccionService {
   }
 
   /**
+   * Sincroniza atómicamente un paquete completo de inspección generado en modo offline (US 05).
+   *
+   * @param dto DTO de inspección completa con colmenas asociadas
+   * @returns Observable con la inspección persistida
+   */
+  sincronizarInspeccion(dto: InspeccionDTO): Observable<InspeccionDTO> {
+    return this.http.post<InspeccionDTO>(`${this.apiUrl}/inspecciones/sincronizar`, dto);
+  }
+
+  /**
    * Elimina un registro de inspección por su ID.
    */
   deleteInspeccion(id: number): Observable<void> {

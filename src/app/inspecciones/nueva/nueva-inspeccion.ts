@@ -9,12 +9,15 @@ import { NavbarComponent } from '../../navbar/navbar.component';
 
 import { InspeccionDraftService } from '../inspeccion-draft.service';
 import { IndexedDbAudioService } from '../../audio-recorder/services/indexed-db-audio.service';
+import { OfflineCacheService } from '../../shared/services/offline-cache.service';
+import { InspeccionSyncService } from '../services/inspeccion-sync.service';
+import { NetworkStatusService } from '../../shared/services/network-status.service';
 
 /**
  * Componente para la pantalla de Nueva Inspección.
  * Permite visualizar la fecha actual, precargar o modificar la Floración Predominante del apiario,
  * visualizar la lista de colmenas con sus estados ("✓ Inspección guardada" vs "Pendiente de revisión")
- * y finalizar la inspección.
+ * y finalizar la inspección con soporte offline-first (US 05).
  */
 @Component({
   selector: 'app-nueva-inspeccion',
@@ -66,7 +69,10 @@ export class NuevaInspeccionComponent implements OnInit {
     private apiarioService: ApiarioService,
     private inspeccionService: InspeccionService,
     private draftService: InspeccionDraftService,
-    private indexedDbAudio: IndexedDbAudioService
+    private indexedDbAudio: IndexedDbAudioService,
+    private offlineCache: OfflineCacheService,
+    private syncService: InspeccionSyncService,
+    public networkStatus: NetworkStatusService
   ) { }
 
   ngOnInit(): void {
@@ -109,18 +115,23 @@ export class NuevaInspeccionComponent implements OnInit {
     this.loading.set(true);
     this.apiarioService.getApiarioById(this.apiarioId).subscribe({
       next: (data) => {
-        this.apiario.set(data);
-        this.prepararColmenas(data);
+        if (data) {
+          this.apiario.set(data);
+          this.prepararColmenas(data);
+        } else {
+          this.cargarApiarioDesdeCache();
+        }
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error al cargar apiario para nueva inspección:', err);
+        console.warn('Conexión no disponible, recuperando apiario de la caché local:', err);
+        this.cargarApiarioDesdeCache();
         this.loading.set(false);
       }
     });
 
     // Si viene inspeccionId, obtener sus datos específicos; de lo contrario buscar el último borrador u última floración
-    if (this.inspeccionId) {
+    if (this.inspeccionId && this.inspeccionId > 0) {
       this.inspeccionService.getInspeccionById(this.inspeccionId).subscribe({
         next: (insp) => {
           if (insp) {
@@ -139,7 +150,7 @@ export class NuevaInspeccionComponent implements OnInit {
           }
         }
       });
-    } else {
+    } else if (this.networkStatus.online()) {
       this.inspeccionService.getInspeccionesByApiario(this.apiarioId).subscribe({
         next: (list) => {
           if (!list || list.length === 0) return;
@@ -171,15 +182,31 @@ export class NuevaInspeccionComponent implements OnInit {
     }
   }
 
+  private cargarApiarioDesdeCache(): void {
+    const cached = this.offlineCache.getCachedApiarioById(this.apiarioId);
+    if (cached) {
+      const colmenas = this.offlineCache.getCachedColmenas(this.apiarioId);
+      const apiarioDto: ApiarioDTO = {
+        ...cached,
+        colmenas: colmenas && colmenas.length > 0 ? colmenas : (cached.colmenas || [])
+      };
+      this.apiario.set(apiarioDto);
+      this.prepararColmenas(apiarioDto);
+    }
+  }
+
   /**
    * Prepara la lista de colmenas asignándoles su estado de revisión según la inspección en curso.
    */
   prepararColmenas(apiario: ApiarioDTO): void {
-    const colmenas = apiario.colmenas || [];
+    let colmenas = apiario.colmenas || [];
+    if (colmenas.length === 0) {
+      colmenas = this.offlineCache.getCachedColmenas(this.apiarioId);
+    }
     const localDraft = this.draftService.getDraft(this.apiarioId);
     const colmenasGuardadasLocal = localDraft?.colmenasGuardadas || {};
 
-    if (this.inspeccionId) {
+    if (this.inspeccionId && this.inspeccionId > 0 && this.networkStatus.online()) {
       this.inspeccionService.getInspeccionesColmenas(this.inspeccionId).subscribe({
         next: (guardadas) => {
           const idsGuardadas = new Set(guardadas.map((g) => g.colmenaId));
@@ -255,7 +282,7 @@ export class NuevaInspeccionComponent implements OnInit {
     // US 15: Guardado continuo local
     this.draftService.saveDraft(this.apiarioId, { floracion: opcion });
 
-    if (this.inspeccionId) {
+    if (this.inspeccionId && this.inspeccionId > 0 && this.networkStatus.online()) {
       this.inspeccionService.updateFloracion(this.inspeccionId, opcion).subscribe({
         next: () => console.log('Floración actualizada en el borrador:', opcion),
         error: (err) => console.error('Error al actualizar floración:', err)
@@ -272,7 +299,7 @@ export class NuevaInspeccionComponent implements OnInit {
     // US 15 / 43: Guardado continuo local
     this.draftService.saveDraft(this.apiarioId, { varroa: opcion });
 
-    if (this.inspeccionId) {
+    if (this.inspeccionId && this.inspeccionId > 0 && this.networkStatus.online()) {
       this.inspeccionService.updateVarroa(this.inspeccionId, opcion).subscribe({
         next: () => console.log('Varroa actualizada en el borrador:', opcion),
         error: (err) => console.error('Error al actualizar varroa:', err)
@@ -281,7 +308,7 @@ export class NuevaInspeccionComponent implements OnInit {
   }
 
   /**
-   * Manejador al seleccionar una tarjeta de colmena para inspeccionarla (US 32).
+   * Manejador al seleccionar una tarjeta de colmena para inspeccionarla (US 32 / US 05).
    */
   seleccionarColmena(colmena: ColmenaEstadoInspeccion): void {
     if (this.inspeccionId) {
@@ -290,7 +317,7 @@ export class NuevaInspeccionComponent implements OnInit {
         'inspecciones', this.inspeccionId,
         'colmenas', colmena.id
       ]);
-    } else {
+    } else if (this.networkStatus.online()) {
       this.inspeccionService
         .createInspeccion(this.apiarioId, {
           fecha: new Date().toISOString(),
@@ -313,49 +340,79 @@ export class NuevaInspeccionComponent implements OnInit {
               'colmenas', colmena.id
             ]);
           },
-          error: (err) => {
-            console.error('Error al crear borrador para colmena:', err);
+          error: () => {
+            this.navegarColmenaOffline(colmena.id);
           }
         });
+    } else {
+      this.navegarColmenaOffline(colmena.id);
     }
+  }
+
+  private navegarColmenaOffline(colmenaId: number): void {
+    const localDraft = this.draftService.getDraft(this.apiarioId) || { apiarioId: this.apiarioId };
+    const tempId = localDraft.inspeccionId || -1;
+    this.inspeccionId = tempId;
+    this.draftService.saveDraft(this.apiarioId, {
+      inspeccionId: tempId,
+      floracion: this.floracionActual(),
+      varroa: this.varroaActual()
+    });
+    this.router.navigate([
+      '/apiarios', this.apiarioId,
+      'inspecciones', tempId,
+      'colmenas', colmenaId
+    ]);
   }
 
   /**
    * Finaliza la inspección cambiando el estado del borrador a "SINCRONIZADA".
+   * Si no hay conexión (offline), consolida y encola atómicamente el paquete (US 05).
    */
   finalizarInspeccion(): void {
-    const onFinalizedSuccess = async () => {
-      if (this.inspeccionId) {
-        await this.indexedDbAudio.deleteAudiosByInspeccion(this.inspeccionId);
-      }
-      // US 15 / 15.1: Purga limpia del borrador local
+    if (this.isSubmitting()) return;
+    this.isSubmitting.set(true);
+
+    const localDraft = this.draftService.getDraft(this.apiarioId);
+    const colmenasCompletadas = Object.values(localDraft?.colmenasGuardadas || {});
+
+    const onOfflineSuccess = () => {
+      this.syncService.enqueueInspeccion({
+        id: this.inspeccionId && this.inspeccionId > 0 ? this.inspeccionId : undefined,
+        apiarioId: this.apiarioId,
+        apiarioNombre: this.apiario()?.name,
+        fecha: new Date().toISOString(),
+        floracion: this.floracionActual(),
+        varroa: this.varroaActual(),
+        colmenas: colmenasCompletadas
+      });
       this.draftService.clearDraft(this.apiarioId);
+      this.isSubmitting.set(false);
       this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones']);
     };
-    if (this.inspeccionId) {
-      this.inspeccionService.finalizarInspeccion(this.inspeccionId).subscribe({
-        next: onFinalizedSuccess,
-        error: (err) => {
-          console.error('Error al finalizar inspección:', err);
-          onFinalizedSuccess();
-        }
-      });
-    } else {
-      this.inspeccionService
-        .createInspeccion(this.apiarioId, {
-          fecha: new Date().toISOString(),
-          floracion: this.floracionActual(),
-          varroa: this.varroaActual(),
-          estado: 'SINCRONIZADA',
-          apiarioId: this.apiarioId
-        })
-        .subscribe({
-          next: onFinalizedSuccess,
-          error: (err) => {
-            console.error('Error al crear y finalizar inspección:', err);
-            onFinalizedSuccess();
-          }
-        });
+
+    const onOnlineSuccess = async () => {
+      if (this.inspeccionId && this.inspeccionId > 0) {
+        await this.indexedDbAudio.deleteAudiosByInspeccion(this.inspeccionId);
+      }
+      this.draftService.clearDraft(this.apiarioId);
+      this.isSubmitting.set(false);
+      this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones']);
+    };
+
+    // Si estamos offline o el borrador es 100% local (inspeccionId <= 0)
+    if (!this.networkStatus.online() || !this.inspeccionId || this.inspeccionId <= 0) {
+      onOfflineSuccess();
+      return;
     }
+
+    // Si estamos online y hay un borrador registrado en el servidor
+    this.inspeccionService.finalizarInspeccion(this.inspeccionId).subscribe({
+      next: onOnlineSuccess,
+      error: (err) => {
+        console.warn('Fallo al finalizar en servidor, encolando offline...', err);
+        onOfflineSuccess();
+      }
+    });
   }
 }

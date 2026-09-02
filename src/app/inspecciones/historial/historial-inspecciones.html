@@ -19,7 +19,21 @@
       </h1>
     </div>
 
-    <div class="header-spacer"></div>
+    <!-- Botón de Sincronización a la derecha del Header (US 05) -->
+    <div class="header-right-action">
+      <button
+        *ngIf="syncService.pendingCount() > 0"
+        type="button"
+        class="btn-sync-header has-pending sink-effect"
+        [class.syncing]="syncService.isSyncing()"
+        (click)="forzarSincronizacion()"
+        [title]="networkStatus.online() ? 'Sincronizar ' + syncService.pendingCount() + ' inspección(es) pendiente(s)' : 'Sincronización pendiente (sin conexión a internet)'"
+      >
+        <span class="material-symbols-outlined sync-icon" [class.spin]="syncService.isSyncing()">sync</span>
+        <span class="sync-count">{{ syncService.pendingCount() }}</span>
+      </button>
+      <div *ngIf="syncService.pendingCount() === 0" class="header-spacer"></div>
+    </div>
   </header>
 
   <!-- Main Content -->
@@ -67,6 +81,9 @@
             <!-- Badge de Estado -->
             <span *ngIf="insp.estado === 'EN_BORRADOR'" class="badge-estado badge-borrador">
               <span class="material-symbols-outlined badge-icon">edit_note</span> EN BORRADOR
+            </span>
+            <span *ngIf="insp.estado === 'PENDIENTE_SINCRONIZACION'" class="badge-estado badge-pendiente">
+              <span class="material-symbols-outlined badge-icon">sync</span> PENDIENTE DE SINCRONIZACIÓN
             </span>
             <span *ngIf="insp.estado === 'SINCRONIZADA'" class="badge-estado badge-sincronizada">
               <span class="material-symbols-outlined badge-icon">check_circle</span> SINCRONIZADA
