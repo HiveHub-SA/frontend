@@ -7,6 +7,7 @@ import { ApiarioService } from '../../apiarios/apiario.service';
 import { ApiarioDTO } from '../../apiarios/apiario.model';
 import { NavbarComponent } from '../../navbar/navbar.component';
 import { IndexedDbAudioService } from '../../audio-recorder/services/indexed-db-audio.service';
+import { InspeccionDraftService } from '../inspeccion-draft.service';
 
 /**
  * Componente que gestiona la pantalla del Historial de Inspecciones del Apiario.
@@ -55,7 +56,8 @@ export class HistorialInspeccionesComponent implements OnInit {
     private router: Router,
     private apiarioService: ApiarioService,
     private inspeccionService: InspeccionService,
-    private indexedDbAudio: IndexedDbAudioService
+    private indexedDbAudio: IndexedDbAudioService,
+    private draftService: InspeccionDraftService
   ) {}
 
   ngOnInit(): void {
@@ -138,6 +140,7 @@ export class HistorialInspeccionesComponent implements OnInit {
         })
         .subscribe({
           next: (nuevaInsp) => {
+            this.draftService.clearDraft(this.apiarioId);
             this.router.navigate(['/apiarios', this.apiarioId, 'inspecciones', 'nueva'], {
               queryParams: { inspeccionId: nuevaInsp.id }
             });
@@ -248,6 +251,10 @@ export class HistorialInspeccionesComponent implements OnInit {
     this.inspeccionService.deleteInspeccion(target.id).subscribe({
       next: async () => {
         await this.indexedDbAudio.deleteAudiosByInspeccion(target.id!);
+        const localDraft = this.draftService.getDraft(this.apiarioId);
+        if (localDraft && (localDraft.inspeccionId === target.id || target.estado === 'EN_BORRADOR')) {
+          this.draftService.clearDraft(this.apiarioId);
+        }
         this.inspecciones.set(this.inspecciones().filter((i) => i.id !== target.id));
         this.inspeccionAEliminar.set(null);
         this.swipedCardId.set(null);

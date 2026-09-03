@@ -43,11 +43,12 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
   private offlineListener = () => this.isOnline.set(false);
 
 
-  // Form Model
-  estadoReina = signal<'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'>('VISTA_Y_SANA');
-  nivelAlimento = signal<'BAJO' | 'MEDIO' | 'ALTO'>('MEDIO');
-  produjoMiel = signal<boolean>(true);
+  // Form Model (sin selección por defecto)
+  estadoReina = signal<'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE' | null>(null);
+  nivelAlimento = signal<'BAJO' | 'MEDIO' | 'ALTO' | null>(null);
+  produjoMiel = signal<boolean | null>(null);
   observaciones: string = '';
+  formValidationError = signal<string | null>(null);
 
   // ── Grabador de audio ────────────────────────────────────────────────────────
   recorderState: RecorderState = 'idle';
@@ -77,7 +78,7 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
     private indexedDbAudio: IndexedDbAudioService,
     private transcriptionService: TranscriptionService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { }
 
   // ── Lifecycle ────────────────────────────────────────────────────────────────
 
@@ -130,7 +131,7 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
     if (localForm) {
       if (localForm.estadoReina) this.estadoReina.set(localForm.estadoReina);
       if (localForm.nivelAlimento) this.nivelAlimento.set(localForm.nivelAlimento);
-      if (localForm.produjoMiel !== undefined) this.produjoMiel.set(localForm.produjoMiel);
+      if (localForm.produjoMiel !== undefined && localForm.produjoMiel !== null) this.produjoMiel.set(localForm.produjoMiel);
       if (localForm.observaciones) this.observaciones = localForm.observaciones;
       if (localForm.colmenaName) this.nombreColmena.set(localForm.colmenaName);
       this.loading.set(false);
@@ -141,7 +142,7 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
         if (dto && !localForm) {
           if (dto.estadoReina) this.estadoReina.set(dto.estadoReina);
           if (dto.nivelAlimento) this.nivelAlimento.set(dto.nivelAlimento);
-          if (dto.produjoMiel !== undefined) this.produjoMiel.set(dto.produjoMiel);
+          if (dto.produjoMiel !== undefined && dto.produjoMiel !== null) this.produjoMiel.set(dto.produjoMiel);
           if (dto.observaciones) this.observaciones = dto.observaciones;
           if (dto.colmenaName) this.nombreColmena.set(dto.colmenaName);
         }
@@ -156,25 +157,28 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
       inspeccionId: this.inspeccionId,
       colmenaId: this.colmenaId,
       colmenaName: this.nombreColmena(),
-      estadoReina: this.estadoReina(),
-      nivelAlimento: this.nivelAlimento(),
-      produjoMiel: this.produjoMiel(),
+      estadoReina: this.estadoReina() ?? undefined,
+      nivelAlimento: this.nivelAlimento() ?? undefined,
+      produjoMiel: this.produjoMiel() !== null ? this.produjoMiel()! : undefined,
       observaciones: this.observaciones,
     });
   }
 
   setEstadoReina(val: 'VISTA_Y_SANA' | 'NO_VISTA' | 'CELDA_REAL' | 'AUSENTE'): void {
     this.estadoReina.set(val);
+    this.formValidationError.set(null);
     this.autoSaveLocal();
   }
 
   setNivelAlimento(val: 'BAJO' | 'MEDIO' | 'ALTO'): void {
     this.nivelAlimento.set(val);
+    this.formValidationError.set(null);
     this.autoSaveLocal();
   }
 
   setProdujoMiel(val: boolean): void {
     this.produjoMiel.set(val);
+    this.formValidationError.set(null);
     this.autoSaveLocal();
   }
 
@@ -183,13 +187,24 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
   }
 
   guardarColmena(): void {
+    const reina = this.estadoReina();
+    const alimento = this.nivelAlimento();
+    const miel = this.produjoMiel();
+
+    if (!reina || !alimento || miel === null) {
+      this.formValidationError.set('Por favor seleccioná el estado de la reina, nivel de alimento y si produjo miel antes de guardar.');
+      return;
+    }
+
+    this.formValidationError.set(null);
+
     const payload: InspeccionColmenaDTO = {
       inspeccionId: this.inspeccionId,
       colmenaId: this.colmenaId,
       colmenaName: this.nombreColmena(),
-      estadoReina: this.estadoReina(),
-      nivelAlimento: this.nivelAlimento(),
-      produjoMiel: this.produjoMiel(),
+      estadoReina: reina,
+      nivelAlimento: alimento,
+      produjoMiel: miel,
       observaciones: this.observaciones,
     };
 
@@ -429,7 +444,7 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
   }
 
   /** Handler vacío: fuerza detección de cambios ante eventos del <audio> nativo */
-  onPlayerTick(): void {}
+  onPlayerTick(): void { }
 
   // ── Utilidades ───────────────────────────────────────────────────────────────
 
@@ -476,41 +491,41 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
 
   // ── Autocompletado del formulario ───────────────────────────────────────────────────────────────
 
-    //Cada campo se aplica solo si vino con un valor (la IA devuelve nulo para lo que no pudo identificar en el audio) 
-    //Se reutilizan los setters existentes para que tambien dispare el autoguardado local (autoSaveLocal()) como si lo hubiera tocado el usuario.
+  //Cada campo se aplica solo si vino con un valor (la IA devuelve nulo para lo que no pudo identificar en el audio) 
+  //Se reutilizan los setters existentes para que tambien dispare el autoguardado local (autoSaveLocal()) como si lo hubiera tocado el usuario.
 
-async completarFormularioConIA(): Promise<void> {
-  //Se exige que exista un audio grabado no que ya este transcripto.
-  if (!this.savedAudio || !this.isOnline()) return;
+  async completarFormularioConIA(): Promise<void> {
+    //Se exige que exista un audio grabado no que ya este transcripto.
+    if (!this.savedAudio || !this.isOnline()) return;
 
-  this.isCompletandoFormulario.set(true);
-  this.formularioIAError = undefined as any;
+    this.isCompletandoFormulario.set(true);
+    this.formularioIAError = undefined as any;
 
-  try {
-    //Si no hay transcripcion lista se dispara aca mismo
-    if (this.savedAudio.transcriptionStatus !== 'done' || !this.savedAudio.transcriptionText) {
-      await this.transcribeAudio();
-
-      // Si la transcripcion falla no tiene sentido seguir: se corta aca y se muestra el motivo
+    try {
+      //Si no hay transcripcion lista se dispara aca mismo
       if (this.savedAudio.transcriptionStatus !== 'done' || !this.savedAudio.transcriptionText) {
-        this.formularioIAError = this.savedAudio.transcriptionError ?? 'No se pudo transcribir el audio';
-        return;
+        await this.transcribeAudio();
+
+        // Si la transcripcion falla no tiene sentido seguir: se corta aca y se muestra el motivo
+        if (this.savedAudio.transcriptionStatus !== 'done' || !this.savedAudio.transcriptionText) {
+          this.formularioIAError = this.savedAudio.transcriptionError ?? 'No se pudo transcribir el audio';
+          return;
+        }
       }
+      const r = await this.transcriptionService.completarFormulario(this.savedAudio.transcriptionText);
+      if (r.estadoReina) this.setEstadoReina(r.estadoReina);
+      if (r.nivelAlimento) this.setNivelAlimento(r.nivelAlimento);
+      if (r.produjoMiel !== null && r.produjoMiel !== undefined) this.setProdujoMiel(r.produjoMiel);
+      if (r.observaciones) {
+        this.observaciones = r.observaciones;
+        this.onObservacionesChange();
+      }
+    } catch (error) {
+      this.formularioIAError = error instanceof Error ? error.message : 'Error al completar el formulario';
+    } finally {
+      this.isCompletandoFormulario.set(false);
+      this.cdr.markForCheck();
     }
-    const r = await this.transcriptionService.completarFormulario(this.savedAudio.transcriptionText);
-    if (r.estadoReina) this.setEstadoReina(r.estadoReina);
-    if (r.nivelAlimento) this.setNivelAlimento(r.nivelAlimento);
-    if (r.produjoMiel !== null && r.produjoMiel !== undefined) this.setProdujoMiel(r.produjoMiel);
-    if (r.observaciones) {
-      this.observaciones = r.observaciones;
-      this.onObservacionesChange();
-    }
-  } catch (error) {
-    this.formularioIAError = error instanceof Error ? error.message : 'Error al completar el formulario';
-  } finally {
-    this.isCompletandoFormulario.set(false);
-    this.cdr.markForCheck();
   }
-}
 
 }

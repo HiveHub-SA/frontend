@@ -33,7 +33,7 @@ export class DetalleInspeccionComponent implements OnInit {
     private router: Router,
     private apiarioService: ApiarioService,
     private inspeccionService: InspeccionService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.apiarioId = Number(this.route.snapshot.params['apiarioId']);
