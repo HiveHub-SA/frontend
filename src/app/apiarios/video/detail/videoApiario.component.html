@@ -1,0 +1,69 @@
+<section class="videos-section">
+    <div class="videos-section__header">
+        <h2 class="videos-section__title">VIDEOS DEL APIARIO ({{ videos().length }})</h2>
+        <label class="add-btn sink-effect">
+            <span class="material-symbols-outlined add-btn__icon">videocam</span>
+            Subir Video
+            <input type="file" accept="video/*" hidden [disabled]="subiendo()"
+                (change)="onArchivoSeleccionado($event)" />
+        </label>
+    </div>
+
+    <div *ngIf="uploadError()" class="form-error">
+        {{ uploadError() }}
+    </div>
+
+    <div *ngIf="subiendo()" class="video-uploading">
+        <span class="material-symbols-outlined video-uploading__spinner">sync</span>
+        Subiendo video...
+    </div>
+
+    <div class="video-list" *ngIf="!loading(); else cargandoLista">
+        <div *ngFor="let video of videos(); trackBy: trackByVideoId" (click)="abrirVideo(video)"
+            class="video-card sink-effect">
+            <div class="video-card__header">
+                <div class="video-card__info">
+                    <h3 class="video-card__title">{{ video.filename }}</h3>
+                    <p class="video-card__meta">{{ video.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{
+                        formatearTamanio(video.sizeBytes) }}</p>
+                </div>
+                <div class="video-card__actions">
+                    <span class="material-symbols-outlined video-card__icon">play_circle</span>
+                    <button type="button" class="video-card__delete-btn sink-effect"
+                        (click)="abrirEliminar(video, $event)" aria-label="Eliminar video">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <p class="video-list__empty" *ngIf="videos().length === 0">
+            Este apiario no tiene videos cargados.
+        </p>
+    </div>
+
+    <ng-template #cargandoLista>
+        <p class="video-list__empty">Cargando videos...</p>
+    </ng-template>
+</section>
+
+<!-- Modal de reproducción -->
+<div class="form-overlay" *ngIf="videoSeleccionado() as videoActivo" (click)="cerrarVideo()">
+    <div class="video-modal" (click)="$event.stopPropagation()">
+        <div class="video-modal__header">
+            <h3 class="section-title">{{ videoActivo.filename }}</h3>
+            <button type="button" class="video-modal__close-btn sink-effect" (click)="cerrarVideo()"
+                aria-label="Cerrar">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="video-modal__body">
+            <span *ngIf="cargandoReproduccion()" class="material-symbols-outlined video-uploading__spinner">sync</span>
+            <video *ngIf="videoUrlActual() as url" [src]="url" controls autoplay class="video-modal__player"></video>
+        </div>
+    </div>
+</div>
+
+<app-confirm-delete-component [visible]="!!videoAEliminar()" [itemName]="videoAEliminar()?.filename ?? ''"
+    entityLabel="video" [loading]="deleting()" [errorMessage]="deleteError()" (confirmed)="confirmarEliminar()"
+    (cancelled)="cerrarEliminar()" />
