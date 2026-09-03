@@ -95,13 +95,19 @@ export class NuevaInspeccionComponent implements OnInit {
       // US 15.1: Verificar borrador local previo tras crash o recarga
       const localDraft = this.draftService.getDraft(this.apiarioId);
       if (localDraft) {
-        if (localDraft.inspeccionId) this.inspeccionId = localDraft.inspeccionId;
-        if (localDraft.floracion) {
-          this.floracionActual.set(localDraft.floracion);
-          this.floracionOriginal = localDraft.floracion;
-        }
-        if (localDraft.varroa) {
-          this.varroaActual.set(localDraft.varroa);
+        if (this.inspeccionId && localDraft.inspeccionId && localDraft.inspeccionId !== this.inspeccionId) {
+          this.draftService.clearDraft(this.apiarioId);
+        } else {
+          if (!this.inspeccionId && localDraft.inspeccionId) {
+            this.inspeccionId = localDraft.inspeccionId;
+          }
+          if (localDraft.floracion) {
+            this.floracionActual.set(localDraft.floracion);
+            this.floracionOriginal = localDraft.floracion;
+          }
+          if (localDraft.varroa) {
+            this.varroaActual.set(localDraft.varroa);
+          }
         }
       }
       this.cargarDatosApiario();
