@@ -435,6 +435,7 @@
   align-items: flex-end;
   gap: 12px;
   z-index: 50;
+  pointer-events: none;
 }
 
 .fab-menu {
@@ -486,6 +487,7 @@
   justify-content: center;
   cursor: pointer;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
 }
 
 .fab-main-btn.open {
