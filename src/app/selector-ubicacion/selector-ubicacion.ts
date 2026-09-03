@@ -28,23 +28,30 @@ export class SelectorUbicacionComponent implements AfterViewInit {
   }
 
   private iniciarMapa() {
-    //Render del mapa centrado en Villa Maria
     this.mapa = L.map('mapa-seleccion', {
       zoomControl: false,
-    }).setView([-32.4103, -63.2314], 13);
+      fadeAnimation: true,
+      zoomAnimation: true,
+    }).setView([-32.4103, -63.2314], 14);
 
-    //Capa segura con las politicas obligatorias
-    const capaCarto = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    //Capa Esri Light Gray optimizada igual que la que usamos en mapa-interactivo
+    const capaEsriGray = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
       {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      },
+        maxZoom: 16,
+        minZoom: 3,
+        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+        keepBuffer: 6,            
+        updateWhenIdle: false,    
+        updateWhenZooming: false, 
+      }
     );
-
-    capaCarto.addTo(this.mapa);
-
+    capaEsriGray.addTo(this.mapa);
+    //Ajuste de renderizado inicial
+    requestAnimationFrame(() => {
+      this.mapa.invalidateSize();
+    });
+  
     //Icono personalizado para marcar la nueva ubicacion
     this.iconoNuevaUbicacion = L.divIcon({
           className: 'hive-marker-wrapper',
