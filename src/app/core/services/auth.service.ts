@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, map, throwError, of, shareReplay } from 'rxjs';
+import { Observable, catchError, map, of, shareReplay } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
@@ -26,26 +26,55 @@ export interface AuthResult<T> {
   error?: AuthError;
 }
 
+const SESSION_KEY = 'auth_email';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.apiUrl;
 
   // ── Estado de sesión ──────────────────────────────────────────────────────
-  private readonly _userEmail = signal<string | null>(null);
+  // Se inicializa desde localStorage para que, si no hay conexión al arrancar,
+  // la app recuerde que el usuario estaba logueado.
+  private readonly _userEmail = signal<string | null>(localStorage.getItem(SESSION_KEY));
 
-  /** `true` mientras haya un email de sesión en memoria */
   readonly isAuthenticated = computed(() => this._userEmail() !== null);
-
-  /** Email del usuario logueado (o `null`) */
   readonly userEmail = this._userEmail.asReadonly();
+
+  // ── Rehidratación ─────────────────────────────────────────────────────────
+  readonly sessionReady$: Observable<boolean> = this.http
+    .get<LoginResponse>(`${this.base}/api/auth/me`)
+    .pipe(
+      map((res) => {
+        // Sesión válida confirmada por el backend → persistir
+        this.setSession(res.email);
+        return true;
+      }),
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 0) {
+          // Error de red (sin conexión): confiar en lo que hay en localStorage.
+          // Si había sesión guardada, el usuario sigue "autenticado" offline
+          // y puede seguir usando la app. Cuando vuelva la conexión, el próximo
+          // request al backend devolverá 401 si la cookie expiró, y ahí sí
+          // se limpia la sesión.
+          const cached = localStorage.getItem(SESSION_KEY);
+          this._userEmail.set(cached);
+          return of(cached !== null);
+        }
+
+        // 401 / 403: sesión inválida o expirada → limpiar todo
+        this.clearSession();
+        return of(false);
+      }),
+      shareReplay(1),
+    );
 
   // ── Login ─────────────────────────────────────────────────────────────────
   login(email: string, password: string): Observable<AuthResult<LoginResponse>> {
     const body: LoginRequest = { email, password };
     return this.http.post<LoginResponse>(`${this.base}/api/auth/login`, body).pipe(
       map((res) => {
-        this._userEmail.set(res.email);
+        this.setSession(res.email);
         return { data: res };
       }),
       catchError((err: HttpErrorResponse) => {
@@ -58,12 +87,9 @@ export class AuthService {
   // ── Logout ───────────────────────────────────────────────────────────────
   logout(): Observable<void> {
     return this.http.post<void>(`${this.base}/api/auth/logout`, {}, { withCredentials: true }).pipe(
-      map(() => {
-        this._userEmail.set(null);
-      }),
+      map(() => this.clearSession()),
       catchError(() => {
-        // aunque el back falle, limpiamos el estado local igual
-        this._userEmail.set(null);
+        this.clearSession();
         return of(undefined);
       }),
     );
@@ -123,31 +149,28 @@ export class AuthService {
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
+  private setSession(email: string): void {
+    this._userEmail.set(email);
+    localStorage.setItem(SESSION_KEY, email);
+  }
+
+  private clearSession(): void {
+    this._userEmail.set(null);
+    localStorage.removeItem(SESSION_KEY);
+  }
+
   private mapHttpError(err: HttpErrorResponse): AuthResult<never> {
     if (err.status === 0) return { error: 'NETWORK_ERROR' };
     return { error: 'SERVER_ERROR' };
   }
 
-  // ── Rehidratación de sesión (llamado al arrancar la app) ────────────────────
   me(): Observable<AuthResult<LoginResponse>> {
-    return this.http.get<LoginResponse>(`${this.base}/api/auth/me`).pipe(
-      map((res) => {
-        this._userEmail.set(res.email);
-        return { data: res };
-      }),
-      catchError(() => {
-        this._userEmail.set(null);
-        return of({ error: 'INVALID_CREDENTIALS' as AuthError });
-      }),
+    return this.sessionReady$.pipe(
+      map((ok) =>
+        ok
+          ? { data: { email: this._userEmail()! } as LoginResponse }
+          : { error: 'INVALID_CREDENTIALS' as AuthError },
+      ),
     );
   }
-
-  readonly sessionReady$: Observable<boolean> = this.http
-    .get<LoginResponse>(`${this.base}/api/auth/me`)
-    .pipe(
-      map((res) => { this._userEmail.set(res.email); return true; }),
-      catchError(() => { this._userEmail.set(null); return of(false); }),
-      shareReplay(1),
-    );
-
 }
