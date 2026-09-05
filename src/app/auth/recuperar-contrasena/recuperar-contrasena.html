@@ -1,0 +1,170 @@
+<div class="auth-page">
+  @if (errorMessage()) {
+    <div class="toast toast-error" role="alert">
+      <span class="material-symbols-outlined" aria-hidden="true">error</span>
+      {{ errorMessage() }}
+    </div>
+  }
+  @if (codeResentMessage()) {
+    <div class="toast toast-success" role="status">
+      <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+      {{ codeResentMessage() }}
+    </div>
+  }
+  <div class="auth-card">
+    <div class="auth-header">
+      <button type="button" class="back-btn" (click)="goBack()">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <h1 class="auth-title">Recuperar contraseña</h1>
+    </div>
+
+    <!-- Indicador de pasos -->
+    <div class="steps-indicator" aria-label="Progreso">
+      @for (n of [1, 2, 3]; track n) {
+        <div
+          class="step-dot"
+          [class.step-active]="paso() === n"
+          [class.step-done]="paso() > n"
+          [attr.aria-current]="paso() === n ? 'step' : null"
+        ></div>
+      }
+    </div>
+
+    @switch (paso()) {
+
+      <!-- ── Paso 1: email ──────────────────────────────────────────────── -->
+      @case (1) {
+        <p class="step-description">
+          Ingresá tu email y te enviaremos un código de verificación.
+        </p>
+        <form [formGroup]="emailForm" (ngSubmit)="onSubmitEmail()" novalidate class="auth-form">
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              class="form-input"
+              formControlName="email"
+              autocomplete="email"
+              placeholder="tu@email.com"
+              [class.input-error]="showError(emailForm, 'email')"
+            />
+              <span class="field-error" [class.visible]="showError(emailForm, 'email')">Ingresá un email válido</span>
+          </div>
+
+          <button type="submit" class="submit-button" [disabled]="loading() || emailForm.invalid">
+            @if (loading()) {
+              <span class="material-symbols-outlined animate-spin" aria-hidden="true">progress_activity</span>
+              Enviando…
+            } @else {
+              Enviar código
+            }
+          </button>
+        </form>
+      }
+
+      <!-- ── Paso 2: código ─────────────────────────────────────────────── -->
+      @case (2) {
+        <p class="step-description">
+          Te enviamos un código de 6 dígitos a <strong>{{ emailUsado() }}</strong>.
+          Tenés 30&nbsp;minutos para usarlo.
+        </p>
+        <form [formGroup]="codigoForm" (ngSubmit)="onSubmitCodigo()" novalidate class="auth-form">
+          <div class="form-group">
+            <label class="form-label" for="codigo">Código de verificación</label>
+            <input
+              id="codigo"
+              type="text"
+              inputmode="numeric"
+              class="form-input codigo-input"
+              formControlName="code"
+              maxlength="6"
+              placeholder="000000"
+              autocomplete="one-time-code"
+              [class.input-error]="showError(codigoForm, 'code')"
+            />
+              <span class="field-error" [class.visible]="showError(codigoForm, 'code')">El código debe tener exactamente 6 dígitos</span>
+          </div>
+
+          <button type="submit" class="submit-button" [disabled]="loading() || resending() || codigoForm.invalid">
+            @if (loading()) {
+              <span class="material-symbols-outlined animate-spin" aria-hidden="true">progress_activity</span>
+              Verificando…
+            } @else {
+              Verificar código
+            }
+          </button>
+        </form>
+
+      <div class="auth-links">
+        <button type="button" class="text-button-primary" (click)="reenviarCodigo()" [disabled]="resending()">
+          {{ resending() ? 'Reenviando…' : 'Reenviar código' }}
+        </button>
+      </div>
+      }
+
+      <!-- ── Paso 3: nueva contraseña ───────────────────────────────────── -->
+      @case (3) {
+        <p class="step-description">Elegí una nueva contraseña de al menos 8 caracteres.</p>
+        <form [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()" novalidate class="auth-form">
+          <div class="form-group">
+            <label class="form-label" for="newPassword">Nueva contraseña</label>
+            <div class="input-wrapper">
+              <input
+                id="newPassword"
+                [type]="showPassword() ? 'text' : 'password'"
+                class="form-input"
+                formControlName="newPassword"
+                autocomplete="new-password"
+                placeholder="Mínimo 8 caracteres"
+                [class.input-error]="showError(passwordForm, 'newPassword')"
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                (click)="showPassword.set(!showPassword())"
+                [attr.aria-label]="showPassword() ? 'Ocultar' : 'Mostrar'"
+              >
+                <span class="material-symbols-outlined">
+                  {{ showPassword() ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+              <span class="field-error" [class.visible]="showError(passwordForm, 'newPassword')">Mínimo 8 caracteres</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="confirmPassword">Confirmá la contraseña</label>
+            <input
+              id="confirmPassword"
+              [type]="showPassword() ? 'text' : 'password'"
+              class="form-input"
+              formControlName="confirmPassword"
+              autocomplete="new-password"
+              placeholder="Repetí la contraseña"
+              [class.input-error]="
+                passwordForm.hasError('passwordsMismatch') &&
+                passwordForm.get('confirmPassword')!.touched
+              "
+            />
+              <span
+                class="field-error"
+                [class.visible]="passwordForm.hasError('passwordsMismatch') && passwordForm.get('confirmPassword')!.touched"
+              >Las contraseñas no coinciden</span>
+          </div>
+
+          <button type="submit" class="submit-button" [disabled]="loading() || passwordForm.invalid">
+            @if (loading()) {
+              <span class="material-symbols-outlined animate-spin" aria-hidden="true">progress_activity</span>
+              Guardando…
+            } @else {
+              Cambiar contraseña
+            }
+          </button>
+        </form>
+      }
+
+    }
+  </div>
+</div>

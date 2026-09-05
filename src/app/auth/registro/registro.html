@@ -1,0 +1,125 @@
+<div class="auth-page">
+  @if (createdUser()) {
+    <div class="toast toast-success" role="status">
+      <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+      Usuario <strong>{{ createdUser()!.email }}</strong> creado correctamente
+      (ID&nbsp;{{ createdUser()!.id }})
+    </div>
+  }
+  @if (errorMessage()) {
+    <div class="toast toast-error" role="alert">
+      <span class="material-symbols-outlined" aria-hidden="true">error</span>
+      {{ errorMessage() }}
+    </div>
+  }
+  <div class="auth-card">
+    <h1 class="auth-title">Registro</h1>
+    <p class="auth-subtitle">Alta de nuevo usuario (solo administradores)</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-form">
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          class="form-input"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="usuario@hivehub.app"
+          [class.input-error]="showError('email')"
+        />
+          <span class="field-error" [class.visible]="showError('email')">Ingresá un email válido</span>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="form-group">
+        <label class="form-label" for="password">Contraseña</label>
+        <div class="input-wrapper">
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            class="form-input"
+            formControlName="password"
+            autocomplete="new-password"
+            placeholder="Mínimo 8 caracteres"
+            [class.input-error]="showError('password')"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="showPassword.set(!showPassword())"
+            [attr.aria-label]="showPassword() ? 'Ocultar' : 'Mostrar'"
+          >
+            <span class="material-symbols-outlined">
+              {{ showPassword() ? 'visibility_off' : 'visibility' }}
+            </span>
+          </button>
+        </div>
+          <span class="field-error" [class.visible]="showError('password')">Mínimo 8 caracteres</span>
+      </div>
+
+      <!-- Confirmar contraseña -->
+      <div class="form-group">
+        <label class="form-label" for="confirmPassword">Confirmá la contraseña</label>
+        <input
+          id="confirmPassword"
+          [type]="showPassword() ? 'text' : 'password'"
+          class="form-input"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+          placeholder="Repetí la contraseña"
+          [class.input-error]="
+            form.hasError('passwordsMismatch') && form.get('confirmPassword')!.touched
+          "
+        />
+          <span
+            class="field-error"
+            [class.visible]="form.hasError('passwordsMismatch') && form.get('confirmPassword')!.touched"
+          >Las contraseñas no coinciden</span>
+      </div>
+
+      <!-- API Key -->
+      <div class="form-group">
+        <label class="form-label" for="apiKey">API Key de administrador</label>
+        <div class="input-wrapper">
+          <input
+            id="apiKey"
+            [type]="showApiKey() ? 'text' : 'password'"
+            class="form-input"
+            formControlName="apiKey"
+            autocomplete="off"
+            placeholder="••••••••••••"
+            [class.input-error]="showError('apiKey')"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="showApiKey.set(!showApiKey())"
+            [attr.aria-label]="showApiKey() ? 'Ocultar' : 'Mostrar'"
+          >
+            <span class="material-symbols-outlined">
+              {{ showApiKey() ? 'visibility_off' : 'visibility' }}
+            </span>
+          </button>
+        </div>
+        @if (showError('apiKey')) {
+          <span class="field-error" [class.visible]="showError('apiKey')">La API key es requerida</span>
+        }
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="loading() || form.invalid">
+        @if (loading()) {
+          <span class="material-symbols-outlined animate-spin" aria-hidden="true">
+            progress_activity
+          </span>
+          Creando usuario…
+        } @else {
+          Crear usuario
+        }
+      </button>
+
+    </form>
+  </div>
+</div>

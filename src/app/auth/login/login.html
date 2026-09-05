@@ -1,0 +1,71 @@
+<div class="auth-page">
+  @if (errorMessage()) {
+    <div class="toast toast-error" role="alert">
+      <span class="material-symbols-outlined" aria-hidden="true">error</span>
+      {{ errorMessage() }}
+    </div>
+  }
+  <div class="auth-card">
+    <h1 class="auth-title">HiveHub</h1>
+    <p class="auth-subtitle">Iniciá sesión para continuar</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-form">
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          class="form-input"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="tu@email.com"
+          [class.input-error]="showError('email')"
+        />
+          <span class="field-error" [class.visible]="showError('email')">Ingresá un email válido</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Contraseña</label>
+        <div class="input-wrapper">
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            class="form-input"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            [class.input-error]="showError('password')"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="showPassword.set(!showPassword())"
+            [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          >
+            <span class="material-symbols-outlined">
+              {{ showPassword() ? 'visibility_off' : 'visibility' }}
+            </span>
+          </button>
+        </div>
+          <span class="field-error" [class.visible]="showError('password')">La contraseña es requerida</span>
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="loading() || form.invalid">
+        @if (loading()) {
+          <span class="material-symbols-outlined animate-spin" aria-hidden="true">
+            progress_activity
+          </span>
+          Ingresando…
+        } @else {
+          Ingresar
+        }
+      </button>
+    </form>
+
+    <div class="auth-links">
+      <button type="button" class="text-button-primary" (click)="goToRecovery()">
+        Olvidé mi contraseña
+      </button>
+    </div>
+  </div>
+</div>
