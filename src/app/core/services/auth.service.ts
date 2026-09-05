@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, map, throwError, of } from 'rxjs';
+import { Observable, catchError, map, throwError, of, shareReplay } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
@@ -141,4 +141,13 @@ export class AuthService {
       }),
     );
   }
+
+  readonly sessionReady$: Observable<boolean> = this.http
+    .get<LoginResponse>(`${this.base}/api/auth/me`)
+    .pipe(
+      map((res) => { this._userEmail.set(res.email); return true; }),
+      catchError(() => { this._userEmail.set(null); return of(false); }),
+      shareReplay(1),
+    );
+
 }
