@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, map, throwError, of } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
@@ -55,9 +55,18 @@ export class AuthService {
     );
   }
 
-  // ── Logout (limpia el estado local; el backend invalida la cookie) ─────────
-  logout(): void {
-    this._userEmail.set(null);
+  // ── Logout ───────────────────────────────────────────────────────────────
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.base}/api/auth/logout`, {}, { withCredentials: true }).pipe(
+      map(() => {
+        this._userEmail.set(null);
+      }),
+      catchError(() => {
+        // aunque el back falle, limpiamos el estado local igual
+        this._userEmail.set(null);
+        return of(undefined);
+      }),
+    );
   }
 
   // ── Recuperación — paso 1 ─────────────────────────────────────────────────
@@ -117,5 +126,19 @@ export class AuthService {
   private mapHttpError(err: HttpErrorResponse): AuthResult<never> {
     if (err.status === 0) return { error: 'NETWORK_ERROR' };
     return { error: 'SERVER_ERROR' };
+  }
+
+  // ── Rehidratación de sesión (llamado al arrancar la app) ────────────────────
+  me(): Observable<AuthResult<LoginResponse>> {
+    return this.http.get<LoginResponse>(`${this.base}/api/auth/me`).pipe(
+      map((res) => {
+        this._userEmail.set(res.email);
+        return { data: res };
+      }),
+      catchError(() => {
+        this._userEmail.set(null);
+        return of({ error: 'INVALID_CREDENTIALS' as AuthError });
+      }),
+    );
   }
 }
