@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InventarioService } from '../inventario.service';
-import { InventarioRequestDTO, TipoInventarioNombre, MARCOS_VALIDOS } from '../inventario.model';
+import { InventarioRequestDTO, TipoInventarioNombre, MARCOS_VALIDOS, TamanoAlza, TAMANO_ALZA_LABELS } from '../inventario.model';
 
 @Component({
     selector: 'app-registrar-material',
@@ -19,17 +19,25 @@ export class RegistrarMaterialComponent {
     error: string | null = null;
     marcosValidos = MARCOS_VALIDOS;
 
-    material: InventarioRequestDTO = { tipoInventario: 'CAMARA', cantidadMarcos: null, pesoInventario: null };
+    tamanosValidos = Object.entries(TAMANO_ALZA_LABELS).map(([value, label]) => ({ value: value as TamanoAlza, label }));
+
+    material: InventarioRequestDTO = { tipoInventario: 'CAMARA', cantidadMarcos: null, tamanoAlza: null, pesoInventario: null };
 
     constructor(private inventarioService: InventarioService) { }
 
     onTipoChange() {
         if (this.material.tipoInventario !== 'ALZA') {
             this.material.cantidadMarcos = null;
+            this.material.tamanoAlza = null;
         }
     }
 
     registrar() {
+        if (this.material.tipoInventario === 'ALZA' && !this.material.tamanoAlza) {
+            this.error = 'El Alza debe tener un tamaño definido.';
+            return;
+        }
+
         if (this.material.tipoInventario === 'ALZA' && !this.marcosValidos.includes(this.material.cantidadMarcos as any)) {
             this.error = 'El Alza debe tener 8, 9 o 10 marcos.';
             return;
@@ -41,7 +49,7 @@ export class RegistrarMaterialComponent {
         this.inventarioService.registrarInventario(this.material).subscribe({
             next: () => {
                 this.registrando = false;
-                this.material = { tipoInventario: 'CAMARA', cantidadMarcos: null, pesoInventario: null };
+                this.material = { tipoInventario: 'CAMARA', cantidadMarcos: null, tamanoAlza: null, pesoInventario: null };
                 this.registrado.emit();
             },
             error: (err) => {

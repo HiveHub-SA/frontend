@@ -1,9 +1,11 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
+import { switchMap } from 'rxjs';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColmenaService } from '../colmena.service';
 import { ColmenaDTO, ColmenaRequestDTO } from '../colmena.model';
+import { TamanoAlza } from '../../inventario/inventario.model';
 import { calcularComposicion, formatearAlzas } from '../colmena-composicion.util';
 import { ConfirmDeleteComponent } from '../../confirm-delete-component/confirm-delete-component';
 import { InventarioSelectorComponent } from '../../shared/inventario-selector/inventario-selector.component';
@@ -32,6 +34,7 @@ export class ColmenaDetailComponent implements OnInit {
   idsAlzas: number[] = [];
   idsNucleos: number[] = [];
   nombreEdit = '';
+  tamanoAlzaEdit: TamanoAlza | null = null;
 
   composicion = computed(() => calcularComposicion(this.colmena()?.inventarios ?? []));
   alzasTexto = computed(() => formatearAlzas(this.composicion()));
@@ -75,6 +78,7 @@ export class ColmenaDetailComponent implements OnInit {
       this.idsCamaras = inv.filter((i) => i.tipoNombre === 'CAMARA').map((i) => i.id);
       this.idsAlzas = inv.filter((i) => i.tipoNombre === 'ALZA').map((i) => i.id);
       this.idsNucleos = inv.filter((i) => i.tipoNombre === 'NUCLEO').map((i) => i.id);
+      this.tamanoAlzaEdit = this.colmena()!.tamanoAlza ?? null;
     }
   }
 
@@ -89,18 +93,44 @@ export class ColmenaDetailComponent implements OnInit {
       inventarioIds: [...this.idsCamaras, ...this.idsAlzas, ...this.idsNucleos],
     };
 
-    this.colmenaService.updateColmena(this.colmenaId, request).subscribe({
-      next: (updated) => {
-        this.colmena.set(updated);
-        this.saving.set(false);
-        this.editMode.set(false);
-      },
-      error: (err) => {
-        console.error('Error al guardar la colmena:', err);
-        this.saving.set(false);
-        this.saveError.set(typeof err?.error === 'string' ? err.error : 'No se pudo guardar la colmena.');
-      },
-    });
+    const sizeChanged = this.colmena()!.tamanoAlza != null 
+                     && this.tamanoAlzaEdit != null 
+                     && this.colmena()!.tamanoAlza !== this.tamanoAlzaEdit;
+
+    if (sizeChanged && this.idsAlzas.length > 0) {
+      const clearAlzasRequest: ColmenaRequestDTO = {
+        ...request,
+        inventarioIds: [...this.idsCamaras, ...this.idsNucleos],
+      };
+
+      this.colmenaService.updateColmena(this.colmenaId, clearAlzasRequest).pipe(
+        switchMap(() => this.colmenaService.updateColmena(this.colmenaId!, request))
+      ).subscribe({
+        next: (updated) => {
+          this.colmena.set(updated);
+          this.saving.set(false);
+          this.editMode.set(false);
+        },
+        error: (err) => {
+          console.error('Error al guardar la colmena:', err);
+          this.saving.set(false);
+          this.saveError.set(typeof err?.error === 'string' ? err.error : 'No se pudo guardar la colmena.');
+        },
+      });
+    } else {
+      this.colmenaService.updateColmena(this.colmenaId, request).subscribe({
+        next: (updated) => {
+          this.colmena.set(updated);
+          this.saving.set(false);
+          this.editMode.set(false);
+        },
+        error: (err) => {
+          console.error('Error al guardar la colmena:', err);
+          this.saving.set(false);
+          this.saveError.set(typeof err?.error === 'string' ? err.error : 'No se pudo guardar la colmena.');
+        },
+      });
+    }
   }
 
   openDeleteModal() {

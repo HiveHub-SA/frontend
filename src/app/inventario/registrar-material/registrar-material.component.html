@@ -22,6 +22,20 @@
             </div>
 
             <div *ngIf="material.tipoInventario === 'ALZA'" class="form-field flex flex-col gap-2">
+                <label class="form-label font-bold text-sm">Tamaño de alza</label>
+                <div class="flex gap-2">
+                    <label *ngFor="let t of tamanosValidos" class="flex-1 cursor-pointer">
+                        <input type="radio" name="tamanoAlza" [value]="t.value" [(ngModel)]="material.tamanoAlza"
+                            required class="sr-only peer" />
+                        <div
+                            class="w-full text-center border-2 border-on-surface rounded-full py-3 font-bold peer-checked:bg-primary-container transition-colors cursor-pointer text-sm">
+                            {{ t.label }}
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div *ngIf="material.tipoInventario === 'ALZA' && material.tamanoAlza" class="form-field flex flex-col gap-2 mt-2">
                 <label class="form-label font-bold text-sm">Marcos por alza</label>
                 <div class="flex gap-2">
                     <label *ngFor="let m of marcosValidos" class="flex-1 cursor-pointer">
@@ -40,7 +54,7 @@
                     (click)="cerrar()">Cancelar</button>
                 <button type="submit"
                     class="btn-submit flex-1 p-2 border-2 rounded-full font-bold text-sm bg-primary sink-effect text-on-primary flex items-center justify-center gap-2 disabled:opacity-50"
-                    [disabled]="!materialForm.form.valid || registrando || (material.tipoInventario === 'ALZA' && !material.cantidadMarcos)">
+                    [disabled]="!materialForm.form.valid || registrando || (material.tipoInventario === 'ALZA' && (!material.cantidadMarcos || !material.tamanoAlza))">
                     <span *ngIf="registrando" class="material-symbols-outlined animate-spin"
                         style="font-size:16px">sync</span>
                     Registrar

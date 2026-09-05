@@ -116,3 +116,36 @@
     transform: translateY(1px);
     box-shadow: none;
 }
+
+.tamano-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.tamano-opciones {
+    display: flex;
+    gap: 8px;
+}
+
+.tamano-btn {
+    flex: 1;
+    font-family: var(--font-headline);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 8px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-on-surface);
+    background-color: var(--color-surface-container-lowest);
+    color: var(--color-on-surface);
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.08s ease, background-color 0.15s ease;
+    box-shadow: 1px 1px 0px 0px rgba(26, 28, 28, 1);
+}
+
+.tamano-btn:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}

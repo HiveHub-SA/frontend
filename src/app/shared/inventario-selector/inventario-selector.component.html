@@ -10,13 +10,23 @@
         </span>
     </div>
 
-    <p *ngIf="loading" class="form-note">Cargando {{ labelTipo }} disponibles...</p>
+    <p *ngIf="loading && !mostrarSelectorTamano" class="form-note">Cargando {{ labelTipo }} disponibles...</p>
 
-    <p *ngIf="!loading && todosVisibles.length === 0" class="form-note">
+    <p *ngIf="!loading && todosVisibles.length === 0 && !mostrarSelectorTamano" class="form-note">
         No hay {{ labelTipo }} disponibles. Registrá material nuevo primero.
     </p>
 
-    <div class="inv-selector__scroll" *ngIf="!loading && todosVisibles.length > 0">
+    <div *ngIf="mostrarSelectorTamano" class="tamano-selector">
+        <p class="form-label">Seleccioná el tamaño de alza</p>
+        <div class="tamano-opciones">
+            <button type="button" *ngFor="let t of tamanosValidos" 
+                    class="tamano-btn" (click)="seleccionarTamano(t.value)">
+                {{ t.label }}
+            </button>
+        </div>
+    </div>
+
+    <div class="inv-selector__scroll" *ngIf="!loading && todosVisibles.length > 0 && !mostrarSelectorTamano">
 
         <ng-container *ngIf="esAlza">
             <ng-container *ngFor="let grupo of gruposAlzas">
