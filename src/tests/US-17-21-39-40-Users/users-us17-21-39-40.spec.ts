@@ -2,7 +2,7 @@ import { TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { ComponentFixture } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of, throwError, Observable } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { signal } from '@angular/core';
 
@@ -827,6 +827,65 @@ describe('Guards de ruta — authGuard y guestGuard', () => {
         { provide: AuthService, useValue: authSpy },
         { provide: Router, useValue: routerSpy },
       ],
+    });
+  });
+
+  describe('authGuard', () => {
+    it('debe permitir el acceso si el usuario está autenticado', (done) => {
+      (authSpy.isAuthenticated as jasmine.Spy).and.returnValue(true);
+
+      TestBed.runInInjectionContext(() => {
+        const result = authGuard({} as any, {} as any);
+        (result as any).subscribe((val: any) => {
+          expect(val).toBeTrue();
+          done();
+        });
+      });
+    });
+
+    it('debe redirigir a /login si el usuario NO está autenticado', (done) => {
+      (authSpy.isAuthenticated as jasmine.Spy).and.returnValue(false);
+      routerSpy.createUrlTree.and.returnValue({ toString: () => '/login' } as any);
+
+      TestBed.runInInjectionContext(() => {
+        const result = authGuard({} as any, {} as any);
+        (result as any).subscribe((val: any) => {
+          expect(routerSpy.createUrlTree).toHaveBeenCalledWith(['/login']);
+          done();
+        });
+      });
+    });
+
+    it('CA: debe esperar a que sessionReady$ resuelva antes de evaluar (sin condición de carrera)', (done) => {
+      (authSpy.isAuthenticated as jasmine.Spy).and.returnValue(true);
+      let sessionResolved = false;
+
+      // Reemplazamos sessionReady$ con un observable que marca cuándo resolvió
+      Object.defineProperty(authSpy, 'sessionReady$', {
+        get: () =>
+          of(true).pipe(
+            // tap que marca la resolución
+            (source) =>
+              new Observable((obs: any) => {
+                source.subscribe({
+                  next: (v: any) => {
+                    sessionResolved = true;
+                    obs.next(v);
+                  },
+                  error: (e: any) => obs.error(e),
+                  complete: () => obs.complete(),
+                });
+              }),
+          ),
+      });
+
+      TestBed.runInInjectionContext(() => {
+        const result = authGuard({} as any, {} as any);
+        (result as any).subscribe(() => {
+          expect(sessionResolved).toBeTrue();
+          done();
+        });
+      });
     });
   });
 
