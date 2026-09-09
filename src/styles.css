@@ -285,6 +285,12 @@ app-header {
   box-shadow: none;
 }
 
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .fab-button {
   position: fixed;
   right: 20px;
@@ -1085,4 +1091,35 @@ button:disabled[class~="disabled:opacity-50"] {
 .leaflet-tile {
   -webkit-transform-style: flat !important;
   transform-style: flat !important;
+}
+
+/* ── Toasts (notificaciones flotantes) ──────────────────────────────────── */
+.toast {
+  position: fixed;
+  top: max(20px, env(safe-area-inset-top, 20px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-base) var(--space-sm);
+  border: var(--border-dark);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  box-shadow: var(--shadow-sm);
+  max-width: calc(100% - 40px);
+}
+
+.toast-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #ef4444;
+}
+
+.toast-success {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border-color: #16a34a;
 }

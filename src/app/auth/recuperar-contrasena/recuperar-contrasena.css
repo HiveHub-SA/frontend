@@ -1,0 +1,153 @@
+/* ── Página ──────────────────────────────────────────────────────────────── */
+.auth-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background);
+  padding: var(--space-md);
+}
+
+/* ── Tarjeta ─────────────────────────────────────────────────────────────── */
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--color-surface-container-lowest);
+  border: var(--border-dark);
+  border-radius: var(--radius-default);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-lg) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* ── Encabezado ──────────────────────────────────────────────────────────── */
+.auth-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  color: var(--color-on-surface-variant);
+  line-height: 0;
+}
+
+.back-btn:hover {
+  color: var(--color-on-surface);
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+/* ── Indicador de pasos ──────────────────────────────────────────────────── */
+.steps-indicator {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-surface-container-high);
+  border: 2px solid var(--color-outline-variant);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.step-dot.step-active {
+  background-color: var(--color-primary-container);
+  border-color: var(--color-primary);
+}
+
+.step-dot.step-done {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ── Descripción del paso ────────────────────────────────────────────────── */
+.step-description {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Formulario ──────────────────────────────────────────────────────────── */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* ── Input código (grande y centrado) ────────────────────────────────────── */
+.codigo-input {
+  font-size: 1.5rem;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+/* ── Input con botón ojo ─────────────────────────────────────────────────── */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper .form-input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--color-on-surface-variant);
+  line-height: 0;
+}
+
+.toggle-password:hover {
+  color: var(--color-on-surface);
+}
+
+/* ── Errores de campo ────────────────────────────────────────────────────── */
+.field-error {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--color-error);
+  margin-top: 2px;
+  min-height: 15px; /* reserva el espacio siempre, haya o no texto */
+  visibility: hidden;
+}
+
+.field-error.visible {
+  visibility: visible;
+}
+
+.input-error {
+  border-color: var(--color-error) !important;
+}
+/* ── Links ───────────────────────────────────────────────────────────────── */
+.auth-links {
+  display: flex;
+  justify-content: center;
+}

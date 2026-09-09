@@ -491,7 +491,7 @@ export class InspeccionarColmenaComponent implements OnInit, OnDestroy {
 
   // ── Autocompletado del formulario ───────────────────────────────────────────────────────────────
 
-  //Cada campo se aplica solo si vino con un valor (la IA devuelve nulo para lo que no pudo identificar en el audio) 
+  //Cada campo se aplica solo si vino con un valor (la IA devuelve nulo para lo que no pudo identificar en el audio)
   //Se reutilizan los setters existentes para que tambien dispare el autoguardado local (autoSaveLocal()) como si lo hubiera tocado el usuario.
 
   async completarFormularioConIA(): Promise<void> {

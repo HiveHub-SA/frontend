@@ -41,7 +41,7 @@ export class TranscriptionService {
     formData.append('sampleRate', '16000');
     formData.append('encoding', 'pcm_s16le');
 
-    const response = await fetch(this.API_URL, { method: 'POST', body: formData });
+    const response = await fetch(this.API_URL, { method: 'POST', body: formData, credentials: 'include', });
 
     if (!response.ok) {
       const body = await response.json().catch(() => null);
@@ -58,6 +58,7 @@ export class TranscriptionService {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ texto }),
+      credentials: 'include',
     });
     if (!response.ok) {
       const body = await response.json().catch(() => null);

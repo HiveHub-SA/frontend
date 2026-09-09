@@ -13,21 +13,75 @@ import { AudioRecorderComponent } from './audio-recorder/audio-recorder';
 import { MaterialesComponent } from './materiales/materiales.component';
 import { ReporteCierreTemporadaComponent } from './reportes/cierre-temporada/reporte-cierre-temporada';
 
+import { authGuard } from './core/guards/auth.guard';
+import { logoutGuard } from './core/guards/logout.guard';
+import { guestGuard } from './core/guards/guest.guard';
+import { LoginComponent } from './auth/login/login';
+
 export const routes: Routes = [
+  {
+    path: 'login',
+    loadComponent: () => import('./auth/login/login').then((m) => m.LoginComponent),
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'recuperar-contrasena',
+    loadComponent: () =>
+      import('./auth/recuperar-contrasena/recuperar-contrasena').then(
+        (m) => m.RecuperarContrasenaComponent,
+      ),
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'admin/registro',
+    loadComponent: () => import('./auth/registro/registro').then((m) => m.RegistroComponent),
+    canActivate: [guestGuard],
+  },
+
+  {
+    path: 'logout',
+    canActivate: [logoutGuard],
+    component: LoginComponent,
+  },
+
+  // Rutas protegidas (con guard)
+  { path: 'apiarios', component: ApiarioListComponent, canActivate: [authGuard] },
+
+  { path: 'apiarios/:id', component: ApiarioDetailComponent, canActivate: [authGuard] },
+  {
+    path: 'apiarios/:id/inspecciones',
+    component: HistorialInspeccionesComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'apiarios/:id/inspecciones/nueva',
+    component: NuevaInspeccionComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'apiarios/:apiarioId/inspecciones/:inspeccionId',
+    component: DetalleInspeccionComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'apiarios/:apiarioId/inspecciones/:inspeccionId/colmenas/:colmenaId',
+    component: InspeccionarColmenaComponent,
+    canActivate: [authGuard],
+  },
+  { path: 'colmenas/:id', component: ColmenaDetailComponent, canActivate: [authGuard] },
+
+  { path: 'mapa', component: MapaInteractivo, canActivate: [authGuard] },
+
+  { path: 'inicio', component: Inicio, canActivate: [authGuard] },
+
+  { path: 'extraccion', component: OperacionSalaComponent, canActivate: [authGuard] },
+
+  { path: 'reportes', component: ReporteCierreTemporadaComponent, canActivate: [authGuard] },
+
+  { path: 'voz', component: AudioRecorderComponent, canActivate: [authGuard] },
+
+  { path: 'materiales', component: MaterialesComponent, canActivate: [authGuard] },
+
+  // ── Default ───────────────────────────────────────────────────────────────
   { path: '', redirectTo: 'mapa', pathMatch: 'full' },
-  { path: 'apiarios', component: ApiarioListComponent },
-  { path: 'apiarios/:id', component: ApiarioDetailComponent },
-  { path: 'apiarios/:id/inspecciones', component: HistorialInspeccionesComponent },
-  { path: 'apiarios/:id/inspecciones/nueva', component: NuevaInspeccionComponent },
-  { path: 'apiarios/:apiarioId/inspecciones/:inspeccionId', component: DetalleInspeccionComponent },
-  { path: 'apiarios/:apiarioId/inspecciones/:inspeccionId/colmenas/:colmenaId', component: InspeccionarColmenaComponent },
-  { path: 'colmenas/:id', component: ColmenaDetailComponent },
-  { path: 'mapa', component: MapaInteractivo },
-  { path: 'inicio', component: Inicio },
-  { path: 'extraccion', component: OperacionSalaComponent },
-  { path: 'reportes', component: ReporteCierreTemporadaComponent },
-  { path: 'voz', component: AudioRecorderComponent },
-  { path: 'materiales', component: MaterialesComponent },
 ];
-
-
