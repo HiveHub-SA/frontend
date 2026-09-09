@@ -65,10 +65,11 @@
           <div class="form-section-divider">
             <p class="form-label form-section-title">MATERIAL ASIGNADO</p>
 
-            <app-inventario-selector tipo="CAMARA" [max]="2" [seleccionados]="idsCamaras"
+            <app-inventario-selector tipo="CAMARA" [max]="1" [seleccionados]="idsCamaras"
               [preAsignados]="camarasActuales()" (seleccionadosChange)="idsCamaras = $event" />
 
             <app-inventario-selector tipo="ALZA" [max]="5" [seleccionados]="idsAlzas" [preAsignados]="alzasActuales()"
+              [tamanoAlzaFijado]="tamanoAlzaEdit" (tamanoAlzaChange)="tamanoAlzaEdit = $event"
               (seleccionadosChange)="idsAlzas = $event" />
 
             <app-inventario-selector tipo="NUCLEO" [seleccionados]="idsNucleos" [preAsignados]="nucleosActuales()"
@@ -77,7 +78,8 @@
 
           <div class="form-actions">
             <button type="button" class="btn-cancel sink-effect" (click)="toggleEditMode()">Cancelar</button>
-            <button type="button" class="btn-submit sink-effect" (click)="guardarColmena()" [disabled]="saving() || !nombreEdit">
+            <button type="button" class="btn-submit sink-effect" (click)="guardarColmena()"
+              [disabled]="saving() || !nombreEdit">
               <span *ngIf="saving()" class="material-symbols-outlined icon-spin">sync</span>
               Guardar
             </button>
