@@ -9,10 +9,11 @@ import { InventarioSelectorComponent } from '../../shared/inventario-selector/in
 import { ColmenaService } from '../../colmenas/colmena.service';
 import { ColmenaRequestDTO } from '../../colmenas/colmena.model';
 import { calcularComposicion } from '../../colmenas/colmena-composicion.util';
+import { VideosApiarioComponent } from '../video/detail/videoApiario.component';
 
 @Component({
   selector: 'app-detalle-apiario',
-  imports: [CommonModule, RouterLink, FormsModule, ConfirmDeleteComponent, InventarioSelectorComponent],
+  imports: [CommonModule, RouterLink, FormsModule, ConfirmDeleteComponent, InventarioSelectorComponent, VideosApiarioComponent],
   templateUrl: './detalle-apiario.html',
   styleUrl: './detalle-apiario.css',
 })
